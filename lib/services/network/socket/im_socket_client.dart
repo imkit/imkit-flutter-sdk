@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:imkit/models/im_invitation.dart';
 import 'package:imkit/models/im_message.dart';
 import 'package:imkit/models/im_room.dart';
-import 'package:imkit/sdk/internal/imkit_accessor.dart';
-import 'package:imkit/services/network/im_socket_client_event.dart';
+import 'package:imkit/models/im_state.dart';
+import 'package:imkit/services/network/socket/im_socket_client_event.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
 part 'im_socket_client.g.dart';
@@ -51,14 +51,16 @@ Map<String, dynamic> _convertSocketData(dynamic data) {
   }
 }
 
-class IMSocketClient with IMAccessor {
+class IMSocketClient {
+  late final IMSocketClientEncodingType _encodingType = IMSocketClientEncodingType.base64;
+  late final IMSocketClientEvent _event;
+  late final IMState _state;
   late Socket _socket;
-  final IMSocketClientEncodingType _encodingType = IMSocketClientEncodingType.base64;
-  late IMSocketClientEvent _event;
 
-  IMSocketClient(IMSocketClientEvent event) {
+  IMSocketClient({required IMState state, required IMSocketClientEvent event}) {
     assert(state.chatServerURL.isNotEmpty, 'Must configure `chatServerURL` before initializing SocketClient');
 
+    _state = state;
     _event = event;
 
     _socket = io(
@@ -77,9 +79,9 @@ class IMSocketClient with IMAccessor {
   }
 
   connect() {
-    assert(state.chatServerURL.isNotEmpty, 'Must configure `chatServerURL` before socket connecting');
-    assert(state.uid.isNotEmpty, 'Must configure `uid` before socket connecting');
-    assert(state.token.isNotEmpty, 'Must configure `token` before socket connecting');
+    assert(_state.chatServerURL.isNotEmpty, 'Must configure `chatServerURL` before socket connecting');
+    assert(_state.uid.isNotEmpty, 'Must configure `uid` before socket connecting');
+    assert(_state.token.isNotEmpty, 'Must configure `token` before socket connecting');
 
     _socket.clearListeners();
     _addEvents();
@@ -112,8 +114,7 @@ extension on IMSocketClient {
 
   _onHandshakeEvent(dynamic data) {
     _socket.emitWithAck("conf", {"encoding": _encodingType.value}, ack: (data) {
-      final header = {"IM-CLIENT-KEY": state.clientKey, "IM-Authorization": state.token};
-      _socket.emitWithAck("auth2", [state.token, header], ack: (data) {
+      _socket.emitWithAck("auth2", [_state.token, _state.headers()], ack: (data) {
         if (data == null || data == "NO ACK") {
           reconnect();
         } else if (_convertSocketData(data)["RC"] == 401) {

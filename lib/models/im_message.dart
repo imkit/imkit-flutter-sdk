@@ -19,6 +19,7 @@ enum IMMessageType {
 
 @JsonSerializable()
 class IMMessage {
+  // Common
   @JsonKey(name: '_id', defaultValue: '')
   String id = "";
 
@@ -30,9 +31,6 @@ class IMMessage {
 
   @JsonKey(name: 'sender', defaultValue: null)
   IMUser? sender;
-
-  @JsonKey(name: 'mentions', defaultValue: [])
-  List<String> mentions = [];
 
   @JsonKey(name: 'createdAtMS', defaultValue: null, fromJson: toDateTime, toJson: toTimestamp)
   DateTime? createAt;
@@ -46,16 +44,19 @@ class IMMessage {
   @JsonKey(name: 'message', defaultValue: null)
   String? text;
 
+  @JsonKey(name: 'mentions')
+  List<String> mentions = [];
+
   IMMessage({
     required this.id,
     required this.roomId,
     required this.type,
     this.sender,
-    this.mentions = const [],
     this.createAt,
     this.updateAt,
     this.messageAt,
     this.text,
+    this.mentions = const [],
   });
 
   factory IMMessage.fromJson(Map<String, dynamic> json) => _$IMMessageFromJson(json);

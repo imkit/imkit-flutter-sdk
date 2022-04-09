@@ -15,14 +15,14 @@ IMMessage _$IMMessageFromJson(Map<String, dynamic> json) => IMMessage(
       sender: json['sender'] == null
           ? null
           : IMUser.fromJson(json['sender'] as Map<String, dynamic>),
-      mentions: (json['mentions'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          [],
       createAt: toDateTime(json['createdAtMS'] as int),
       updateAt: toDateTime(json['updatedAtMS'] as int),
       messageAt: toDateTime(json['messageTimeMS'] as int),
       text: json['message'] as String?,
+      mentions: (json['mentions'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$IMMessageToJson(IMMessage instance) => <String, dynamic>{
@@ -30,11 +30,11 @@ Map<String, dynamic> _$IMMessageToJson(IMMessage instance) => <String, dynamic>{
       'room': instance.roomId,
       'messageType': _$IMMessageTypeEnumMap[instance.type],
       'sender': instance.sender,
-      'mentions': instance.mentions,
       'createdAtMS': toTimestamp(instance.createAt),
       'updatedAtMS': toTimestamp(instance.updateAt),
       'messageTimeMS': toTimestamp(instance.messageAt),
       'message': instance.text,
+      'mentions': instance.mentions,
     };
 
 const _$IMMessageTypeEnumMap = {
