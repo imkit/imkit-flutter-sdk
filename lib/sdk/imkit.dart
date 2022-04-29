@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_state.dart';
 import 'package:imkit/sdk/internal/imkit_internal.dart';
 
@@ -15,18 +18,18 @@ class IMKit {
   IMKitInternal getInternal() => _internal;
 
   connect() {
-    _internal.connect();
+    _internal.data.socketConnect();
   }
 
   disconnect() {
-    _internal.disconnect();
+    _internal.data.socketDisconnect();
   }
 
   setUid(String uid) {
     if (_internal.state.uid != uid) {
       _internal.state.uid = uid;
       if (_internal.state.uid.isNotEmpty && _internal.state.token.isNotEmpty) {
-        _internal.reconnect();
+        _internal.data.socketReconnect();
       }
     }
   }
@@ -35,8 +38,16 @@ class IMKit {
     if (_internal.state.token != token) {
       _internal.state.token = token;
       if (_internal.state.uid.isNotEmpty && _internal.state.token.isNotEmpty) {
-        _internal.reconnect();
+        _internal.data.socketReconnect();
       }
     }
+  }
+
+  fetchRooms() {
+    _internal.data.syncRooms();
+  }
+
+  Stream<List<IMRoom>> roomsStream() {
+    return _internal.data.observer(_internal.streamManager.rooms);
   }
 }

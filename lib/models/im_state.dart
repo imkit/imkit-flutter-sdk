@@ -6,6 +6,19 @@ class IMState {
   String uid = "";
   String token = "";
 
+  Map<String, String> headers() {
+    return {
+      "IM-CLIENT-KEY": clientKey,
+      "IM-Authorization": token,
+    };
+  }
+
+  Map<String, String> headersForApi() {
+    final apiHeaders = headers();
+    apiHeaders.putIfAbsent("IM-CLIENT-ID", () => uid);
+    return apiHeaders;
+  }
+
   void logout() {
     uid = "";
     token = "";

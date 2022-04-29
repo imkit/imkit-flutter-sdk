@@ -1,0 +1,38 @@
+import 'package:dio/adapter.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:imkit/sdk/internal/imkit_accessor.dart';
+import 'package:imkit/services/network/api/interceptors/im_api_wrapper.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+
+class IMApiDio with DioMixin, IMAccessor implements Dio {
+  static IMApiDio _instance() => IMApiDio._();
+
+  factory IMApiDio() => _instance();
+
+  IMApiDio._([BaseOptions? options]) {
+    options = BaseOptions()
+      ..baseUrl = state.chatServerURL
+      ..contentType = Headers.jsonContentType
+      ..connectTimeout = 60000
+      ..sendTimeout = 180000
+      ..receiveTimeout = 180000;
+
+    this.options = options;
+
+    interceptors.add(IMApiWrapper(sdk.state));
+
+    if (kDebugMode) {
+      interceptors.add(PrettyDioLogger(
+        request: false,
+        requestHeader: false,
+        requestBody: false,
+        responseHeader: false,
+        responseBody: false,
+        compact: false,
+      ));
+    }
+
+    httpClientAdapter = DefaultHttpClientAdapter();
+  }
+}
