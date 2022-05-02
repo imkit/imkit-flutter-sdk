@@ -11,7 +11,7 @@ IMUser _$IMUserFromJson(Map<String, dynamic> json) => IMUser(
       nickname: json['nickname'] as String? ?? '',
       desc: json['description'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
-      lastLoginAt: toDateTime(json['lastLoginTimeMS'] as int),
+      lastLoginAt: toDateTime(json['lastLoginTimeMS'] as int?),
     );
 
 Map<String, dynamic> _$IMUserToJson(IMUser instance) => <String, dynamic>{

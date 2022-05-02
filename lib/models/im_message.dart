@@ -1,4 +1,5 @@
 import 'package:imkit/models/im_user.dart';
+import 'package:imkit/sdk/imkit.dart';
 import 'package:imkit/utils/json_from_parser.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -46,6 +47,47 @@ class IMMessage {
 
   @JsonKey(name: 'mentions')
   List<String> mentions = [];
+
+  bool get isMe => sender?.id == IMKit.uid;
+
+  String? get description {
+    // I18n
+    switch (type) {
+      case IMMessageType.text:
+        return text;
+
+      case IMMessageType.image:
+      case IMMessageType.audio:
+      case IMMessageType.video:
+      case IMMessageType.file:
+      case IMMessageType.location:
+      case IMMessageType.sticker:
+        final map = {
+          IMMessageType.image: "n.photo",
+          IMMessageType.audio: "n.voice message",
+          IMMessageType.video: "n.video",
+          IMMessageType.file: "n.file",
+          IMMessageType.location: "n.location",
+          IMMessageType.sticker: "n.sticker"
+        };
+        if (isMe) {
+          return "s.You sent a %@." + (map[type] ?? "n.message");
+        } else {
+          return "s.%@ sent a %@." + (sender?.nickname ?? "" + (map[type] ?? "n.message"));
+        }
+
+      case IMMessageType.system:
+        // Not Implement
+        return text;
+
+      case IMMessageType.template:
+        // Not Implement
+        return text;
+
+      case IMMessageType.other:
+        return text;
+    }
+  }
 
   IMMessage({
     required this.id,

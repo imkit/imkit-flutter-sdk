@@ -8,10 +8,11 @@ part of 'im_room.dart';
 
 IMRoom _$IMRoomFromJson(Map<String, dynamic> json) => IMRoom(
       id: json['_id'] as String? ?? '',
-      type: $enumDecodeNullable(_$IMRoomTypeEnumMap, json['roomType'],
+      type: $enumDecodeNullable(
+              _$IMRoomTypeEnumMap, _toRoomType(json, 'roomType'),
               unknownValue: IMRoomType.direct) ??
           IMRoomType.direct,
-      name: json['name'] as String? ?? '',
+      name: _toName(json, 'name') as String? ?? '',
       desc: json['description'] as String?,
       coverUrl: json['cover'] as String?,
       numberOfUnreadMessages: json['unread'] as int? ?? 0,
@@ -20,7 +21,8 @@ IMRoom _$IMRoomFromJson(Map<String, dynamic> json) => IMRoom(
       isTranslationEnabled:
           _toIsTranslationEnabled(json, 'isTranslationEnabled') as bool? ??
               true,
-      createAt: toDateTime(json['createdTimeMS'] as int),
+      createdAt: toDateTime(json['createdTimeMS'] as int?),
+      updatedAt: toDateTime(_toUpdatedAt(json, 'updatedTimeMS') as int?),
       lastMessage: json['lastMessage'] == null
           ? null
           : IMMessage.fromJson(json['lastMessage'] as Map<String, dynamic>),
@@ -49,7 +51,8 @@ Map<String, dynamic> _$IMRoomToJson(IMRoom instance) => <String, dynamic>{
       'members': instance.members,
       'roomTags': instance.roomTags,
       'pref': instance.tags,
-      'createdTimeMS': toTimestamp(instance.createAt),
+      'createdTimeMS': toTimestamp(instance.createdAt),
+      'updatedTimeMS': toTimestamp(instance.updatedAt),
     };
 
 const _$IMRoomTypeEnumMap = {

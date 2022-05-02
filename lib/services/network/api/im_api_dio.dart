@@ -22,16 +22,16 @@ class IMApiDio with DioMixin, IMAccessor implements Dio {
 
     interceptors.add(IMApiWrapper(sdk.state));
 
-    if (kDebugMode) {
-      interceptors.add(PrettyDioLogger(
-        request: false,
-        requestHeader: false,
-        requestBody: false,
-        responseHeader: false,
-        responseBody: false,
-        compact: false,
-      ));
-    }
+    // if (kDebugMode) {
+    //   interceptors.add(PrettyDioLogger(
+    //     request: true,
+    //     requestHeader: true,
+    //     requestBody: true,
+    //     responseHeader: true,
+    //     responseBody: true,
+    //     compact: true,
+    //   ));
+    // }
 
     httpClientAdapter = DefaultHttpClientAdapter();
   }

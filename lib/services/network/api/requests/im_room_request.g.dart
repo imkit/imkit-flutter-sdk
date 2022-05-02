@@ -6,8 +6,6 @@ part of 'im_room_request.dart';
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps
-
 class _IMRoomRequest implements IMRoomRequest {
   _IMRoomRequest(this._dio, {this.baseUrl});
 
@@ -37,8 +35,9 @@ class _IMRoomRequest implements IMRoomRequest {
                 .compose(_dio.options, '/rooms',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    var value = await compute(
-        deserializeIMRoomList, _result.data!.cast<Map<String, dynamic>>());
+    var value = _result.data!
+        .map((dynamic i) => IMRoom.fromJson(i as Map<String, dynamic>))
+        .toList();
     return value;
   }
 

@@ -1,19 +1,16 @@
-import 'dart:async';
-
 import 'package:imkit/models/im_invitation.dart';
 import 'package:imkit/models/im_message.dart';
 import 'package:imkit/models/im_room.dart';
 import 'package:imkit/models/im_state.dart';
-import 'package:imkit/sdk/internal/imkit_streams.dart';
 import 'package:imkit/services/data/managers/im_room_data_manager.dart';
+import 'package:imkit/services/data/storage/im_local_storage.dart';
 import 'package:imkit/services/network/socket/im_socket_client.dart';
 import 'package:imkit/services/network/socket/im_socket_client_event.dart';
 
 class IMData {
   final IMState state;
-  final IMKitStreamManager stream;
   late final IMRoomDataManager _roomDataManager = IMRoomDataManager();
-
+  late final IMLocalStorage localStorege;
   late final IMSocketClient _socketClient = IMSocketClient(
       state: state,
       event: IMSocketClientEvent()
@@ -27,18 +24,25 @@ class IMData {
         ..onDidReceiveRoomPref = onSocketDidReceiveRoomPref);
   IMSocketClient get socketClient => _socketClient;
 
-  IMData({required this.state, required this.stream});
+  IMData({required this.state, required this.localStorege});
 
   /// Room
-  void syncRooms() {
-    //TODO: save data to local db
-    _roomDataManager.fetchRooms().then((value) => stream.rooms.add(value));
-  }
+  void syncRooms({bool isRefresh = false}) async {
+    if (isRefresh) {
+      await localStorege.remove(key: IMLocalStoregeKey.lastRoomUpdatedAt);
+    }
+    final rooms = await _roomDataManager.fetchRooms();
+    final lastRoomUpdatedAt = rooms.fold<int>(
+      0,
+      (previousValue, element) =>
+          (element.updatedAt?.millisecondsSinceEpoch ?? 0) > previousValue ? (element.updatedAt?.millisecondsSinceEpoch ?? 0) : previousValue,
+    );
 
-  /// Stream
-  Stream<T> observer<T>(StreamController<T> streamController) async* {
-    await for (final res in streamController.stream) {
-      yield res;
+    if (lastRoomUpdatedAt > 0) {
+      localStorege.setValue(key: IMLocalStoregeKey.lastRoomUpdatedAt, value: lastRoomUpdatedAt + 1000);
+    }
+    if (rooms.isNotEmpty) {
+      _roomDataManager.insertItems(rooms);
     }
   }
 
