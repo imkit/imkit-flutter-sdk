@@ -8,7 +8,7 @@ export 'sdk/style/imkit_style.dart';
 export 'sdk/style/imkit_room_cell_style.dart';
 
 // Widget
-export 'widgets/im_rooms_view.dart';
+export 'widgets/rooms/im_rooms_view.dart';
 
 // Models
 export 'models/im_invitation.dart';

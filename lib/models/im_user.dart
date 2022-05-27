@@ -3,6 +3,12 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'im_user.g.dart';
 
+IMUser deserializeIMUser(Map<String, dynamic> json) => IMUser.fromJson(json);
+List<IMUser> deserializeIMUserList(List<Map<String, dynamic>> json) => json.map((e) => IMUser.fromJson(e)).toList();
+
+Map<String, dynamic> serializeIMUser(IMUser object) => object.toJson();
+List<Map<String, dynamic>> serializeIMUserList(List<IMUser> objects) => objects.map((e) => e.toJson()).toList();
+
 @JsonSerializable()
 class IMUser {
   @JsonKey(name: '_id', defaultValue: '')
@@ -31,9 +37,3 @@ class IMUser {
   factory IMUser.fromJson(Map<String, dynamic> json) => _$IMUserFromJson(json);
   Map<String, dynamic> toJson() => _$IMUserToJson(this);
 }
-
-IMUser deserializeIMUser(Map<String, dynamic> json) => IMUser.fromJson(json);
-List<IMUser> deserializeIMUserList(List<Map<String, dynamic>> json) => json.map((e) => IMUser.fromJson(e)).toList();
-
-Map<String, dynamic> serializeIMUser(IMUser object) => object.toJson();
-List<Map<String, dynamic>> serializeIMUserList(List<IMUser> objects) => objects.map((e) => e.toJson()).toList();

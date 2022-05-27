@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/extensions/string_ext.dart';
 import 'package:imkit/sdk/imkit.dart';
@@ -48,26 +49,22 @@ class IMCircleAvatarWidget extends StatelessWidget {
     }
   }
 
-  Widget _fromNetwork() => Image.network(
-        url ?? "",
+  Widget _fromNetwork() => CachedNetworkImage(
+        imageUrl: url ?? "",
         fit: fit,
         width: width,
         height: height,
-        errorBuilder: (context, error, stackTrace) {
+        httpHeaders: IMKit.instance.internal.state.headers(),
+        errorWidget: (context, url, error) {
           if (onLoadImageError != null) {
             onLoadImageError?.call();
           }
           return _fromText();
         },
-        loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-          if (loadingProgress == null) {
-            return child;
-          }
-          return CircularProgressIndicator(
-            strokeWidth: 2,
-            value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null,
-          );
-        },
+        progressIndicatorBuilder: (BuildContext context, String url, DownloadProgress downloadProgress) => CircularProgressIndicator(
+          strokeWidth: 2,
+          value: downloadProgress.progress,
+        ),
       );
 
   Widget _fromMemory() => Image.memory(
@@ -86,7 +83,7 @@ class IMCircleAvatarWidget extends StatelessWidget {
   Widget _fromText() {
     final str = text ?? "";
     if (str.isNotEmpty) {
-      return Text(str.firstWord.toUpperCase(), style: IMKit.style.avatar.text);
+      return Center(child: Text(str.firstWord.toUpperCase(), style: IMKit.style.avatar.text));
     }
     return _empty();
   }

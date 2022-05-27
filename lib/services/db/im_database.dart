@@ -3,11 +3,20 @@ import 'dart:async';
 import 'package:floor/floor.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/converter/im_date_time_converter.dart';
+import 'package:imkit/models/converter/im_file_converter.dart';
+import 'package:imkit/models/converter/im_image_list_converter.dart';
+import 'package:imkit/models/converter/im_location_converter.dart';
+import 'package:imkit/models/converter/im_map_converter.dart';
 import 'package:imkit/models/converter/im_message_converter.dart';
+import 'package:imkit/models/converter/im_message_type_converter.dart';
+import 'package:imkit/models/converter/im_response_object_converter.dart';
 import 'package:imkit/models/converter/im_room_type_converter.dart';
 import 'package:imkit/models/converter/im_string_list_converter.dart';
+import 'package:imkit/models/converter/im_system_event_converter.dart';
 import 'package:imkit/models/converter/im_tag_list_converter.dart';
+import 'package:imkit/models/converter/im_user_converter.dart';
 import 'package:imkit/models/converter/im_user_list_converter.dart';
+import 'package:imkit/services/db/im_message_dao.dart';
 import 'package:imkit/services/db/im_room_dao.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
@@ -18,12 +27,21 @@ part 'im_database.g.dart';
   IMDateTimeConverter,
   IMRoomTypeConverter,
   IMMessageConverter,
+  IMUserConverter,
   IMUserListConverter,
   IMTagListConverter,
+  IMMessageTypeConverter,
+  IMSystemEventConverter,
+  IMResponseObjectConverter,
+  IMImageListConverter,
+  IMFileConverter,
+  IMLocationConverter,
+  IMMapConverter,
 ])
-@Database(version: 1, entities: [IMRoom])
+@Database(version: 1, entities: [IMRoom, IMMessage])
 abstract class IMDatabase extends FloorDatabase {
   IMRoomDao get roomDao;
+  IMMessageDao get messageDao;
 
   // static IMDatabase? _instance;
   // static Future<IMDatabase> getInstance() async {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:imkit/models/im_room.dart';
 import 'package:imkit/sdk/imkit.dart';
-import 'package:imkit/widgets/im_rooms_list_item.dart';
+import 'package:imkit/widgets/rooms/im_rooms_list_item.dart';
 
 class IMRoomsListWidget extends StatelessWidget {
   const IMRoomsListWidget({Key? key}) : super(key: key);
@@ -12,7 +12,7 @@ class IMRoomsListWidget extends StatelessWidget {
         stream: IMKit.instance.listener.watchRooms,
         builder: (BuildContext context, AsyncSnapshot<List<IMRoom>> snapshot) {
           ///获取到数据，为所欲为的更新 UI
-          print(">>> asyncSnapshot: ${snapshot.data?.length ?? 0}");
+          print(">>> room list count: ${snapshot.data?.length ?? 0}");
           // inspect(snapshot.data);
           //return Container();
           return ListView.separated(

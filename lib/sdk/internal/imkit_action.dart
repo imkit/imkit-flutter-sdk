@@ -17,7 +17,8 @@ class IMKitAction {
   }
 
   // Room
-  void fetchRooms({bool isRefresh = false}) {
-    _data.syncRooms(isRefresh: isRefresh);
-  }
+  void fetchRooms({bool isRefresh = false}) => _data.syncRooms(isRefresh: isRefresh);
+
+  // Message
+  void fetchMessages({required String roomId}) => _data.syncMessages(roomId: roomId);
 }

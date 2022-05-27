@@ -14,6 +14,9 @@ enum IMRoomType {
   group,
 }
 
+IMRoom deserializeIMRoom(Map<String, dynamic> json) => IMRoom.fromJson(json);
+List<IMRoom> deserializeIMRoomList(List<Map<String, dynamic>> json) => json.map((e) => IMRoom.fromJson(e)).toList();
+
 Map<IMRoomType, String> get roomTypeMap => _$IMRoomTypeEnumMap;
 
 @JsonSerializable()
@@ -114,13 +117,13 @@ class IMRoom {
   Map<String, dynamic> toJson() => _$IMRoomToJson(this);
 }
 
-String _toName(Map<dynamic, dynamic>? map, String key) {
-  if (map == null) {
+String _toName(Map<dynamic, dynamic>? json, String key) {
+  if (json == null) {
     return "";
   }
 
-  final String name = map["name"] ?? "";
-  final List<dynamic> members = map["members"] ?? [];
+  final String name = json["name"] ?? "";
+  final List<dynamic> members = json["members"] ?? [];
   if (name.isNotEmpty) {
     return name;
   } else {
@@ -137,9 +140,9 @@ String _toName(Map<dynamic, dynamic>? map, String key) {
   }
 }
 
-String _toRoomType(Map<dynamic, dynamic>? map, String key) {
-  final String roomType = map?["roomType"] ?? "";
-  final Iterable members = ((map?["members"] ?? []) as List).where((element) => element["id"] != IMKit.uid);
+String _toRoomType(Map<dynamic, dynamic>? json, String key) {
+  final String roomType = json?["roomType"] ?? "";
+  final Iterable members = ((json?["members"] ?? []) as List).where((element) => element["id"] != IMKit.uid);
   if (roomType.isNotEmpty) {
     return roomType;
   } else if (members.length == 1) {
@@ -149,10 +152,10 @@ String _toRoomType(Map<dynamic, dynamic>? map, String key) {
   }
 }
 
-List<IMTag> _toIMTags(Map<dynamic, dynamic>? prefs) {
-  if (prefs != null) {
-    final tags = prefs["tags"];
-    final tagColors = prefs["tagColors"];
+List<IMTag> _toIMTags(Map<dynamic, dynamic>? json) {
+  if (json != null) {
+    final tags = json["tags"];
+    final tagColors = json["tagColors"];
     if (tags != null && tagColors != null) {
       return tags.map<IMTag>((tag) => IMTag(name: tag, hexColor: tagColors[tag]?.toString())).toList();
     }
@@ -162,6 +165,3 @@ List<IMTag> _toIMTags(Map<dynamic, dynamic>? prefs) {
 
 bool _toIsTranslationEnabled(Map<dynamic, dynamic>? map, String key) => map?["pref"]?["translation"] ?? true;
 int? _toUpdatedAt(Map<dynamic, dynamic>? map, String key) => map?["lastMessage"]?["createdAtMS"] ?? map?["createdTimeMS"];
-
-IMRoom deserializeIMRoom(Map<String, dynamic> json) => IMRoom.fromJson(json);
-List<IMRoom> deserializeIMRoomList(List<Map<String, dynamic>> json) => json.map((e) => IMRoom.fromJson(e)).toList();

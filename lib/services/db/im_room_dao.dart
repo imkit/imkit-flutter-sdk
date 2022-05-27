@@ -9,6 +9,9 @@ abstract class IMRoomDao extends IMBaseDao<IMRoom> {
   @Query('SELECT * FROM $table ORDER BY updatedAt DESC')
   Stream<List<IMRoom>> findRooms();
 
+  @Query('SELECT * FROM $table WHERE id = :id')
+  Stream<IMRoom?> findRoom(String id);
+
   @Query('DELETE FROM $table')
   Future<void> deleteAll();
 }
