@@ -9,7 +9,7 @@ class Utils {
 
     for (int i = 0; i < 36; i++) {
       final int hexPos = random.nextInt(16);
-      uuid[i] = (hexDigits.substring(hexPos, hexPos + 1));
+      uuid.add((hexDigits.substring(hexPos, hexPos + 1)));
     }
 
     int pos = (int.parse(uuid[19], radix: 16) & 0x3) | 0x8; // bits 6-7 of the clock_seq_hi_and_reserved to 01

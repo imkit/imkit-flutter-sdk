@@ -4,6 +4,8 @@ import 'package:imkit/widgets/components/im_circle_avatar_widget.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_audio.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_image.dart';
+import 'package:imkit/widgets/messages/items/im_message_item_resend.dart';
+import 'package:imkit/widgets/messages/items/im_message_item_status.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_system.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_text.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_video.dart';
@@ -47,7 +49,7 @@ extension on IMMessageListItem {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   _incomingBubble(context),
-                  IMMessageItemComponent.getReadReceiptAndTime(message: message),
+                  _statusWidget(),
                 ],
               )
             ],
@@ -67,8 +69,12 @@ extension on IMMessageListItem {
 
   Widget _outgoing(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [IMMessageItemComponent.getReadReceiptAndTime(message: message), _outgoingBubble(context)],
+        crossAxisAlignment: message.status == IMMessageStatus.undelivered ? CrossAxisAlignment.center : CrossAxisAlignment.end,
+        children: [
+          _statusWidget(),
+          _outgoingBubble(context),
+          _resendWidget(),
+        ],
       );
 
   Widget _outgoingBubble(BuildContext context) => Container(
@@ -119,4 +125,11 @@ extension on IMMessageListItem {
         return IMMessageItemText(message: message);
     }
   }
+
+  Widget _statusWidget() => IMMessageItemStatus(message: message);
+
+  Widget _resendWidget() => Visibility(
+        visible: message.status == IMMessageStatus.undelivered,
+        child: IMMessageItemResend(message: message),
+      );
 }

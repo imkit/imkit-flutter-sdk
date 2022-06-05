@@ -6,11 +6,15 @@ class IMIconButtonWidget extends StatelessWidget {
     required this.icon,
     this.onPressed,
     this.size = 36,
+    this.iconSize = 24,
+    this.padding = EdgeInsets.zero,
   }) : super(key: key);
 
   final Function()? onPressed;
   final Icon icon;
   final double size;
+  final double iconSize;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) => SizedBox(
@@ -21,8 +25,9 @@ class IMIconButtonWidget extends StatelessWidget {
           highlightColor: Colors.transparent,
           splashColor: Colors.transparent,
           onPressed: onPressed,
-          padding: EdgeInsets.zero,
+          padding: padding,
           icon: icon,
+          iconSize: iconSize,
         ),
       );
 }

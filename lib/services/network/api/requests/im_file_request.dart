@@ -13,7 +13,10 @@ abstract class IMFileRequest {
   @POST("/files/{bucket}")
   @MultiPart()
   Future<IMUploadFile> upload({
+    @Header("Content-Type") required String mimeType,
     @Path("bucket") required String bucket,
     @Part(name: "file") required File file,
+    @SendProgress() ProgressCallback? onSendProgress,
+    @CancelRequest() CancelToken? cancelToken,
   });
 }

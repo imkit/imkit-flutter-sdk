@@ -16,9 +16,9 @@ IMMessage _$IMMessageFromJson(Map<String, dynamic> json) => IMMessage(
           ? null
           : IMSystemEvent.fromJson(
               _toSystemEvent(json, 'systemEvent') as Map<String, dynamic>),
-      sender: json['sender'] == null
+      sender: _toMap(json, 'sender') == null
           ? null
-          : IMUser.fromJson(json['sender'] as Map<String, dynamic>),
+          : IMUser.fromJson(_toMap(json, 'sender') as Map<String, dynamic>),
       createdAt: toDateTime(_toCreatedAt(json, 'createdAtMS') as int?),
       updatedAt: toDateTime(json['updatedAtMS'] as int?),
       text: _toText(json, 'text') as String?,
@@ -43,6 +43,9 @@ IMMessage _$IMMessageFromJson(Map<String, dynamic> json) => IMMessage(
           : IMLocation.fromJson(
               _toLocation(json, 'location') as Map<String, dynamic>),
       extra: _toExtra(json, 'extra') as Map<String, dynamic>?,
+      status: $enumDecodeNullable(
+              _$IMMessageStatusEnumMap, _toStatus(json, 'status')) ??
+          IMMessageStatus.initial,
     );
 
 Map<String, dynamic> _$IMMessageToJson(IMMessage instance) => <String, dynamic>{
@@ -61,7 +64,15 @@ Map<String, dynamic> _$IMMessageToJson(IMMessage instance) => <String, dynamic>{
       'file': instance.file,
       'location': instance.location,
       'extra': instance.extra,
+      'status': _$IMMessageStatusEnumMap[instance.status],
     };
+
+const _$IMMessageStatusEnumMap = {
+  IMMessageStatus.initial: 'initial',
+  IMMessageStatus.sent: 'sent',
+  IMMessageStatus.delivered: 'delivered',
+  IMMessageStatus.undelivered: 'undelivered',
+};
 
 const _$IMMessageTypeEnumMap = {
   IMMessageType.text: 'text',

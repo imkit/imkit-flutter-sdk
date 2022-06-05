@@ -49,6 +49,13 @@ extension DateExtension on DateTime {
     return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
   }
 
+  int? calculateDifference(DateTime? date) {
+    if (date == null) {
+      return null;
+    }
+    return DateTime(date.year, date.month, date.day).difference(DateTime(year, month, day)).inDays;
+  }
+
   String get toHumanString {
     if (isToday) {
       return DateFormat("a h:mm").format(this);
@@ -57,6 +64,20 @@ extension DateExtension on DateTime {
       return "n.yesterday";
     } else if (isSameWeek) {
       return DateFormat("EEEE").format(this);
+    } else if (isThisYear) {
+      return DateFormat("M/dd").format(this);
+    } else {
+      return DateFormat("yyyy/M/dd").format(this);
+    }
+  }
+
+  String get toMessageHeader {
+    if (isToday) {
+      // I18n
+      return "n.today";
+    } else if (isYesterday) {
+      // I18n
+      return "n.yesterday";
     } else if (isThisYear) {
       return DateFormat("M/dd").format(this);
     } else {

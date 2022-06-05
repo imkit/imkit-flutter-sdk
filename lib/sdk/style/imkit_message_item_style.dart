@@ -5,6 +5,7 @@ class IMKitMessageItemStyle {
   final IMKitMessageItemIncomingStyle incoming = IMKitMessageItemIncomingStyle();
   final IMKitMessageItemSystemStyle system = IMKitMessageItemSystemStyle();
   final IMKitMessageItemDateStyle date = IMKitMessageItemDateStyle();
+  final IMKitMessageItemStatusStyle status = IMKitMessageItemStatusStyle();
 
   double cornerRadius = 12;
 
@@ -35,4 +36,9 @@ class IMKitMessageItemDateStyle {
   Color backgroundColor = const Color.fromRGBO(255, 255, 255, 0.6);
 
   TextStyle textSytle = const TextStyle(color: Color.fromRGBO(123, 146, 173, 1), fontSize: 11);
+}
+
+class IMKitMessageItemStatusStyle {
+  Color retryButtonBackgroundColor = const Color.fromRGBO(0, 160, 230, 1);
+  Color retryButtonColor = const Color.fromRGBO(255, 255, 255, 1);
 }

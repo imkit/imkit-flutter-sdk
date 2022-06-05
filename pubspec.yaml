@@ -27,6 +27,9 @@ dependencies:
   shared_preferences: ^2.0.13
   floor: ^1.2.0
 
+  # Photo
+  photo_manager: ^2.1.2
+
   # Util
   enume: ^1.1.0
   crypto: ^3.0.1

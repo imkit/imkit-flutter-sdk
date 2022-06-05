@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ImkitMessageInputBarStyle {
+class IMKitMessageInputBarStyle {
   Color iconColor = const Color.fromRGBO(0, 0, 0, 1);
 
   Color textFieldBackgroundColor = const Color.fromRGBO(238, 238, 238, 1);

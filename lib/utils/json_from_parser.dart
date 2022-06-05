@@ -12,3 +12,12 @@ Map<String, dynamic>? toMap(dynamic resource) {
   }
   return resource;
 }
+
+List<Map<String, dynamic>>? toList(dynamic resource) {
+  if (resource == null) {
+    return null;
+  } else if (resource is List) {
+    return resource.map((element) => toMap(element)!).toList();
+  }
+  return resource;
+}

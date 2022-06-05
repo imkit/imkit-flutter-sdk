@@ -22,11 +22,16 @@ class IMImage {
   @JsonKey(name: 'height')
   int height = 0;
 
+  String? originalPath;
+  String? thumbnailPath;
+
   IMImage({
     this.originalUrl = "",
     this.thumbnailUrl = "",
     this.width = 0,
     this.height = 0,
+    this.originalPath,
+    this.thumbnailPath,
   });
 
   factory IMImage.fromJson(Map<String, dynamic> json) => _$IMImageFromJson(json);

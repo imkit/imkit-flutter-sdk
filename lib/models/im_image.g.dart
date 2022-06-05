@@ -11,6 +11,8 @@ IMImage _$IMImageFromJson(Map<String, dynamic> json) => IMImage(
       thumbnailUrl: json['thumbnailUrl'] as String? ?? "",
       width: json['width'] as int? ?? 0,
       height: json['height'] as int? ?? 0,
+      originalPath: json['originalPath'] as String?,
+      thumbnailPath: json['thumbnailPath'] as String?,
     );
 
 Map<String, dynamic> _$IMImageToJson(IMImage instance) => <String, dynamic>{
@@ -18,4 +20,6 @@ Map<String, dynamic> _$IMImageToJson(IMImage instance) => <String, dynamic>{
       'thumbnailUrl': instance.thumbnailUrl,
       'width': instance.width,
       'height': instance.height,
+      'originalPath': instance.originalPath,
+      'thumbnailPath': instance.thumbnailPath,
     };

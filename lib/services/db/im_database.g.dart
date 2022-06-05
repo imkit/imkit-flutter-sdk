@@ -65,6 +65,8 @@ class _$IMDatabase extends IMDatabase {
 
   IMMessageDao? _messageDaoInstance;
 
+  IMUserDao? _userDaoInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -86,7 +88,9 @@ class _$IMDatabase extends IMDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `IMRoom` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `coverUrl` TEXT, `numberOfUnreadMessages` INTEGER NOT NULL, `isMuted` INTEGER NOT NULL, `isMentioned` INTEGER NOT NULL, `isTranslationEnabled` INTEGER NOT NULL, `lastMessage` TEXT, `members` TEXT NOT NULL, `roomTags` TEXT NOT NULL, `tags` TEXT NOT NULL, `createdAt` INTEGER, `updatedAt` INTEGER, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `IMMessage` (`id` TEXT NOT NULL, `roomId` TEXT NOT NULL, `type` TEXT NOT NULL, `systemEvent` TEXT, `sender` TEXT, `createdAt` INTEGER, `updatedAt` INTEGER, `responseObject` TEXT, `text` TEXT, `stickerId` TEXT, `mentions` TEXT NOT NULL, `images` TEXT NOT NULL, `file` TEXT, `location` TEXT, `extra` TEXT, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `IMMessage` (`id` TEXT NOT NULL, `roomId` TEXT NOT NULL, `type` TEXT NOT NULL, `systemEvent` TEXT, `sender` TEXT, `createdAt` INTEGER, `updatedAt` INTEGER, `responseObject` TEXT, `text` TEXT, `stickerId` TEXT, `mentions` TEXT NOT NULL, `images` TEXT NOT NULL, `file` TEXT, `location` TEXT, `extra` TEXT, `status` TEXT NOT NULL, PRIMARY KEY (`id`))');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `IMUser` (`id` TEXT NOT NULL, `nickname` TEXT NOT NULL, `desc` TEXT, `avatarUrl` TEXT, `lastLoginAt` INTEGER, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -102,6 +106,11 @@ class _$IMDatabase extends IMDatabase {
   @override
   IMMessageDao get messageDao {
     return _messageDaoInstance ??= _$IMMessageDao(database, changeListener);
+  }
+
+  @override
+  IMUserDao get userDao {
+    return _userDaoInstance ??= _$IMUserDao(database, changeListener);
   }
 }
 
@@ -252,6 +261,11 @@ class _$IMRoomDao extends IMRoomDao {
   }
 
   @override
+  Future<void> updateItem(IMRoom item) async {
+    await _iMRoomUpdateAdapter.update(item, OnConflictStrategy.replace);
+  }
+
+  @override
   Future<int> updateItems(List<IMRoom> items) {
     return _iMRoomUpdateAdapter.updateListAndReturnChangedRows(
         items, OnConflictStrategy.replace);
@@ -291,7 +305,8 @@ class _$IMMessageDao extends IMMessageDao {
                   'images': _iMImageListConverter.encode(item.images),
                   'file': _iMFileConverter.encode(item.file),
                   'location': _iMLocationConverter.encode(item.location),
-                  'extra': _iMMapConverter.encode(item.extra)
+                  'extra': _iMMapConverter.encode(item.extra),
+                  'status': _iMMessageStatusConverter.encode(item.status)
                 },
             changeListener),
         _iMMessageUpdateAdapter = UpdateAdapter(
@@ -315,7 +330,8 @@ class _$IMMessageDao extends IMMessageDao {
                   'images': _iMImageListConverter.encode(item.images),
                   'file': _iMFileConverter.encode(item.file),
                   'location': _iMLocationConverter.encode(item.location),
-                  'extra': _iMMapConverter.encode(item.extra)
+                  'extra': _iMMapConverter.encode(item.extra),
+                  'status': _iMMessageStatusConverter.encode(item.status)
                 },
             changeListener),
         _iMMessageDeletionAdapter = DeletionAdapter(
@@ -339,7 +355,8 @@ class _$IMMessageDao extends IMMessageDao {
                   'images': _iMImageListConverter.encode(item.images),
                   'file': _iMFileConverter.encode(item.file),
                   'location': _iMLocationConverter.encode(item.location),
-                  'extra': _iMMapConverter.encode(item.extra)
+                  'extra': _iMMapConverter.encode(item.extra),
+                  'status': _iMMessageStatusConverter.encode(item.status)
                 },
             changeListener);
 
@@ -376,7 +393,8 @@ class _$IMMessageDao extends IMMessageDao {
             images: _iMImageListConverter.decode(row['images'] as String),
             file: _iMFileConverter.decode(row['file'] as String?),
             location: _iMLocationConverter.decode(row['location'] as String?),
-            extra: _iMMapConverter.decode(row['extra'] as String?)),
+            extra: _iMMapConverter.decode(row['extra'] as String?),
+            status: _iMMessageStatusConverter.decode(row['status'] as String)),
         arguments: [roomId],
         queryableName: 'IMMessage',
         isView: false);
@@ -386,7 +404,7 @@ class _$IMMessageDao extends IMMessageDao {
   Future<IMMessage?> findLatestMessage(String roomId) async {
     return _queryAdapter.query(
         'SELECT * FROM IMMessage WHERE roomId = ?1 ORDER BY createdAt DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => IMMessage(id: row['id'] as String, roomId: row['roomId'] as String, type: _iMMessageTypeConverter.decode(row['type'] as String), systemEvent: _iMSystemEventConverter.decode(row['systemEvent'] as String?), sender: _iMUserConverter.decode(row['sender'] as String?), createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?), updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?), text: row['text'] as String?, stickerId: row['stickerId'] as String?, responseObject: _iMResponseObjectConverter.decode(row['responseObject'] as String?), mentions: _iMStringListConverter.decode(row['mentions'] as String), images: _iMImageListConverter.decode(row['images'] as String), file: _iMFileConverter.decode(row['file'] as String?), location: _iMLocationConverter.decode(row['location'] as String?), extra: _iMMapConverter.decode(row['extra'] as String?)),
+        mapper: (Map<String, Object?> row) => IMMessage(id: row['id'] as String, roomId: row['roomId'] as String, type: _iMMessageTypeConverter.decode(row['type'] as String), systemEvent: _iMSystemEventConverter.decode(row['systemEvent'] as String?), sender: _iMUserConverter.decode(row['sender'] as String?), createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?), updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?), text: row['text'] as String?, stickerId: row['stickerId'] as String?, responseObject: _iMResponseObjectConverter.decode(row['responseObject'] as String?), mentions: _iMStringListConverter.decode(row['mentions'] as String), images: _iMImageListConverter.decode(row['images'] as String), file: _iMFileConverter.decode(row['file'] as String?), location: _iMLocationConverter.decode(row['location'] as String?), extra: _iMMapConverter.decode(row['extra'] as String?), status: _iMMessageStatusConverter.decode(row['status'] as String)),
         arguments: [roomId]);
   }
 
@@ -413,6 +431,11 @@ class _$IMMessageDao extends IMMessageDao {
   }
 
   @override
+  Future<void> updateItem(IMMessage item) async {
+    await _iMMessageUpdateAdapter.update(item, OnConflictStrategy.replace);
+  }
+
+  @override
   Future<int> updateItems(List<IMMessage> items) {
     return _iMMessageUpdateAdapter.updateListAndReturnChangedRows(
         items, OnConflictStrategy.replace);
@@ -429,6 +452,99 @@ class _$IMMessageDao extends IMMessageDao {
   }
 }
 
+class _$IMUserDao extends IMUserDao {
+  _$IMUserDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database),
+        _iMUserInsertionAdapter = InsertionAdapter(
+            database,
+            'IMUser',
+            (IMUser item) => <String, Object?>{
+                  'id': item.id,
+                  'nickname': item.nickname,
+                  'desc': item.desc,
+                  'avatarUrl': item.avatarUrl,
+                  'lastLoginAt': _iMDateTimeConverter.encode(item.lastLoginAt)
+                }),
+        _iMUserUpdateAdapter = UpdateAdapter(
+            database,
+            'IMUser',
+            ['id'],
+            (IMUser item) => <String, Object?>{
+                  'id': item.id,
+                  'nickname': item.nickname,
+                  'desc': item.desc,
+                  'avatarUrl': item.avatarUrl,
+                  'lastLoginAt': _iMDateTimeConverter.encode(item.lastLoginAt)
+                }),
+        _iMUserDeletionAdapter = DeletionAdapter(
+            database,
+            'IMUser',
+            ['id'],
+            (IMUser item) => <String, Object?>{
+                  'id': item.id,
+                  'nickname': item.nickname,
+                  'desc': item.desc,
+                  'avatarUrl': item.avatarUrl,
+                  'lastLoginAt': _iMDateTimeConverter.encode(item.lastLoginAt)
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<IMUser> _iMUserInsertionAdapter;
+
+  final UpdateAdapter<IMUser> _iMUserUpdateAdapter;
+
+  final DeletionAdapter<IMUser> _iMUserDeletionAdapter;
+
+  @override
+  Future<IMUser?> findUser(String id) async {
+    return _queryAdapter.query('SELECT * FROM IMUser WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => IMUser(
+            id: row['id'] as String,
+            nickname: row['nickname'] as String,
+            desc: row['desc'] as String?,
+            avatarUrl: row['avatarUrl'] as String?,
+            lastLoginAt:
+                _iMDateTimeConverter.decode(row['lastLoginAt'] as int?)),
+        arguments: [id]);
+  }
+
+  @override
+  Future<void> insertItem(IMUser item) async {
+    await _iMUserInsertionAdapter.insert(item, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> insertItems(List<IMUser> items) async {
+    await _iMUserInsertionAdapter.insertList(items, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> updateItem(IMUser item) async {
+    await _iMUserUpdateAdapter.update(item, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<int> updateItems(List<IMUser> items) {
+    return _iMUserUpdateAdapter.updateListAndReturnChangedRows(
+        items, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> deleteItem(IMUser item) async {
+    await _iMUserDeletionAdapter.delete(item);
+  }
+
+  @override
+  Future<int> deleteItems(List<IMUser> items) {
+    return _iMUserDeletionAdapter.deleteListAndReturnChangedRows(items);
+  }
+}
+
 // ignore_for_file: unused_element
 final _iMStringListConverter = IMStringListConverter();
 final _iMDateTimeConverter = IMDateTimeConverter();
@@ -438,6 +554,7 @@ final _iMUserConverter = IMUserConverter();
 final _iMUserListConverter = IMUserListConverter();
 final _iMTagListConverter = IMTagListConverter();
 final _iMMessageTypeConverter = IMMessageTypeConverter();
+final _iMMessageStatusConverter = IMMessageStatusConverter();
 final _iMSystemEventConverter = IMSystemEventConverter();
 final _iMResponseObjectConverter = IMResponseObjectConverter();
 final _iMImageListConverter = IMImageListConverter();

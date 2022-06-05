@@ -24,17 +24,16 @@ class IMMessagesListWidget extends StatelessWidget {
               itemCount: snapshot.data?.length ?? 0,
               separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 8),
               itemBuilder: (BuildContext context, int index) {
-                final prevMessageCreatedAt = messages.firstWhereIndexedOrNull((i, _) => i == index - 1)?.createdAt?.toHumanString;
+                final prevMessageCreatedAt = messages.firstWhereIndexedOrNull((i, _) => i == index - 1)?.createdAt;
                 final currentMessage = messages[index];
-                final currentMessageCreatedAt = currentMessage.createdAt?.toHumanString ?? "";
 
                 return Column(
                   children: [
                     Visibility(
-                      visible: prevMessageCreatedAt != currentMessageCreatedAt,
+                      visible: currentMessage.createdAt?.calculateDifference(prevMessageCreatedAt) != 0,
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 8),
-                        child: IMMessageItemDate(value: currentMessageCreatedAt),
+                        child: IMMessageItemDate(value: currentMessage.createdAt?.toMessageHeader ?? ""),
                       ),
                     ),
                     IMMessageListItem(key: ObjectKey(currentMessage.id), room: room, message: currentMessage),

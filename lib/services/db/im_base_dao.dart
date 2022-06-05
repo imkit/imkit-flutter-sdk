@@ -4,6 +4,9 @@ abstract class IMBaseDao<T> {
   @Insert(onConflict: OnConflictStrategy.replace)
   Future<void> insertItem(T item);
 
+  @Update(onConflict: OnConflictStrategy.replace)
+  Future<void> updateItem(T item);
+
   @delete
   Future<void> deleteItem(T item);
 

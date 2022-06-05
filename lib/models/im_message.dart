@@ -30,6 +30,13 @@ enum IMMessageType {
   other,
 }
 
+enum IMMessageStatus {
+  initial,
+  sent,
+  delivered,
+  undelivered,
+}
+
 IMMessage deserializeIMMessage(Map<String, dynamic> json) => IMMessage.fromJson(json);
 List<IMMessage> deserializeIMMessageList(List<Map<String, dynamic>> json) => json.map((e) => IMMessage.fromJson(e)).toList();
 
@@ -37,6 +44,7 @@ Map<String, dynamic> serializeIMMessage(IMMessage object) => object.toJson();
 List<Map<String, dynamic>> serializeIMMessageList(List<IMMessage> objects) => objects.map((e) => e.toJson()).toList();
 
 Map<IMMessageType, String> get messageTypeMap => _$IMMessageTypeEnumMap;
+Map<IMMessageStatus, String> get messageTypeStatus => _$IMMessageStatusEnumMap;
 
 @JsonSerializable()
 @Entity()
@@ -54,7 +62,7 @@ class IMMessage {
   @JsonKey(defaultValue: null, readValue: _toSystemEvent)
   IMSystemEvent? systemEvent;
 
-  @JsonKey(name: 'sender', defaultValue: null)
+  @JsonKey(name: 'sender', defaultValue: null, readValue: _toMap)
   IMUser? sender;
 
   @JsonKey(name: 'createdAtMS', defaultValue: null, readValue: _toCreatedAt, fromJson: toDateTime, toJson: toTimestamp)
@@ -86,6 +94,9 @@ class IMMessage {
 
   @JsonKey(readValue: _toExtra)
   Map<String, dynamic>? extra;
+
+  @JsonKey(readValue: _toStatus)
+  IMMessageStatus status = IMMessageStatus.initial;
 
   bool get isMe => sender?.id == IMKit.uid;
 
@@ -248,6 +259,7 @@ class IMMessage {
     this.file,
     this.location,
     this.extra,
+    this.status = IMMessageStatus.initial,
   });
 
   factory IMMessage.fromJson(Map<String, dynamic> json) => _$IMMessageFromJson(json);
@@ -268,6 +280,7 @@ class IMMessage {
         sender: sender,
         responseObject: responseObject,
         file: hiddenUrl != null ? IMFile(url: hiddenUrl) : null,
+        text: text,
         mentions: mentions,
       );
 
@@ -382,6 +395,14 @@ IMMessageType _toType(String value) {
 
     default:
       return IMMessageType.other;
+  }
+}
+
+Map<String, dynamic>? _toMap(Map<dynamic, dynamic>? json, String key) {
+  try {
+    return toMap(json?[key]);
+  } catch (_) {
+    return null;
   }
 }
 
@@ -511,7 +532,7 @@ List<Map<String, dynamic>> _toImages(Map<dynamic, dynamic>? json, String key) {
 }
 
 Map<String, dynamic>? _toResponseObject(Map<dynamic, dynamic>? json, String key) {
-  final reply = json?["reply"];
+  final reply = toMap(json?["reply"]);
   if (json == null || reply == null) {
     return null;
   }
@@ -540,3 +561,5 @@ Map<String, dynamic>? _toExtra(Map<dynamic, dynamic>? json, String key) {
 }
 
 int? _toCreatedAt(Map<dynamic, dynamic>? json, String key) => json?["createdAtMS"] ?? json?["messageTimeMS"];
+
+String _toStatus(Map<dynamic, dynamic>? json, String key) => IMMessageStatus.delivered.name;

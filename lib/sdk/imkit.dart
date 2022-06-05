@@ -70,6 +70,7 @@ class IMKit {
   }
 
   static String get uid => _instance._internal.state.uid;
+  static String get bucket => _instance._internal.state.bucket;
   static IMKitStyle get style => _instance._style;
   static IMKitS get S => IMKitS.current;
 }
