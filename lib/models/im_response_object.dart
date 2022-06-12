@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:imkit/models/im_user.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -25,7 +23,7 @@ class IMResponseObject {
   @JsonKey(name: "sticker", defaultValue: null)
   String? stickerId;
 
-  @JsonKey(readValue: _toImageUrl, defaultValue: null)
+  @JsonKey(name: "imageUrl", defaultValue: null)
   String? imageUrl;
 
   String get text {
@@ -66,12 +64,13 @@ String _toMessage(Map<dynamic, dynamic>? json, String key) {
   if (json == null) {
     return "";
   }
-  final List<String> mentions = json["mentions"] ?? [];
+  final List<String> mentions = List<String>.from(json["mentions"] ?? []);
   final extra = json["extra"];
 
   switch (json["messageType"]) {
     case "text":
-      return mentions.join("");
+      return json["message"];
+    //mentions.join("");
 
     case "file":
       return "${(extra?["fileName"] ?? json["message"])}.${extra?["fileExtension"] ?? ""}";
@@ -80,5 +79,3 @@ String _toMessage(Map<dynamic, dynamic>? json, String key) {
       return json["message"];
   }
 }
-
-String? _toImageUrl(Map<dynamic, dynamic>? json, String key) => json?["thumbnailUrl"] ?? json?["originalUrl"];

@@ -7,8 +7,8 @@ import 'package:imkit/widgets/messages/im_messages_list_widget.dart';
 class IMMessagesView extends StatelessWidget {
   final String roomId;
   final IMRoom? room;
-  final GlobalKey<IMMessagesInputViewState> _inputViewKey = GlobalKey();
-  IMMessagesView({Key? key, required this.roomId, this.room}) : super(key: key);
+
+  const IMMessagesView({Key? key, required this.roomId, this.room}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +20,11 @@ class IMMessagesView extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<IMRoom?> snapshot) => Scaffold(
           appBar: AppBar(title: Text(snapshot.data?.title ?? ""), backgroundColor: IMKit.style.primaryColor),
           body: GestureDetector(
-            onTap: () => _inputViewKey.currentState?.updateInputType(IMMessagesInputViewType.none),
+            onTap: () => inputViewWidgetKey.currentState?.updateInputType(IMMessagesInputViewType.none),
             child: Column(
               children: [
                 IMMessagesListWidget(roomId: roomId, room: snapshot.data),
-                IMMessagesInputView(key: _inputViewKey, roomId: roomId),
+                IMMessagesInputView(key: inputViewWidgetKey, roomId: roomId),
               ],
             ),
           ),

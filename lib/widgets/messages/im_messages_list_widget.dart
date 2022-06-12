@@ -36,7 +36,7 @@ class IMMessagesListWidget extends StatelessWidget {
                         child: IMMessageItemDate(value: currentMessage.createdAt?.toMessageHeader ?? ""),
                       ),
                     ),
-                    IMMessageListItem(key: ObjectKey(currentMessage.id), room: room, message: currentMessage),
+                    IMMessageListItem(key: ValueKey(currentMessage.id), room: room, message: currentMessage),
                   ],
                 );
               },

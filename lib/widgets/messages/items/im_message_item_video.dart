@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/models/im_message.dart';
 import 'package:imkit/sdk/imkit.dart';
+import 'package:imkit/widgets/components/im_image_widget.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
 
 class IMMessageItemVideo extends StatelessWidget {
@@ -11,21 +11,20 @@ class IMMessageItemVideo extends StatelessWidget {
   const IMMessageItemVideo({Key? key, required this.message}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => CachedNetworkImage(
-        imageUrl: message.images.firstOrNull?.thumbnailUrl ?? "",
-        httpHeaders: IMKit.instance.internal.state.headers(),
+  Widget build(BuildContext context) => IMImageWidget(
+        url: message.images.firstOrNull?.thumbnailUrl,
         fit: BoxFit.fitWidth,
-        errorWidget: (BuildContext context, String url, dynamic error) => IMMessageItemComponent.getLoadImageFailure(),
-        progressIndicatorBuilder: (BuildContext context, String url, DownloadProgress downloadProgress) => Container(
+        onError: IMMessageItemComponent.getLoadImageFailure,
+        onProgress: (double? progress) => Container(
           padding: const EdgeInsets.all(12),
           width: 44,
           height: 44,
           child: CircularProgressIndicator(
             strokeWidth: 2,
-            value: downloadProgress.progress,
+            value: progress,
           ),
         ),
-        imageBuilder: (BuildContext context, ImageProvider<Object> imageProvider) => Stack(
+        onImageBuilder: (ImageProvider<Object> imageProvider) => Stack(
           children: [
             Image(image: imageProvider, fit: BoxFit.cover),
             Positioned.fill(

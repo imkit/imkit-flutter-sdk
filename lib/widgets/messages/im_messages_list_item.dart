@@ -4,24 +4,33 @@ import 'package:imkit/widgets/components/im_circle_avatar_widget.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_audio.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_image.dart';
+import 'package:imkit/widgets/messages/items/im_message_item_menu.dart';
+import 'package:imkit/widgets/messages/items/im_message_item_reply.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_resend.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_status.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_system.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_text.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_video.dart';
+import 'package:popup_menu/popup_menu.dart';
 
 class IMMessageListItem extends StatelessWidget {
   final IMRoom? room;
   final IMMessage message;
 
-  const IMMessageListItem({Key? key, required this.room, required this.message}) : super(key: key);
+  final GlobalKey itemKey = GlobalKey();
+
+  IMMessageListItem({Key? key, required this.room, required this.message}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => message.type == IMMessageType.system
-      ? _bodyWidget(context: context)
-      : message.isMe
-          ? _outgoing(context)
-          : _incoming(context);
+  Widget build(BuildContext context) {
+    if (message.type == IMMessageType.system) {
+      return _bodyWidget(context: context);
+    }
+    return GestureDetector(
+      onLongPress: () => _longPressMenu(context: context),
+      child: message.isMe ? _outgoing(context) : _incoming(context),
+    );
+  }
 }
 
 extension on IMMessageListItem {
@@ -32,8 +41,7 @@ extension on IMMessageListItem {
           IMCircleAvatarWidget(
             text: message.sender?.nickname,
             url: message.sender?.avatarUrl,
-            width: 35,
-            height: 35,
+            size: 35,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +56,7 @@ extension on IMMessageListItem {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  _incomingBubble(context),
+                  _bubble(context),
                   _statusWidget(),
                 ],
               )
@@ -57,51 +65,41 @@ extension on IMMessageListItem {
         ],
       );
 
-  Widget _incomingBubble(BuildContext context) => Container(
-      constraints: BoxConstraints(maxWidth: IMMessageItemComponent.getMaxCellWidth(context)),
-      clipBehavior: Clip.hardEdge,
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      decoration: BoxDecoration(
-        color: IMKit.style.message.incoming.backgroundColor,
-        borderRadius: BorderRadius.circular(IMKit.style.message.cornerRadius),
-      ),
-      child: _bodyWidget(context: context));
-
   Widget _outgoing(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: message.status == IMMessageStatus.undelivered ? CrossAxisAlignment.center : CrossAxisAlignment.end,
         children: [
           _statusWidget(),
-          _outgoingBubble(context),
+          _bubble(context),
           _resendWidget(),
         ],
       );
+}
 
-  Widget _outgoingBubble(BuildContext context) => Container(
+extension on IMMessageListItem {
+  Widget _bubble(BuildContext context) => Container(
       constraints: BoxConstraints(maxWidth: IMMessageItemComponent.getMaxCellWidth(context)),
       clipBehavior: Clip.hardEdge,
       margin: const EdgeInsets.symmetric(horizontal: 6),
       decoration: BoxDecoration(
-        color: IMKit.style.message.outgoing.backgroundColor,
+        color: message.isMe ? IMKit.style.message.outgoing.backgroundColor : IMKit.style.message.incoming.backgroundColor,
         borderRadius: BorderRadius.circular(IMKit.style.message.cornerRadius),
       ),
-      child: _bodyWidget(context: context));
-}
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_replyWidget(), _bodyWidget(context: context)]));
 
-extension on IMMessageListItem {
   Widget _bodyWidget({required BuildContext context}) {
     switch (message.type) {
       case IMMessageType.text:
-        return IMMessageItemText(message: message);
+        return IMMessageItemText(key: itemKey, message: message);
 
       case IMMessageType.image:
-        return IMMessageItemImage(message: message);
+        return IMMessageItemImage(key: itemKey, message: message);
 
       case IMMessageType.audio:
-        return IMMessageItemAudio(message: message);
+        return IMMessageItemAudio(key: itemKey, message: message);
 
       case IMMessageType.video:
-        return IMMessageItemVideo(message: message);
+        return IMMessageItemVideo(key: itemKey, message: message);
 
       // case IMMessageType.file:
       //   return;
@@ -113,7 +111,7 @@ extension on IMMessageListItem {
       //   return;
 
       case IMMessageType.system:
-        return IMMessageItemSystem(message: message);
+        return IMMessageItemSystem(key: itemKey, message: message);
 
       // case IMMessageType.template:
       //   return;
@@ -122,14 +120,26 @@ extension on IMMessageListItem {
       //   return;
 
       default:
-        return IMMessageItemText(message: message);
+        return IMMessageItemText(key: itemKey, message: message);
     }
   }
 
   Widget _statusWidget() => IMMessageItemStatus(message: message);
 
+  Widget _replyWidget() => Visibility(
+        visible: message.responseObject != null,
+        child: IMMessageItemReply(message: message),
+      );
+
   Widget _resendWidget() => Visibility(
         visible: message.status == IMMessageStatus.undelivered,
         child: IMMessageItemResend(message: message),
       );
+
+  void _longPressMenu({required BuildContext context}) {
+    final IMMessageItemMenu itemMenu = IMMessageItemMenu(message);
+    final PopupMenu popupMenu = itemMenu.getPopupMenu(context);
+
+    popupMenu.show(widgetKey: itemKey);
+  }
 }

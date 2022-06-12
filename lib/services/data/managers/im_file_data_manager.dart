@@ -13,9 +13,11 @@ class IMFileDataManager extends IMBaseDataManager {
     const mimeType = "image/jpeg";
     double originalProgress = 0;
     double thumbnailProgress = 0;
+    File originalFile = File(image.originalPath ?? "");
+    File thumbnailFile = File(image.thumbnailPath ?? "");
     final original = upload(
         mimeType: mimeType,
-        file: File(image.originalPath ?? ""),
+        file: originalFile,
         onSendProgress: (count, total) {
           originalProgress = count / total;
           uploadProgress?.call((originalProgress + thumbnailProgress) / 2);
@@ -23,7 +25,7 @@ class IMFileDataManager extends IMBaseDataManager {
         cancelToken: cancelToken);
     final thumbnail = upload(
         mimeType: mimeType,
-        file: File(image.thumbnailPath ?? ""),
+        file: thumbnailFile,
         onSendProgress: (count, total) {
           thumbnailProgress = count / total;
           uploadProgress?.call((originalProgress + thumbnailProgress) / 2);
@@ -33,7 +35,7 @@ class IMFileDataManager extends IMBaseDataManager {
     final results = await Future.wait([original, thumbnail]);
     final originalUrl = results[0].url;
     final thumbnailUrl = results[1].url;
-    await downloadImageToCache(url: thumbnailUrl);
+    await addImageToCache(url: thumbnailUrl, file: thumbnailFile);
     return image
       ..originalUrl = originalUrl
       ..thumbnailUrl = thumbnailUrl;
@@ -51,5 +53,11 @@ class IMFileDataManager extends IMBaseDataManager {
 
   Future<FileInfo> downloadImageToCache({required String url}) {
     return DefaultCacheManager().downloadFile(url, authHeaders: IMKit.instance.internal.state.headers());
+  }
+
+  Future<File> addImageToCache({required String url, required File file}) async {
+    final fileBytes = await file.readAsBytes();
+    final fileExtension = file.path.split(".").last;
+    return DefaultCacheManager().putFile(url, fileBytes, fileExtension: fileExtension);
   }
 }

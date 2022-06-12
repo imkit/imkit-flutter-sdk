@@ -9,6 +9,7 @@ import 'package:imkit/generated/intl/messages_zh.dart';
 import 'package:imkit/models/im_image.dart';
 import 'package:imkit/models/im_invitation.dart';
 import 'package:imkit/models/im_message.dart';
+import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/models/im_room.dart';
 import 'package:imkit/models/im_state.dart';
 import 'package:imkit/models/im_upload_file.dart';
@@ -44,6 +45,9 @@ class IMData {
   IMSocketClient get socketClient => _socketClient;
 
   IMData({required this.state, required this.localStorege});
+
+  /// User
+  Future<IMUser> getMe() => _userDataManager.getMe();
 
   /// Room
   void syncRooms({bool isRefresh = false}) async {
@@ -89,10 +93,11 @@ class IMData {
     } while (isCountinue);
   }
 
-  void sendTextMessage({required String roomId, required String text}) async {
+  void sendTextMessage({required String roomId, required String text, IMResponseObject? responseObject}) async {
     final IMMessage localMessage = IMMessage.fromText(
       roomId: roomId,
-      sender: await _userDataManager.getMe(),
+      sender: await getMe(),
+      responseObject: responseObject,
       text: text,
     );
     final newMessage = await _messageDataManager.preSendMessage(localMessage: localMessage);
@@ -126,7 +131,7 @@ class IMData {
     }));
     final IMMessage localMessage = IMMessage.fromImages(
       roomId: roomId,
-      sender: await _userDataManager.getMe(),
+      sender: await getMe(),
       images: images.whereNotNull().toList(),
     );
     _messageDataManager.preSendMessage(localMessage: localMessage);

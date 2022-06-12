@@ -15,7 +15,7 @@ IMResponseObject _$IMResponseObjectFromJson(Map<String, dynamic> json) =>
           ? null
           : IMUser.fromJson(json['sender'] as Map<String, dynamic>),
       stickerId: json['sticker'] as String?,
-      imageUrl: _toImageUrl(json, 'imageUrl') as String?,
+      imageUrl: json['imageUrl'] as String?,
     );
 
 Map<String, dynamic> _$IMResponseObjectToJson(IMResponseObject instance) =>

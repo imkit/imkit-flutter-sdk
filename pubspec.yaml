@@ -2,6 +2,7 @@ name: imkit
 description: A new Flutter package project.
 version: 0.0.1
 homepage:
+publish_to: none
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
@@ -36,6 +37,9 @@ dependencies:
   path_provider: ^2.0.9
   keyboard_dismisser: ^2.0.1
   cached_network_image: ^3.2.0
+  popup_menu: 
+    git:
+      url: https://github.com/shangguanyanyan/popup_menu
 
 dev_dependencies:
   flutter_test:

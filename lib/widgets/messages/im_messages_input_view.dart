@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:imkit/extensions/string_ext.dart';
+import 'package:imkit/models/im_message.dart';
+import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/sdk/imkit.dart';
+import 'package:imkit/widgets/components/im_circle_avatar_widget.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
+import 'package:imkit/widgets/components/im_rounded_image_widget.dart';
 import 'package:imkit/widgets/messages/input_view/im_photo_input_view.dart';
 import 'package:photo_manager/photo_manager.dart';
+
+final GlobalKey<IMMessagesInputViewState> inputViewWidgetKey = GlobalKey();
 
 enum IMMessagesInputViewType {
   none,
@@ -20,12 +27,14 @@ class IMMessagesInputView extends StatefulWidget {
 
 class IMMessagesInputViewState extends State<IMMessagesInputView> {
   late final TextEditingController _controller = TextEditingController(text: "");
+  late final FocusNode _focusNode = FocusNode();
   final double _height = 36;
   final double _padding = 12;
   IMMessagesInputViewType _inputViewType = IMMessagesInputViewType.none;
   bool _isEditing = false;
   bool _isEnableInputText = true;
   List<AssetEntity> _selectedAssetEntities = [];
+  IMResponseObject? _responseObject;
 
   @override
   void dispose() {
@@ -38,6 +47,61 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
         color: Colors.white,
         child: Column(
           children: [
+            Visibility(
+              visible: _responseObject != null,
+              child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: _padding),
+                  child: Row(
+                    children: [
+                      IMCircleAvatarWidget(
+                        text: _responseObject?.sender?.nickname,
+                        url: _responseObject?.sender?.avatarUrl,
+                        size: 32,
+                      ),
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.only(left: _padding),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(_responseObject?.sender?.nickname ?? "", style: IMKit.style.message.response.titleTextSytle),
+                              Text(
+                                (_responseObject?.text ?? "").breakWord,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: IMKit.style.message.response.subtitleTextSytle,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: (_responseObject?.imageUrl ?? "").isNotEmpty,
+                        child: Padding(
+                          padding: EdgeInsets.only(left: _padding),
+                          child: IMRoundedAvatarWidget(
+                            url: _responseObject?.imageUrl,
+                            size: 38,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(left: _padding, bottom: 14),
+                        decoration: BoxDecoration(shape: BoxShape.circle, color: IMKit.style.avatar.backgroundColor),
+                        child: IMIconButtonWidget(
+                          size: 18,
+                          iconSize: 14,
+                          icon: const Icon(Icons.close, color: Colors.white),
+                          onPressed: () {
+                            setState(() {
+                              _responseObject = null;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
             SafeArea(
               left: false,
               right: false,
@@ -67,6 +131,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                               controller: _controller,
                               style: IMKit.style.inputBar.textFieldTextSytle,
                               keyboardType: TextInputType.multiline,
+                              focusNode: _focusNode,
                               minLines: 1,
                               maxLines: 3,
                               readOnly: !_isEnableInputText,
@@ -105,8 +170,11 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                             icon: Icon(Icons.send, color: IMKit.style.inputBar.iconColor),
                             onPressed: () {
                               final text = _controller.text;
-                              IMKit.instance.action.sendTextMessage(roomId: widget.roomId, text: text);
+                              IMKit.instance.action.sendTextMessage(roomId: widget.roomId, text: text, responseObject: _responseObject);
                               _controller.text = "";
+                              setState(() {
+                                _responseObject = null;
+                              });
                             },
                           ),
                         ),
@@ -165,7 +233,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
     }
 
     if (type != IMMessagesInputViewType.text) {
-      FocusScope.of(context).unfocus();
+      _focusNode.unfocus();
     }
 
     setState(() {
@@ -176,6 +244,12 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
       _inputViewType = type;
       _isEnableInputText = [IMMessagesInputViewType.none, IMMessagesInputViewType.text].contains(type);
     });
-    setState(() {});
+  }
+
+  void replay({required IMMessage message}) {
+    setState(() {
+      _responseObject = message.transformToResponseObject();
+    });
+    _focusNode.requestFocus();
   }
 }

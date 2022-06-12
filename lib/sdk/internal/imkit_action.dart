@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/services/data/im_data.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -21,12 +22,16 @@ class IMKitAction {
     _data.socketDisconnect();
   }
 
+  // User
+  Future<IMUser> getMe() => _data.getMe();
+
   // Room
   void fetchRooms({bool isRefresh = false}) => _data.syncRooms(isRefresh: isRefresh);
 
   // Message
   void fetchMessages({required String roomId}) => _data.syncMessages(roomId: roomId);
-  void sendTextMessage({required String roomId, required String text}) => _data.sendTextMessage(roomId: roomId, text: text);
+  void sendTextMessage({required String roomId, required String text, IMResponseObject? responseObject}) =>
+      _data.sendTextMessage(roomId: roomId, text: text, responseObject: responseObject);
   void preSendImageMessage({required String roomId, required List<AssetEntity> assetEntities}) =>
       _data.preSendImageMessage(roomId: roomId, assetEntities: assetEntities);
   void sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>

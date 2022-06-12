@@ -354,6 +354,32 @@ class IMMessage {
         sender: sender,
         file: file,
       );
+
+  IMResponseObject transformToResponseObject() {
+    String value = "";
+    switch (type) {
+      case IMMessageType.text:
+        value = text ?? "";
+        break;
+      case IMMessageType.file:
+        value = "${file?.name ?? ""}.${file?.fileExtension ?? ""}";
+        break;
+      case IMMessageType.location:
+        value = location?.address ?? "";
+        break;
+      default:
+        break;
+    }
+
+    return IMResponseObject(
+      id: id,
+      message: value,
+      messageType: type.name,
+      sender: sender,
+      imageUrl: images.firstOrNull?.thumbnailUrl ?? images.firstOrNull?.originalUrl,
+      stickerId: stickerId,
+    );
+  }
 }
 
 IMMessageType _toType(String value) {
@@ -537,7 +563,8 @@ Map<String, dynamic>? _toResponseObject(Map<dynamic, dynamic>? json, String key)
     return null;
   }
   Map<String, dynamic> map = reply;
-  map["imageUrl"] = json["thumbnailUrl"];
+  map["imageUrl"] =
+      ["image", "video"].contains(map["messageType"]) ? map["thumbnailUrl"] ?? json["thumbnailUrl"] ?? map["originalUrl"] ?? json["originalUrl"] : null;
   map["message"] = reply["message"] ?? json["message"];
   map["extra"] = toMap(json["extra"]);
   map["mentions"] = json["mentions"];

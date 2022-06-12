@@ -1,3 +1,5 @@
+import 'package:imkit/models/im_message.dart';
+
 class IMState {
   String clientKey = "";
   String chatServerURL = "";
@@ -5,6 +7,42 @@ class IMState {
   String bucket = "";
   String uid = "";
   String token = "";
+
+  List<IMMessageType> replyableMessageTypes = [
+    IMMessageType.text,
+    IMMessageType.image,
+    IMMessageType.audio,
+    IMMessageType.video,
+    IMMessageType.file,
+    IMMessageType.sticker,
+    IMMessageType.location
+  ];
+
+  List<IMMessageType> forwardableMessageTypes = [
+    IMMessageType.text,
+    IMMessageType.image,
+    IMMessageType.audio,
+    IMMessageType.video,
+    IMMessageType.file,
+  ];
+
+  List<IMMessageType> copyableMessageTypes = [
+    IMMessageType.text,
+  ];
+
+  List<IMMessageType> unsendableMessageTypes = [];
+
+  List<IMMessageType> editableMessageTypes = [
+    IMMessageType.text,
+  ];
+
+  List<IMMessageType> reportableMessageTypes = [
+    IMMessageType.text,
+    IMMessageType.image,
+    IMMessageType.audio,
+    IMMessageType.video,
+    IMMessageType.file,
+  ];
 
   Map<String, String> headers() {
     return {

@@ -63,7 +63,7 @@ extension DateExtension on DateTime {
       // I18n
       return "n.yesterday";
     } else if (isSameWeek) {
-      return DateFormat("EEEE").format(this);
+      return DateFormat("EE").format(this);
     } else if (isThisYear) {
       return DateFormat("M/dd").format(this);
     } else {
@@ -79,7 +79,7 @@ extension DateExtension on DateTime {
       // I18n
       return "n.yesterday";
     } else if (isThisYear) {
-      return DateFormat("M/dd").format(this);
+      return DateFormat("EE, M/dd").format(this);
     } else {
       return DateFormat("yyyy/M/dd").format(this);
     }

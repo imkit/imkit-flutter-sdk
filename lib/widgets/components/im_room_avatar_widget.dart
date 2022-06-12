@@ -33,7 +33,7 @@ class IMRoomAvatarWidget extends StatelessWidget {
 
   Widget? _getChild() {
     if ((room.coverUrl ?? "").isNotEmpty) {
-      return _circleAvatar(url: room.coverUrl, text: room.name, onLoadImageError: _getChildByRoomType);
+      return _circleAvatar(url: room.coverUrl, text: room.name, onError: _getChildByRoomType);
     }
     return _getChildByRoomType();
   }
@@ -124,12 +124,12 @@ class IMRoomAvatarWidget extends StatelessWidget {
         h: h,
       );
 
-  Widget _circleAvatar({String? url, String? text, double? w, double? h, Function? onLoadImageError}) => IMCircleAvatarWidget(
+  Widget _circleAvatar({String? url, String? text, double? w, double? h, Function? onError}) => IMCircleAvatarWidget(
         url: url,
         text: text,
         width: w ?? width,
         height: h ?? height,
         fit: fit,
-        onLoadImageError: onLoadImageError,
+        onError: onError,
       );
 }
