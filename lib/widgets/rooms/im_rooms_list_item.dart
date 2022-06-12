@@ -73,11 +73,7 @@ class IMRoomsListItem extends StatelessWidget {
                               visible: room.isMentioned,
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  // I18n
-                                  "s.You were mentioned",
-                                  style: IMKit.style.room.mentioned,
-                                ),
+                                child: Text(IMKit.S.s_You_were_mentioned, style: IMKit.style.room.mentioned),
                               ),
                             ),
 

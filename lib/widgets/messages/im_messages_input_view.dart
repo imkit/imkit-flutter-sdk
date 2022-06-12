@@ -195,8 +195,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                             icon: Icon(Icons.close, color: IMKit.style.inputBar.iconColor),
                             onPressed: () => updateInputType(IMMessagesInputViewType.none),
                           ),
-                          // I18n
-                          Text("photo.select.count" + _selectedAssetEntities.length.toString(), style: IMKit.style.inputBar.textFieldTextSytle),
+                          Text(IMKit.S.photo_select_count(_selectedAssetEntities.length), style: IMKit.style.inputBar.textFieldTextSytle),
                           // 送出按鈕
                           IMIconButtonWidget(
                             size: _height,

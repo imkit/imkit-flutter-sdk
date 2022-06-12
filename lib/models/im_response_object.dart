@@ -1,4 +1,5 @@
 import 'package:imkit/models/im_user.dart';
+import 'package:imkit/sdk/imkit.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'im_response_object.g.dart';
@@ -29,20 +30,16 @@ class IMResponseObject {
   String get text {
     switch (messageType) {
       case "image":
-        // I18n
-        return "n.photo";
+        return IMKit.S.n_photo;
 
       case "sticker":
-        // I18n
-        return "n.sticker";
+        return IMKit.S.n_sticker;
 
       case "audio":
-        // I18n
-        return "n.voice message";
+        return IMKit.S.n_voice_message;
 
       case "video":
-        // I18n
-        return "n.video";
+        return IMKit.S.n_video;
     }
     return message;
   }

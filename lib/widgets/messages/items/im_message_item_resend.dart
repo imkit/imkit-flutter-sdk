@@ -23,28 +23,25 @@ class IMMessageItemResend extends StatelessWidget {
             context: context,
             builder: (BuildContext context) => CupertinoActionSheet(
               actions: [
-                // I18n
                 CupertinoActionSheetAction(
                   isDefaultAction: true,
-                  child: const Text('messages.action.resend'),
+                  child: Text(IMKit.S.messages_action_resend),
                   onPressed: () {
                     IMKit.instance.action.resendMessage(message: message);
                     Navigator.pop(context);
                   },
                 ),
-                // I18n
                 CupertinoActionSheetAction(
                   isDestructiveAction: true,
                   onPressed: () {
                     IMKit.instance.action.deleteMessage(message: message);
                     Navigator.pop(context);
                   },
-                  child: const Text('messages.action.delete'),
+                  child: Text(IMKit.S.messages_action_delete),
                 )
               ],
-              // I18n
               cancelButton: CupertinoActionSheetAction(
-                child: const Text('messages.action.cancel'),
+                child: Text(IMKit.S.messages_action_cancel),
                 onPressed: () => Navigator.pop(context),
               ),
             ),

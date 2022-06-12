@@ -1,3 +1,4 @@
+import 'package:imkit/sdk/imkit.dart';
 import 'package:intl/intl.dart';
 
 extension DateExtension on DateTime {
@@ -60,8 +61,7 @@ extension DateExtension on DateTime {
     if (isToday) {
       return DateFormat("a h:mm").format(this);
     } else if (isYesterday) {
-      // I18n
-      return "n.yesterday";
+      return IMKit.S.n_yesterday;
     } else if (isSameWeek) {
       return DateFormat("EE").format(this);
     } else if (isThisYear) {
@@ -73,11 +73,9 @@ extension DateExtension on DateTime {
 
   String get toMessageHeader {
     if (isToday) {
-      // I18n
-      return "n.today";
+      return IMKit.S.n_today;
     } else if (isYesterday) {
-      // I18n
-      return "n.yesterday";
+      return IMKit.S.n_yesterday;
     } else if (isThisYear) {
       return DateFormat("EE, M/dd").format(this);
     } else {

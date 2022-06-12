@@ -12,7 +12,7 @@ class IMRoomsView extends StatelessWidget {
       onInit: IMKit.instance.action.fetchRooms,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(IMKit.S.chat_room),
+          title: Text(IMKit.S.rooms_title),
           backgroundColor: IMKit.style.primaryColor,
         ),
         body: RefreshIndicator(

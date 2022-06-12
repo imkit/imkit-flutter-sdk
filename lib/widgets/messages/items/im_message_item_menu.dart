@@ -31,28 +31,22 @@ extension on IMMessageItemMenu {
   List<MenuItem> get items {
     List<MenuItem> items = [];
     if (state.copyableMessageTypes.contains(message.type)) {
-      // I18n
-      items.add(MenuItem(title: "messages.action.${IMMessageAction.copy.name}", userInfo: IMMessageAction.copy));
+      items.add(MenuItem(title: IMKit.S.messages_action_copy, userInfo: IMMessageAction.copy));
     }
     if (state.replyableMessageTypes.contains(message.type)) {
-      // I18n
-      items.add(MenuItem(title: "messages.action.${IMMessageAction.reply.name}", userInfo: IMMessageAction.reply));
+      items.add(MenuItem(title: IMKit.S.messages_action_reply, userInfo: IMMessageAction.reply));
     }
     if (state.editableMessageTypes.contains(message.type)) {
-      // I18n
-      items.add(MenuItem(title: "messages.action.${IMMessageAction.edit.name}", userInfo: IMMessageAction.edit));
+      items.add(MenuItem(title: IMKit.S.messages_action_edit, userInfo: IMMessageAction.edit));
     }
     if (state.unsendableMessageTypes.contains(message.type)) {
-      // I18n
-      items.add(MenuItem(title: "messages.action.${IMMessageAction.unsend.name}", userInfo: IMMessageAction.unsend));
+      items.add(MenuItem(title: IMKit.S.messages_action_unsend, userInfo: IMMessageAction.unsend));
     }
     if (state.forwardableMessageTypes.contains(message.type)) {
-      // I18n
-      items.add(MenuItem(title: "messages.action.${IMMessageAction.forward.name}", userInfo: IMMessageAction.forward));
+      items.add(MenuItem(title: IMKit.S.messages_action_forward, userInfo: IMMessageAction.forward));
     }
     if (state.reportableMessageTypes.contains(message.type) && !message.isMe) {
-      // I18n
-      items.add(MenuItem(title: "messages.action.${IMMessageAction.report.name}", userInfo: IMMessageAction.report));
+      items.add(MenuItem(title: IMKit.S.messages_action_report, userInfo: IMMessageAction.report));
     }
     return items;
   }

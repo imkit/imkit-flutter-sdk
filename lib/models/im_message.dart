@@ -108,7 +108,6 @@ class IMMessage {
   }
 
   String? get description {
-    // I18n
     switch (type) {
       case IMMessageType.text:
         return text;
@@ -120,17 +119,18 @@ class IMMessage {
       case IMMessageType.location:
       case IMMessageType.sticker:
         final map = {
-          IMMessageType.image: "n.photo",
-          IMMessageType.audio: "n.voice message",
-          IMMessageType.video: "n.video",
-          IMMessageType.file: "n.file",
-          IMMessageType.location: "n.location",
-          IMMessageType.sticker: "n.sticker"
+          IMMessageType.image: IMKit.S.n_photo,
+          IMMessageType.audio: IMKit.S.n_voice_message,
+          IMMessageType.video: IMKit.S.n_video,
+          IMMessageType.file: IMKit.S.n_file,
+          IMMessageType.location: IMKit.S.n_location,
+          IMMessageType.sticker: IMKit.S.n_sticker
         };
+
         if (isMe) {
-          return "s.You sent a %@." + (map[type] ?? "n.message");
+          return IMKit.S.s_You_sent_a(map[type] ?? IMKit.S.n_message);
         } else {
-          return "s.%@ sent a %@." + (sender?.nickname ?? "" + (map[type] ?? "n.message"));
+          return IMKit.S.s_sent_a(sender?.nickname ?? "", map[type] ?? IMKit.S.n_message);
         }
 
       case IMMessageType.system:
@@ -141,18 +141,19 @@ class IMMessage {
         final memberName = systemEvent?.members.firstOrNull?.nickname ?? "";
         switch (systemEvent!.type) {
           case IMMessageSystemEventType.joinRoom:
-            return "s.%@ joined the chat." + senderName;
+            return IMKit.S.s_joined_the_chat(senderName);
           case IMMessageSystemEventType.leaveRoom:
-            return "s.%@ left the chat." + senderName;
+            return IMKit.S.s_left_the_chat(senderName);
           case IMMessageSystemEventType.addMember:
-            return "s.%@ invited %@." + senderName + memberName;
+            return IMKit.S.s_invited(senderName, memberName);
           case IMMessageSystemEventType.deleteMember:
-            return "s.%@ kicked %@." + senderName + memberName;
+            return IMKit.S.s_kicked(senderName, memberName);
           case IMMessageSystemEventType.addMembers:
-            return "s.%@ invited %@." + senderName + (systemEvent?.members ?? []).map((element) => element.nickname).join(", ");
+            return IMKit.S.s_invited(senderName, (systemEvent?.members ?? []).map((element) => element.nickname).join(", "));
           case IMMessageSystemEventType.recall:
-            return isMe ? "s.You unsent a message" : "s.%@ unsent a message" + senderName;
+            return isMe ? IMKit.S.s_You_unsent_a_message : IMKit.S.s_unsent_a_message(senderName);
           case IMMessageSystemEventType.cancelInvitations:
+            //I18n
             return "s.%@ canceled %@'s %#@invitationCount@ to the group." +
                 senderName +
                 (systemEvent?.members ?? []).map((element) => element.nickname).join(", ") +

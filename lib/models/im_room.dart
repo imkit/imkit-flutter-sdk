@@ -71,14 +71,12 @@ class IMRoom {
   String get title {
     if (type == IMRoomType.group) {
       if (members.isEmpty) {
-        // I18n
-        return "n.noMembers";
+        return IMKit.S.n_noMembers;
       } else {
         return "$name (${members.length})";
       }
     }
-    // I18n
-    return name.isNotEmpty ? name : "rooms.cell.emptyChat";
+    return name.isNotEmpty ? name : IMKit.S.rooms_cell_emptyChat;
   }
 
   String get subtitle {

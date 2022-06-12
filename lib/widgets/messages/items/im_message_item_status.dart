@@ -44,10 +44,9 @@ class IMMessageItemStatus extends StatelessWidget {
       ];
 
   List<Widget> _forDelivered() => [
-        // I18n
         Visibility(
           visible: message.isMe,
-          child: Text(/*"messages.outgoingCell.read"*/ "已讀", style: IMKit.style.message.readReceiptTextSytle),
+          child: Text(IMKit.S.messages_outgoingCell_read, style: IMKit.style.message.readReceiptTextSytle),
         ),
         Visibility(
           visible: message.createdAt != null,
