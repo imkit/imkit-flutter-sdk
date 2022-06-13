@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/sdk/internal/imkit_accessor.dart';
+import 'package:imkit/third_party/popup_menu/popup_menu.dart';
 import 'package:imkit/widgets/messages/im_messages_input_view.dart';
-import 'package:popup_menu/popup_menu.dart';
 
 enum IMMessageAction {
   reply,
@@ -20,9 +21,8 @@ class IMMessageItemMenu with IMAccessor {
 
   PopupMenu getPopupMenu(BuildContext context) => PopupMenu(
         context: context,
-        isDown: true,
-        maxColumn: 4,
         items: items,
+        config: MenuConfig(maxColumn: 4, direction: message.isMe ? DirectionType.rtl : DirectionType.ltr),
         onClickMenu: onClickMenu,
       );
 }

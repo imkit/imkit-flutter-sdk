@@ -11,15 +11,15 @@ import 'package:imkit/widgets/messages/items/im_message_item_status.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_system.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_text.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_video.dart';
-import 'package:popup_menu/popup_menu.dart';
 
 class IMMessageListItem extends StatelessWidget {
   final IMRoom? room;
   final IMMessage message;
+  final Function(GlobalKey, IMMessageItemMenu) onLoginPress;
 
   final GlobalKey itemKey = GlobalKey();
 
-  IMMessageListItem({Key? key, required this.room, required this.message}) : super(key: key);
+  IMMessageListItem({Key? key, required this.onLoginPress, required this.room, required this.message}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class IMMessageListItem extends StatelessWidget {
       return _bodyWidget(context: context);
     }
     return GestureDetector(
-      onLongPress: () => _longPressMenu(context: context),
+      onLongPress: () => onLoginPress.call(itemKey, IMMessageItemMenu(message)),
       child: message.isMe ? _outgoing(context) : _incoming(context),
     );
   }
@@ -85,21 +85,21 @@ extension on IMMessageListItem {
         color: message.isMe ? IMKit.style.message.outgoing.backgroundColor : IMKit.style.message.incoming.backgroundColor,
         borderRadius: BorderRadius.circular(IMKit.style.message.cornerRadius),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [_replyWidget(), _bodyWidget(context: context)]));
+      child: Column(key: itemKey, crossAxisAlignment: CrossAxisAlignment.start, children: [_replyWidget(), _bodyWidget(context: context)]));
 
   Widget _bodyWidget({required BuildContext context}) {
     switch (message.type) {
       case IMMessageType.text:
-        return IMMessageItemText(key: itemKey, message: message);
+        return IMMessageItemText(message: message);
 
       case IMMessageType.image:
-        return IMMessageItemImage(key: itemKey, message: message);
+        return IMMessageItemImage(message: message);
 
       case IMMessageType.audio:
-        return IMMessageItemAudio(key: itemKey, message: message);
+        return IMMessageItemAudio(message: message);
 
       case IMMessageType.video:
-        return IMMessageItemVideo(key: itemKey, message: message);
+        return IMMessageItemVideo(message: message);
 
       // case IMMessageType.file:
       //   return;
@@ -111,7 +111,7 @@ extension on IMMessageListItem {
       //   return;
 
       case IMMessageType.system:
-        return IMMessageItemSystem(key: itemKey, message: message);
+        return IMMessageItemSystem(message: message);
 
       // case IMMessageType.template:
       //   return;
@@ -120,7 +120,7 @@ extension on IMMessageListItem {
       //   return;
 
       default:
-        return IMMessageItemText(key: itemKey, message: message);
+        return IMMessageItemText(message: message);
     }
   }
 
@@ -135,11 +135,4 @@ extension on IMMessageListItem {
         visible: message.status == IMMessageStatus.undelivered,
         child: IMMessageItemResend(message: message),
       );
-
-  void _longPressMenu({required BuildContext context}) {
-    final IMMessageItemMenu itemMenu = IMMessageItemMenu(message);
-    final PopupMenu popupMenu = itemMenu.getPopupMenu(context);
-
-    popupMenu.show(widgetKey: itemKey);
-  }
 }

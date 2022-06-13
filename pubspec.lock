@@ -532,15 +532,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.5.0"
-  popup_menu:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "6721b724f27928338a31806fe429427af3d4184a"
-      url: "https://github.com/shangguanyanyan/popup_menu"
-    source: git
-    version: "1.0.6"
   pretty_dio_logger:
     dependency: "direct main"
     description:
