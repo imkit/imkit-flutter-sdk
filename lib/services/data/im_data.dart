@@ -1,19 +1,19 @@
-import 'dart:async';
-
+import 'package:collection/collection.dart';
 import 'package:imkit/models/im_invitation.dart';
 import 'package:imkit/models/im_message.dart';
 import 'package:imkit/models/im_room.dart';
 import 'package:imkit/models/im_state.dart';
-import 'package:imkit/sdk/internal/imkit_streams.dart';
+import 'package:imkit/services/data/managers/im_message_data_manager.dart';
 import 'package:imkit/services/data/managers/im_room_data_manager.dart';
+import 'package:imkit/services/data/storage/im_local_storage.dart';
 import 'package:imkit/services/network/socket/im_socket_client.dart';
 import 'package:imkit/services/network/socket/im_socket_client_event.dart';
 
 class IMData {
   final IMState state;
-  final IMKitStreamManager stream;
   late final IMRoomDataManager _roomDataManager = IMRoomDataManager();
-
+  late final IMMessageDataManager _messageDataManager = IMMessageDataManager();
+  late final IMLocalStorage localStorege;
   late final IMSocketClient _socketClient = IMSocketClient(
       state: state,
       event: IMSocketClientEvent()
@@ -27,19 +27,45 @@ class IMData {
         ..onDidReceiveRoomPref = onSocketDidReceiveRoomPref);
   IMSocketClient get socketClient => _socketClient;
 
-  IMData({required this.state, required this.stream});
+  IMData({required this.state, required this.localStorege});
 
   /// Room
-  void syncRooms() {
-    //TODO: save data to local db
-    _roomDataManager.fetchRooms().then((value) => stream.rooms.add(value));
+  void syncRooms({bool isRefresh = false}) async {
+    final lastUpdatedAt = isRefresh ? null : localStorege.getValue(key: IMLocalStoregeKey.lastRoomUpdatedAt);
+    const limit = 15;
+    int skip = 0;
+    bool isCountinue = true;
+    List<IMRoom> tmpRooms = [];
+    do {
+      final rooms = await _roomDataManager.fetchRooms(skip: skip, limit: limit, lastUpdatedAt: lastUpdatedAt);
+      tmpRooms.addAll(rooms);
+      _roomDataManager.insertItems(rooms);
+      skip += limit;
+      isCountinue = rooms.length >= limit;
+    } while (isCountinue);
+
+    final lastRoomUpdatedAt = tmpRooms.fold<int>(
+      0,
+      (previousValue, element) =>
+          (element.updatedAt?.millisecondsSinceEpoch ?? 0) > previousValue ? (element.updatedAt?.millisecondsSinceEpoch ?? 0) : previousValue,
+    );
+    if (lastRoomUpdatedAt > 0) {
+      localStorege.setValue(key: IMLocalStoregeKey.lastRoomUpdatedAt, value: lastRoomUpdatedAt + 1000);
+    }
   }
 
-  /// Stream
-  Stream<T> observer<T>(StreamController<T> streamController) async* {
-    await for (final res in streamController.stream) {
-      yield res;
-    }
+  /// Message
+  void syncMessages({required String roomId, int limit = 20}) async {
+    final latestMessage = await _messageDataManager.fetchLatestMessage(roomId: roomId);
+    String? latestMessageId = latestMessage?.id;
+    bool isCountinue = true;
+
+    do {
+      final messages = await _messageDataManager.fetchMessages(roomId: roomId, beforeMessageId: latestMessageId, limit: limit);
+      _messageDataManager.insertItems(messages);
+      isCountinue = messages.length >= limit;
+      latestMessageId = messages.lastOrNull?.id;
+    } while (isCountinue);
   }
 
   /// Socket

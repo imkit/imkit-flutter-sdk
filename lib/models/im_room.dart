@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+import 'package:floor/floor.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_tag.dart';
 import 'package:imkit/utils/json_from_parser.dart';
@@ -12,15 +14,22 @@ enum IMRoomType {
   group,
 }
 
+IMRoom deserializeIMRoom(Map<String, dynamic> json) => IMRoom.fromJson(json);
+List<IMRoom> deserializeIMRoomList(List<Map<String, dynamic>> json) => json.map((e) => IMRoom.fromJson(e)).toList();
+
+Map<IMRoomType, String> get roomTypeMap => _$IMRoomTypeEnumMap;
+
 @JsonSerializable()
+@Entity()
 class IMRoom {
+  @PrimaryKey()
   @JsonKey(name: '_id', defaultValue: '')
   String id = "";
 
-  @JsonKey(name: 'roomType', defaultValue: IMRoomType.direct, unknownEnumValue: IMRoomType.direct)
-  IMRoomType type = IMRoomType.direct;
+  @JsonKey(name: 'roomType', readValue: _toRoomType, defaultValue: IMRoomType.direct, unknownEnumValue: IMRoomType.direct)
+  IMRoomType type;
 
-  @JsonKey(name: 'name', defaultValue: '')
+  @JsonKey(name: 'name', readValue: _toName, defaultValue: '')
   String name = "";
 
   @JsonKey(name: 'description', defaultValue: null)
@@ -54,7 +63,36 @@ class IMRoom {
   List<IMTag> tags = [];
 
   @JsonKey(name: 'createdTimeMS', defaultValue: null, fromJson: toDateTime, toJson: toTimestamp)
-  DateTime? createAt;
+  DateTime? createdAt;
+
+  @JsonKey(name: 'updatedTimeMS', defaultValue: null, readValue: _toUpdatedAt, fromJson: toDateTime, toJson: toTimestamp)
+  DateTime? updatedAt;
+
+  String get title {
+    if (type == IMRoomType.group) {
+      if (members.isEmpty) {
+        // I18n
+        return "n.noMembers";
+      } else {
+        return "$name (${members.length})";
+      }
+    }
+    // I18n
+    return name.isNotEmpty ? name : "rooms.cell.emptyChat";
+  }
+
+  String get subtitle {
+    return lastMessage?.description ?? "";
+  }
+
+  String get numberOfUnreadMessagesCount {
+    if (numberOfUnreadMessages <= 0) {
+      return "";
+    } else if (numberOfUnreadMessages > 999) {
+      return "999+";
+    }
+    return numberOfUnreadMessages.toString();
+  }
 
   IMRoom({
     required this.id,
@@ -66,7 +104,8 @@ class IMRoom {
     this.isMuted = false,
     this.isMentioned = false,
     this.isTranslationEnabled = true,
-    this.createAt,
+    this.createdAt,
+    this.updatedAt,
     this.lastMessage,
     this.members = const [],
     this.roomTags = const [],
@@ -74,13 +113,49 @@ class IMRoom {
   });
 
   factory IMRoom.fromJson(Map<String, dynamic> json) => _$IMRoomFromJson(json);
+
   Map<String, dynamic> toJson() => _$IMRoomToJson(this);
 }
 
-List<IMTag> _toIMTags(Map<dynamic, dynamic>? prefs) {
-  if (prefs != null) {
-    final tags = prefs["tags"];
-    final tagColors = prefs["tagColors"];
+String _toName(Map<dynamic, dynamic>? json, String key) {
+  if (json == null) {
+    return "";
+  }
+
+  final String name = json["name"] ?? "";
+  final List<dynamic> members = json["members"] ?? [];
+  if (name.isNotEmpty) {
+    return name;
+  } else {
+    final membersWithoutMe = members.where((element) => element["id"] != IMKit.uid);
+    final membersWithoutMeLength = membersWithoutMe.length;
+    final firstMember = membersWithoutMe.firstOrNull;
+    if (firstMember != null && membersWithoutMeLength == 1) {
+      return firstMember["nickname"] ?? "";
+    } else if (membersWithoutMeLength == 0) {
+      return "";
+    } else {
+      return membersWithoutMe.map((element) => element["nickname"] ?? "").join(", ");
+    }
+  }
+}
+
+String _toRoomType(Map<dynamic, dynamic>? json, String key) {
+  final String roomType = json?["roomType"] ?? "";
+  final Iterable members = ((json?["members"] ?? []) as List).where((element) => element["id"] != IMKit.uid);
+  if (roomType.isNotEmpty) {
+    return roomType;
+  } else if (members.length == 1) {
+    return IMRoomType.direct.name;
+  } else {
+    return IMRoomType.group.name;
+  }
+}
+
+List<IMTag> _toIMTags(Map<dynamic, dynamic>? json) {
+  if (json != null) {
+    final tags = json["tags"];
+    final tagColors = json["tagColors"];
     if (tags != null && tagColors != null) {
       return tags.map<IMTag>((tag) => IMTag(name: tag, hexColor: tagColors[tag]?.toString())).toList();
     }
@@ -89,6 +164,4 @@ List<IMTag> _toIMTags(Map<dynamic, dynamic>? prefs) {
 }
 
 bool _toIsTranslationEnabled(Map<dynamic, dynamic>? map, String key) => map?["pref"]?["translation"] ?? true;
-
-IMRoom deserializeIMRoom(Map<String, dynamic> json) => IMRoom.fromJson(json);
-List<IMRoom> deserializeIMRoomList(List<Map<String, dynamic>> json) => json.map((e) => IMRoom.fromJson(e)).toList();
+int? _toUpdatedAt(Map<dynamic, dynamic>? map, String key) => map?["lastMessage"]?["createdAtMS"] ?? map?["createdTimeMS"];

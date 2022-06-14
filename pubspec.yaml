@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.17.0
     
   # Network
   socket_io_client: ^1.0.2
@@ -20,12 +23,16 @@ dependencies:
   # Model
   json_annotation: ^4.4.0
 
-  # Data
+  # Persistent Data
   shared_preferences: ^2.0.13
+  floor: ^1.2.0
 
   # Util
   enume: ^1.1.0
   crypto: ^3.0.1
+  path_provider: ^2.0.9
+  keyboard_dismisser: ^2.0.1
+  cached_network_image: ^3.2.0
 
 dev_dependencies:
   flutter_test:
@@ -33,10 +40,20 @@ dev_dependencies:
   flutter_lints: ^1.0.0
 
   build_runner: ^2.1.8
-  json_serializable: ^6.1.5
-  enume_generator: ^1.0.3
-  retrofit_generator: ^4.0.1
 
+  # Network
+  retrofit_generator: ^3.0.0+2
+
+  # Model
+  json_serializable: ^6.1.5
+
+  # Persistent Data
+  floor_generator: ^1.2.0
+
+  #Util
+  enume_generator: ^1.0.0
+  collection: ^1.15.0
+  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -73,3 +90,10 @@ flutter:
   #
   # For details regarding fonts in packages, see
   # https://flutter.dev/custom-fonts/#from-packages
+
+flutter_intl:
+  enabled: true
+  class_name: IMKitS
+  main_locale: zh
+  arb_dir: lib/resources/l10n
+  output_dir: lib/generated

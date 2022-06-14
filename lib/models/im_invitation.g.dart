@@ -13,8 +13,8 @@ IMInvitation _$IMInvitationFromJson(Map<String, dynamic> json) => IMInvitation(
       inviter: json['inviter'] == null
           ? null
           : IMUser.fromJson(json['inviter'] as Map<String, dynamic>),
-      createAt: toDateTime(json['createdTimeMS'] as int),
-      updateAt: toDateTime(json['updatedTimeMS'] as int),
+      createAt: toDateTime(json['createdTimeMS'] as int?),
+      updateAt: toDateTime(json['updatedTimeMS'] as int?),
     );
 
 Map<String, dynamic> _$IMInvitationToJson(IMInvitation instance) =>

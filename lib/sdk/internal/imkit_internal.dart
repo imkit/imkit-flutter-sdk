@@ -1,30 +1,36 @@
 import 'package:flutter/widgets.dart';
+import 'package:imkit/generated/l10n.dart';
 import 'package:imkit/models/im_state.dart';
-import 'package:imkit/sdk/internal/imkit_streams.dart';
 import 'package:imkit/services/data/im_data.dart';
 import 'package:imkit/services/data/storage/im_local_storage.dart';
+import 'package:imkit/services/db/im_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class IMKitInternal with WidgetsBindingObserver {
-  late final IMKitStreamManager _streamManager = IMKitStreamManager();
-  IMKitStreamManager get streamManager => _streamManager;
-
   late final IMState _state;
   IMState get state => _state;
 
-  late final IMLocalStorage _localStorage = IMLocalStorage.instance;
+  late final IMLocalStorage _localStorage;
   IMLocalStorage get localStorage => _localStorage;
 
-  late final IMData _data = IMData(state: state, stream: streamManager);
+  late final IMDatabase _database;
+  IMDatabase get database => _database;
+
+  late final IMData _data = IMData(state: state, localStorege: localStorage);
   IMData get data => _data;
 
-  IMKitInternal(IMStateBuilder builder) {
+  late final IMKitS localization = IMKitS.current;
+
+  IMKitInternal({required IMStateBuilder builder, required SharedPreferences prefs, required IMDatabase db}) {
     _state = builder.build();
+    _localStorage = IMLocalStorage(prefs);
+    _database = db;
   }
 
   logout() {
-    _streamManager.reset();
     _state.logout();
     _localStorage.clean();
+    _database.clean();
     _data.socketDisconnect();
   }
 }
