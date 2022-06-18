@@ -18,7 +18,7 @@ class IMFileConverter extends TypeConverter<IMFile?, String?> {
     if (value == null) {
       return null;
     } else {
-      return jsonEncode(value);
+      return jsonEncode(serializeIMFile(value));
     }
   }
 }

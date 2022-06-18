@@ -9,8 +9,17 @@ abstract class IMMessageDao extends IMBaseDao<IMMessage> {
   @Query('SELECT * FROM $table WHERE roomId = :roomId ORDER BY createdAt ASC')
   Stream<List<IMMessage>> findMessages(String roomId);
 
+  @Query('SELECT * FROM $table WHERE roomId = :roomId ORDER BY createdAt ASC')
+  Future<List<IMMessage>> findMessagesByFuture(String roomId);
+
+  @Query('SELECT * FROM $table WHERE (id IN (:ids))')
+  Future<List<IMMessage>> findMessagesByIds(List<String> ids);
+
   @Query('SELECT * FROM $table WHERE roomId = :roomId ORDER BY createdAt DESC LIMIT 1')
   Future<IMMessage?> findLatestMessage(String roomId);
+
+  @Query('SELECT * FROM $table WHERE id = :id')
+  Future<IMMessage?> findMessage(String id);
 
   @Query('DELETE FROM $table WHERE roomId = :roomId')
   Future<void> deleteByRoom(String roomId);

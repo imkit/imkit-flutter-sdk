@@ -12,8 +12,9 @@ class IMMessagesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(room?.id);
     return IMStatefulWrapper(
-      onInit: () => IMKit.instance.action.fetchMessages(roomId: roomId),
+      onInit: () => IMKit.instance.action.initEntryRoom(roomId: roomId),
       child: StreamBuilder<IMRoom?>(
         initialData: room,
         stream: IMKit.instance.listener.watchRoom(roomId: roomId),

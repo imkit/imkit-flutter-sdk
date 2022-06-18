@@ -18,7 +18,7 @@ class IMSystemEventConverter extends TypeConverter<IMSystemEvent?, String?> {
     if (value == null) {
       return null;
     } else {
-      return jsonEncode(value);
+      return jsonEncode(serializeIMSystemEvent(value));
     }
   }
 }

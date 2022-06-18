@@ -7,6 +7,9 @@ part 'im_response_object.g.dart';
 IMResponseObject deserializeIMResponseObject(Map<String, dynamic> json) => IMResponseObject.fromJson(json);
 List<IMResponseObject> deserializeIMResponseObjectList(List<Map<String, dynamic>> json) => json.map((e) => IMResponseObject.fromJson(e)).toList();
 
+Map<String, dynamic> serializeIMResponseObject(IMResponseObject object) => object.toJson();
+List<Map<String, dynamic>> serializeIMResponseObjectList(List<IMResponseObject> objects) => objects.map((e) => e.toJson()).toList();
+
 @JsonSerializable()
 class IMResponseObject {
   @JsonKey(name: '_id', defaultValue: '')

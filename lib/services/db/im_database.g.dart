@@ -86,9 +86,9 @@ class _$IMDatabase extends IMDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `IMRoom` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `coverUrl` TEXT, `numberOfUnreadMessages` INTEGER NOT NULL, `isMuted` INTEGER NOT NULL, `isMentioned` INTEGER NOT NULL, `isTranslationEnabled` INTEGER NOT NULL, `lastMessage` TEXT, `members` TEXT NOT NULL, `roomTags` TEXT NOT NULL, `tags` TEXT NOT NULL, `createdAt` INTEGER, `updatedAt` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `IMRoom` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `coverUrl` TEXT, `numberOfUnreadMessages` INTEGER NOT NULL, `isMuted` INTEGER NOT NULL, `isMentioned` INTEGER NOT NULL, `isTranslationEnabled` INTEGER NOT NULL, `lastMessage` TEXT, `members` TEXT NOT NULL, `roomTags` TEXT NOT NULL, `tags` TEXT NOT NULL, `memberProperties` TEXT NOT NULL, `createdAt` INTEGER, `updatedAt` INTEGER, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `IMMessage` (`id` TEXT NOT NULL, `roomId` TEXT NOT NULL, `type` TEXT NOT NULL, `systemEvent` TEXT, `sender` TEXT, `createdAt` INTEGER, `updatedAt` INTEGER, `responseObject` TEXT, `text` TEXT, `stickerId` TEXT, `mentions` TEXT NOT NULL, `images` TEXT NOT NULL, `file` TEXT, `location` TEXT, `extra` TEXT, `status` TEXT NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `IMMessage` (`id` TEXT NOT NULL, `roomId` TEXT NOT NULL, `type` TEXT NOT NULL, `systemEvent` TEXT, `sender` TEXT, `createdAt` INTEGER, `updatedAt` INTEGER, `responseObject` TEXT, `text` TEXT, `stickerId` TEXT, `mentions` TEXT NOT NULL, `images` TEXT NOT NULL, `file` TEXT, `location` TEXT, `extra` TEXT, `status` TEXT NOT NULL, `membersWhoHaveRead` TEXT NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `IMUser` (`id` TEXT NOT NULL, `nickname` TEXT NOT NULL, `desc` TEXT, `avatarUrl` TEXT, `lastLoginAt` INTEGER, PRIMARY KEY (`id`))');
 
@@ -130,10 +130,12 @@ class _$IMRoomDao extends IMRoomDao {
                   'isMuted': item.isMuted ? 1 : 0,
                   'isMentioned': item.isMentioned ? 1 : 0,
                   'isTranslationEnabled': item.isTranslationEnabled ? 1 : 0,
-                  'lastMessage': _iMMessageConverter.encode(item.lastMessage),
+                  'lastMessage': _iMMapConverter.encode(item.lastMessage),
                   'members': _iMUserListConverter.encode(item.members),
                   'roomTags': _iMStringListConverter.encode(item.roomTags),
                   'tags': _iMTagListConverter.encode(item.tags),
+                  'memberProperties': _iMMemberPropertyListConverter
+                      .encode(item.memberProperties),
                   'createdAt': _iMDateTimeConverter.encode(item.createdAt),
                   'updatedAt': _iMDateTimeConverter.encode(item.updatedAt)
                 },
@@ -152,10 +154,12 @@ class _$IMRoomDao extends IMRoomDao {
                   'isMuted': item.isMuted ? 1 : 0,
                   'isMentioned': item.isMentioned ? 1 : 0,
                   'isTranslationEnabled': item.isTranslationEnabled ? 1 : 0,
-                  'lastMessage': _iMMessageConverter.encode(item.lastMessage),
+                  'lastMessage': _iMMapConverter.encode(item.lastMessage),
                   'members': _iMUserListConverter.encode(item.members),
                   'roomTags': _iMStringListConverter.encode(item.roomTags),
                   'tags': _iMTagListConverter.encode(item.tags),
+                  'memberProperties': _iMMemberPropertyListConverter
+                      .encode(item.memberProperties),
                   'createdAt': _iMDateTimeConverter.encode(item.createdAt),
                   'updatedAt': _iMDateTimeConverter.encode(item.updatedAt)
                 },
@@ -174,10 +178,12 @@ class _$IMRoomDao extends IMRoomDao {
                   'isMuted': item.isMuted ? 1 : 0,
                   'isMentioned': item.isMentioned ? 1 : 0,
                   'isTranslationEnabled': item.isTranslationEnabled ? 1 : 0,
-                  'lastMessage': _iMMessageConverter.encode(item.lastMessage),
+                  'lastMessage': _iMMapConverter.encode(item.lastMessage),
                   'members': _iMUserListConverter.encode(item.members),
                   'roomTags': _iMStringListConverter.encode(item.roomTags),
                   'tags': _iMTagListConverter.encode(item.tags),
+                  'memberProperties': _iMMemberPropertyListConverter
+                      .encode(item.memberProperties),
                   'createdAt': _iMDateTimeConverter.encode(item.createdAt),
                   'updatedAt': _iMDateTimeConverter.encode(item.updatedAt)
                 },
@@ -211,13 +217,37 @@ class _$IMRoomDao extends IMRoomDao {
             isTranslationEnabled: (row['isTranslationEnabled'] as int) != 0,
             createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
             updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
-            lastMessage:
-                _iMMessageConverter.decode(row['lastMessage'] as String?),
+            lastMessage: _iMMapConverter.decode(row['lastMessage'] as String?),
             members: _iMUserListConverter.decode(row['members'] as String),
             roomTags: _iMStringListConverter.decode(row['roomTags'] as String),
-            tags: _iMTagListConverter.decode(row['tags'] as String)),
+            tags: _iMTagListConverter.decode(row['tags'] as String),
+            memberProperties: _iMMemberPropertyListConverter
+                .decode(row['memberProperties'] as String)),
         queryableName: 'IMRoom',
         isView: false);
+  }
+
+  @override
+  Future<List<IMRoom>> findRoomsByFuture() async {
+    return _queryAdapter.queryList('SELECT * FROM IMRoom',
+        mapper: (Map<String, Object?> row) => IMRoom(
+            id: row['id'] as String,
+            type: _iMRoomTypeConverter.decode(row['type'] as String),
+            name: row['name'] as String,
+            desc: row['desc'] as String?,
+            coverUrl: row['coverUrl'] as String?,
+            numberOfUnreadMessages: row['numberOfUnreadMessages'] as int,
+            isMuted: (row['isMuted'] as int) != 0,
+            isMentioned: (row['isMentioned'] as int) != 0,
+            isTranslationEnabled: (row['isTranslationEnabled'] as int) != 0,
+            createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
+            updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
+            lastMessage: _iMMapConverter.decode(row['lastMessage'] as String?),
+            members: _iMUserListConverter.decode(row['members'] as String),
+            roomTags: _iMStringListConverter.decode(row['roomTags'] as String),
+            tags: _iMTagListConverter.decode(row['tags'] as String),
+            memberProperties: _iMMemberPropertyListConverter
+                .decode(row['memberProperties'] as String)));
   }
 
   @override
@@ -235,14 +265,39 @@ class _$IMRoomDao extends IMRoomDao {
             isTranslationEnabled: (row['isTranslationEnabled'] as int) != 0,
             createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
             updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
-            lastMessage:
-                _iMMessageConverter.decode(row['lastMessage'] as String?),
+            lastMessage: _iMMapConverter.decode(row['lastMessage'] as String?),
             members: _iMUserListConverter.decode(row['members'] as String),
             roomTags: _iMStringListConverter.decode(row['roomTags'] as String),
-            tags: _iMTagListConverter.decode(row['tags'] as String)),
+            tags: _iMTagListConverter.decode(row['tags'] as String),
+            memberProperties: _iMMemberPropertyListConverter
+                .decode(row['memberProperties'] as String)),
         arguments: [id],
         queryableName: 'IMRoom',
         isView: false);
+  }
+
+  @override
+  Future<IMRoom?> findRoomByFuture(String id) async {
+    return _queryAdapter.query('SELECT * FROM IMRoom WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => IMRoom(
+            id: row['id'] as String,
+            type: _iMRoomTypeConverter.decode(row['type'] as String),
+            name: row['name'] as String,
+            desc: row['desc'] as String?,
+            coverUrl: row['coverUrl'] as String?,
+            numberOfUnreadMessages: row['numberOfUnreadMessages'] as int,
+            isMuted: (row['isMuted'] as int) != 0,
+            isMentioned: (row['isMentioned'] as int) != 0,
+            isTranslationEnabled: (row['isTranslationEnabled'] as int) != 0,
+            createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
+            updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
+            lastMessage: _iMMapConverter.decode(row['lastMessage'] as String?),
+            members: _iMUserListConverter.decode(row['members'] as String),
+            roomTags: _iMStringListConverter.decode(row['roomTags'] as String),
+            tags: _iMTagListConverter.decode(row['tags'] as String),
+            memberProperties: _iMMemberPropertyListConverter
+                .decode(row['memberProperties'] as String)),
+        arguments: [id]);
   }
 
   @override
@@ -306,7 +361,9 @@ class _$IMMessageDao extends IMMessageDao {
                   'file': _iMFileConverter.encode(item.file),
                   'location': _iMLocationConverter.encode(item.location),
                   'extra': _iMMapConverter.encode(item.extra),
-                  'status': _iMMessageStatusConverter.encode(item.status)
+                  'status': _iMMessageStatusConverter.encode(item.status),
+                  'membersWhoHaveRead':
+                      _iMStringListConverter.encode(item.membersWhoHaveRead)
                 },
             changeListener),
         _iMMessageUpdateAdapter = UpdateAdapter(
@@ -331,7 +388,9 @@ class _$IMMessageDao extends IMMessageDao {
                   'file': _iMFileConverter.encode(item.file),
                   'location': _iMLocationConverter.encode(item.location),
                   'extra': _iMMapConverter.encode(item.extra),
-                  'status': _iMMessageStatusConverter.encode(item.status)
+                  'status': _iMMessageStatusConverter.encode(item.status),
+                  'membersWhoHaveRead':
+                      _iMStringListConverter.encode(item.membersWhoHaveRead)
                 },
             changeListener),
         _iMMessageDeletionAdapter = DeletionAdapter(
@@ -356,7 +415,9 @@ class _$IMMessageDao extends IMMessageDao {
                   'file': _iMFileConverter.encode(item.file),
                   'location': _iMLocationConverter.encode(item.location),
                   'extra': _iMMapConverter.encode(item.extra),
-                  'status': _iMMessageStatusConverter.encode(item.status)
+                  'status': _iMMessageStatusConverter.encode(item.status),
+                  'membersWhoHaveRead':
+                      _iMStringListConverter.encode(item.membersWhoHaveRead)
                 },
             changeListener);
 
@@ -394,18 +455,109 @@ class _$IMMessageDao extends IMMessageDao {
             file: _iMFileConverter.decode(row['file'] as String?),
             location: _iMLocationConverter.decode(row['location'] as String?),
             extra: _iMMapConverter.decode(row['extra'] as String?),
-            status: _iMMessageStatusConverter.decode(row['status'] as String)),
+            status: _iMMessageStatusConverter.decode(row['status'] as String),
+            membersWhoHaveRead: _iMStringListConverter
+                .decode(row['membersWhoHaveRead'] as String)),
         arguments: [roomId],
         queryableName: 'IMMessage',
         isView: false);
   }
 
   @override
+  Future<List<IMMessage>> findMessagesByFuture(String roomId) async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM IMMessage WHERE roomId = ?1 ORDER BY createdAt ASC',
+        mapper: (Map<String, Object?> row) => IMMessage(
+            id: row['id'] as String,
+            roomId: row['roomId'] as String,
+            type: _iMMessageTypeConverter.decode(row['type'] as String),
+            systemEvent:
+                _iMSystemEventConverter.decode(row['systemEvent'] as String?),
+            sender: _iMUserConverter.decode(row['sender'] as String?),
+            createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
+            updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
+            text: row['text'] as String?,
+            stickerId: row['stickerId'] as String?,
+            responseObject: _iMResponseObjectConverter
+                .decode(row['responseObject'] as String?),
+            mentions: _iMStringListConverter.decode(row['mentions'] as String),
+            images: _iMImageListConverter.decode(row['images'] as String),
+            file: _iMFileConverter.decode(row['file'] as String?),
+            location: _iMLocationConverter.decode(row['location'] as String?),
+            extra: _iMMapConverter.decode(row['extra'] as String?),
+            status: _iMMessageStatusConverter.decode(row['status'] as String),
+            membersWhoHaveRead: _iMStringListConverter
+                .decode(row['membersWhoHaveRead'] as String)),
+        arguments: [roomId]);
+  }
+
+  @override
+  Future<List<IMMessage>> findMessagesByIds(List<String> ids) async {
+    const offset = 1;
+    final _sqliteVariablesForIds =
+        Iterable<String>.generate(ids.length, (i) => '?${i + offset}')
+            .join(',');
+    return _queryAdapter.queryList(
+        'SELECT * FROM IMMessage WHERE (id IN (' +
+            _sqliteVariablesForIds +
+            '))',
+        mapper: (Map<String, Object?> row) => IMMessage(
+            id: row['id'] as String,
+            roomId: row['roomId'] as String,
+            type: _iMMessageTypeConverter.decode(row['type'] as String),
+            systemEvent:
+                _iMSystemEventConverter.decode(row['systemEvent'] as String?),
+            sender: _iMUserConverter.decode(row['sender'] as String?),
+            createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
+            updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
+            text: row['text'] as String?,
+            stickerId: row['stickerId'] as String?,
+            responseObject: _iMResponseObjectConverter
+                .decode(row['responseObject'] as String?),
+            mentions: _iMStringListConverter.decode(row['mentions'] as String),
+            images: _iMImageListConverter.decode(row['images'] as String),
+            file: _iMFileConverter.decode(row['file'] as String?),
+            location: _iMLocationConverter.decode(row['location'] as String?),
+            extra: _iMMapConverter.decode(row['extra'] as String?),
+            status: _iMMessageStatusConverter.decode(row['status'] as String),
+            membersWhoHaveRead: _iMStringListConverter
+                .decode(row['membersWhoHaveRead'] as String)),
+        arguments: [...ids]);
+  }
+
+  @override
   Future<IMMessage?> findLatestMessage(String roomId) async {
     return _queryAdapter.query(
         'SELECT * FROM IMMessage WHERE roomId = ?1 ORDER BY createdAt DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => IMMessage(id: row['id'] as String, roomId: row['roomId'] as String, type: _iMMessageTypeConverter.decode(row['type'] as String), systemEvent: _iMSystemEventConverter.decode(row['systemEvent'] as String?), sender: _iMUserConverter.decode(row['sender'] as String?), createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?), updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?), text: row['text'] as String?, stickerId: row['stickerId'] as String?, responseObject: _iMResponseObjectConverter.decode(row['responseObject'] as String?), mentions: _iMStringListConverter.decode(row['mentions'] as String), images: _iMImageListConverter.decode(row['images'] as String), file: _iMFileConverter.decode(row['file'] as String?), location: _iMLocationConverter.decode(row['location'] as String?), extra: _iMMapConverter.decode(row['extra'] as String?), status: _iMMessageStatusConverter.decode(row['status'] as String)),
+        mapper: (Map<String, Object?> row) => IMMessage(id: row['id'] as String, roomId: row['roomId'] as String, type: _iMMessageTypeConverter.decode(row['type'] as String), systemEvent: _iMSystemEventConverter.decode(row['systemEvent'] as String?), sender: _iMUserConverter.decode(row['sender'] as String?), createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?), updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?), text: row['text'] as String?, stickerId: row['stickerId'] as String?, responseObject: _iMResponseObjectConverter.decode(row['responseObject'] as String?), mentions: _iMStringListConverter.decode(row['mentions'] as String), images: _iMImageListConverter.decode(row['images'] as String), file: _iMFileConverter.decode(row['file'] as String?), location: _iMLocationConverter.decode(row['location'] as String?), extra: _iMMapConverter.decode(row['extra'] as String?), status: _iMMessageStatusConverter.decode(row['status'] as String), membersWhoHaveRead: _iMStringListConverter.decode(row['membersWhoHaveRead'] as String)),
         arguments: [roomId]);
+  }
+
+  @override
+  Future<IMMessage?> findMessage(String id) async {
+    return _queryAdapter.query('SELECT * FROM IMMessage WHERE id = ?1',
+        mapper: (Map<String, Object?> row) => IMMessage(
+            id: row['id'] as String,
+            roomId: row['roomId'] as String,
+            type: _iMMessageTypeConverter.decode(row['type'] as String),
+            systemEvent:
+                _iMSystemEventConverter.decode(row['systemEvent'] as String?),
+            sender: _iMUserConverter.decode(row['sender'] as String?),
+            createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
+            updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
+            text: row['text'] as String?,
+            stickerId: row['stickerId'] as String?,
+            responseObject: _iMResponseObjectConverter
+                .decode(row['responseObject'] as String?),
+            mentions: _iMStringListConverter.decode(row['mentions'] as String),
+            images: _iMImageListConverter.decode(row['images'] as String),
+            file: _iMFileConverter.decode(row['file'] as String?),
+            location: _iMLocationConverter.decode(row['location'] as String?),
+            extra: _iMMapConverter.decode(row['extra'] as String?),
+            status: _iMMessageStatusConverter.decode(row['status'] as String),
+            membersWhoHaveRead: _iMStringListConverter
+                .decode(row['membersWhoHaveRead'] as String)),
+        arguments: [id]);
   }
 
   @override
@@ -549,10 +701,10 @@ class _$IMUserDao extends IMUserDao {
 final _iMStringListConverter = IMStringListConverter();
 final _iMDateTimeConverter = IMDateTimeConverter();
 final _iMRoomTypeConverter = IMRoomTypeConverter();
-final _iMMessageConverter = IMMessageConverter();
 final _iMUserConverter = IMUserConverter();
 final _iMUserListConverter = IMUserListConverter();
 final _iMTagListConverter = IMTagListConverter();
+final _iMMemberPropertyListConverter = IMMemberPropertyListConverter();
 final _iMMessageTypeConverter = IMMessageTypeConverter();
 final _iMMessageStatusConverter = IMMessageStatusConverter();
 final _iMSystemEventConverter = IMSystemEventConverter();

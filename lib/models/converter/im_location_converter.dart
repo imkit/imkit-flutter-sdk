@@ -18,7 +18,7 @@ class IMLocationConverter extends TypeConverter<IMLocation?, String?> {
     if (value == null) {
       return null;
     } else {
-      return jsonEncode(value);
+      return jsonEncode(serializeIMLocation(value));
     }
   }
 }

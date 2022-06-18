@@ -6,7 +6,15 @@ class IMMessageDataManager extends IMBaseDataManager {
     return api.message.fetchMessages(roomId: roomId, beforeMessageId: beforeMessageId, limit: limit);
   }
 
-  Future<IMMessage?> fetchLatestMessage({required String roomId}) {
+  Future<List<IMMessage>> findMessages({required String roomId}) {
+    return database.messageDao.findMessagesByFuture(roomId);
+  }
+
+  Future<List<IMMessage>> findMessagesByIds({required List<String> ids}) {
+    return database.messageDao.findMessagesByIds(ids);
+  }
+
+  Future<IMMessage?> findLatestMessage({required String roomId}) {
     return database.messageDao.findLatestMessage(roomId);
   }
 
@@ -16,6 +24,10 @@ class IMMessageDataManager extends IMBaseDataManager {
 
   Future<void> updateItem(IMMessage message) {
     return database.messageDao.updateItem(message);
+  }
+
+  Future<void> updateItems(List<IMMessage> messages) {
+    return database.messageDao.updateItems(messages);
   }
 
   Future<void> deleteItem(IMMessage message) {

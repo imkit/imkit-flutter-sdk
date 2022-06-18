@@ -3,13 +3,10 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:imkit/extensions/list_ext.dart';
+import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_image.dart';
-import 'package:imkit/models/im_invitation.dart';
-import 'package:imkit/models/im_message.dart';
+import 'package:imkit/models/im_member_property.dart';
 import 'package:imkit/models/im_response_object.dart';
-import 'package:imkit/models/im_room.dart';
-import 'package:imkit/models/im_state.dart';
-import 'package:imkit/models/im_user.dart';
 import 'package:imkit/sdk/internal/imkit_action.dart';
 import 'package:imkit/services/data/managers/im_file_data_manager.dart';
 import 'package:imkit/services/data/managers/im_message_data_manager.dart';
@@ -48,6 +45,7 @@ class IMData {
   /// Room
   void syncRooms({bool isRefresh = false}) async {
     final lastUpdatedAt = isRefresh ? null : localStorege.getValue(key: IMLocalStoregeKey.lastRoomUpdatedAt);
+    final localRooms = await _roomDataManager.findRooms();
     const limit = 15;
     int skip = 0;
     bool isCountinue = true;
@@ -55,6 +53,9 @@ class IMData {
     List<IMUser> users = [];
     do {
       final rooms = await _roomDataManager.fetchRooms(skip: skip, limit: limit, lastUpdatedAt: lastUpdatedAt);
+      for (var room in rooms) {
+        room.memberProperties = localRooms.firstWhereOrNull((element) => element.id == room.id)?.memberProperties ?? [];
+      }
       tmpRooms.addAll(rooms);
       users.addAll(rooms.expand((e) => e.members));
       _roomDataManager.insertItems(rooms);
@@ -75,18 +76,35 @@ class IMData {
     }
   }
 
-  /// Message
-  void syncMessages({required String roomId, int limit = 20}) async {
-    final latestMessage = await _messageDataManager.fetchLatestMessage(roomId: roomId);
-    String? latestMessageId = latestMessage?.id;
-    bool isCountinue = true;
+  Future<void> _setRead({required String roomId}) async {
+    final lastReadMessageId = (await _messageDataManager.findLatestMessage(roomId: roomId))?.id;
+    if ((lastReadMessageId ?? "").isNotEmpty) {
+      final memberProperty = await _roomDataManager.setRead(roomId: roomId, lastReadMessageId: lastReadMessageId ?? "");
+      final room = await _roomDataManager.findRoom(roomId: roomId);
 
-    do {
-      final messages = await _messageDataManager.fetchMessages(roomId: roomId, beforeMessageId: latestMessageId, limit: limit);
-      _messageDataManager.insertItems(messages);
-      isCountinue = messages.length >= limit;
-      latestMessageId = messages.lastOrNull?.id;
-    } while (isCountinue);
+      if (room != null) {
+        room.setMemberProperty(memberProperty);
+        room.numberOfUnreadMessages = memberProperty.badge;
+        _roomDataManager.updateItem(room);
+      }
+    }
+    return;
+  }
+
+  // void _updateRoomLastMessage({required IMMessage? message}) async {
+  //   if (message != null) {
+  //     final room = await _roomDataManager.fetchRoom(roomId: message.roomId);
+  //     _roomDataManager.insertItem(room);
+  //   }
+  // }
+
+  /// Message
+  void initEntryRoom({required String roomId}) async {
+    final room = await _roomDataManager.fetchRoom(roomId: roomId);
+    await _roomDataManager.insertItem(room);
+    await _syncMessages(roomId: roomId);
+    await _setRead(roomId: roomId);
+    _syncMembersWhoHaveRead(roomId: roomId);
   }
 
   void sendTextMessage({required String roomId, required String text, IMResponseObject? responseObject}) async {
@@ -148,12 +166,79 @@ class IMData {
     }
   }
 
-  void resendMessage({required IMMessage message}) {
+  void resendMessage({required IMMessage message}) async {
     _messageDataManager.resendMessage(localMessage: message);
   }
 
   void deleteMessage({required IMMessage message}) {
     _messageDataManager.deleteItem(message);
+  }
+
+  Future<void> _syncMessages({required String roomId, int limit = 20}) async {
+    final localMessages = await _messageDataManager.findMessages(roomId: roomId);
+    final latestMessage = localMessages.lastOrNull;
+
+    String? latestMessageId = latestMessage?.id;
+    bool isCountinue = true;
+
+    do {
+      final messages = await _messageDataManager.fetchMessages(roomId: roomId, beforeMessageId: latestMessageId, limit: limit);
+      for (var message in messages) {
+        message.membersWhoHaveRead = localMessages.firstWhereOrNull((element) => element.id == message.id)?.membersWhoHaveRead ?? [];
+      }
+      _messageDataManager.insertItems(messages);
+      isCountinue = messages.length >= limit;
+      latestMessageId = messages.lastOrNull?.id;
+    } while (isCountinue);
+
+    return;
+  }
+
+  void _syncMembersWhoHaveRead({required String roomId}) async {
+    final IMRoom? room = await _roomDataManager.findRoom(roomId: roomId);
+    if (room == null) {
+      return;
+    }
+
+    final List<IMMemberProperty> memberProperties = room.memberProperties;
+    final List<String> lastReadMessageIds = memberProperties.map((element) => element.lastReadMessageId).where((element) => element.isNotEmpty).toList();
+    final List<IMMessage> messages = lastReadMessageIds.isNotEmpty ? await _messageDataManager.findMessagesByIds(ids: lastReadMessageIds) : [];
+    final List<IMMessage> messagesSentByMe =
+        (await _messageDataManager.findMessages(roomId: roomId)).where((element) => element.sender?.id == IMKit.uid).toList();
+    final List<IMMessage> ascendingMessageSentByMe = messagesSentByMe;
+    final List<IMMessage> descendingMessageSentByMe = messagesSentByMe.reversed.toList();
+    final List<IMMessage> updatedMessages = [];
+    for (var memberProperty in memberProperties) {
+      final lastReadMessageCreateTime = messages.firstWhereOrNull((element) => element.id == memberProperty.lastReadMessageId)?.createdAt;
+      if (lastReadMessageCreateTime != null) {
+        for (var message in descendingMessageSentByMe) {
+          final createdAt = message.createdAt;
+
+          if (createdAt != null && createdAt.compareTo(lastReadMessageCreateTime) <= 0 && !message.membersWhoHaveRead.contains(memberProperty.uid)) {
+            if (message.read(memberProperty.uid)) {
+              updatedMessages.add(message);
+            }
+          }
+        }
+      }
+    }
+    final membersInRoom = memberProperties.map((e) => e.uid);
+    final hasSomeoneLeaveRoom = ascendingMessageSentByMe.firstOrNull?.membersWhoHaveRead
+            .fold<bool>(false, (previousValue, element) => previousValue || !membersInRoom.contains(element)) ??
+        false;
+    if (hasSomeoneLeaveRoom) {
+      final uidsLeaveRoom = ascendingMessageSentByMe.firstOrNull?.membersWhoHaveRead.where((e) => !membersInRoom.contains(e)) ?? [];
+      for (var message in ascendingMessageSentByMe) {
+        for (var uid in uidsLeaveRoom) {
+          if (message.removeMemberWhoReadThis(uid)) {
+            updatedMessages.add(message);
+          }
+        }
+      }
+    }
+    if (updatedMessages.isNotEmpty) {
+      _messageDataManager.updateItems(updatedMessages);
+    }
   }
 
   /// Socket

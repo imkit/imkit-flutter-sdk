@@ -18,7 +18,7 @@ class IMUserConverter extends TypeConverter<IMUser?, String?> {
     if (value == null) {
       return null;
     } else {
-      return jsonEncode(value);
+      return jsonEncode(serializeIMUser(value));
     }
   }
 }

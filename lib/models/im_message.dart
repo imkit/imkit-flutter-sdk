@@ -98,8 +98,13 @@ class IMMessage {
   @JsonKey(readValue: _toStatus)
   IMMessageStatus status = IMMessageStatus.initial;
 
+  @JsonKey(ignore: true)
+  List<String> membersWhoHaveRead = [];
+
+  @ignore
   bool get isMe => sender?.id == IMKit.uid;
 
+  @ignore
   String get duration {
     if (file == null) {
       return "--:--";
@@ -107,6 +112,7 @@ class IMMessage {
     return file!.duration.toTime;
   }
 
+  @ignore
   String? get description {
     switch (type) {
       case IMMessageType.text:
@@ -169,6 +175,7 @@ class IMMessage {
     }
   }
 
+  @ignore
   Map<String, dynamic> get parameters {
     Map<String, dynamic> parameters = {"messageType": type.name};
 
@@ -261,6 +268,7 @@ class IMMessage {
     this.location,
     this.extra,
     this.status = IMMessageStatus.initial,
+    this.membersWhoHaveRead = const [],
   });
 
   factory IMMessage.fromJson(Map<String, dynamic> json) => _$IMMessageFromJson(json);
@@ -380,6 +388,18 @@ class IMMessage {
       imageUrl: images.firstOrNull?.thumbnailUrl ?? images.firstOrNull?.originalUrl,
       stickerId: stickerId,
     );
+  }
+
+  bool read(String uid) {
+    if (uid != sender?.id && !membersWhoHaveRead.contains(uid)) {
+      membersWhoHaveRead.add(uid);
+      return true;
+    }
+    return false;
+  }
+
+  bool removeMemberWhoReadThis(String uid) {
+    return membersWhoHaveRead.remove(uid);
   }
 }
 

@@ -124,7 +124,7 @@ extension on IMMessageListItem {
     }
   }
 
-  Widget _statusWidget() => IMMessageItemStatus(message: message);
+  Widget _statusWidget() => IMMessageItemStatus(room: room, message: message);
 
   Widget _replyWidget() => Visibility(
         visible: message.responseObject != null,

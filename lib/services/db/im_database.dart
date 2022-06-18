@@ -7,7 +7,7 @@ import 'package:imkit/models/converter/im_file_converter.dart';
 import 'package:imkit/models/converter/im_image_list_converter.dart';
 import 'package:imkit/models/converter/im_location_converter.dart';
 import 'package:imkit/models/converter/im_map_converter.dart';
-import 'package:imkit/models/converter/im_message_converter.dart';
+import 'package:imkit/models/converter/im_member_property_list_converter.dart';
 import 'package:imkit/models/converter/im_message_status_converter.dart';
 import 'package:imkit/models/converter/im_message_type_converter.dart';
 import 'package:imkit/models/converter/im_response_object_converter.dart';
@@ -28,10 +28,10 @@ part 'im_database.g.dart';
   IMStringListConverter,
   IMDateTimeConverter,
   IMRoomTypeConverter,
-  IMMessageConverter,
   IMUserConverter,
   IMUserListConverter,
   IMTagListConverter,
+  IMMemberPropertyListConverter,
   IMMessageTypeConverter,
   IMMessageStatusConverter,
   IMSystemEventConverter,

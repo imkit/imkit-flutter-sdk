@@ -26,10 +26,10 @@ class IMKitAction {
   Future<IMUser> getMe() => _data.getMe();
 
   // Room
+  void initEntryRoom({required String roomId}) => _data.initEntryRoom(roomId: roomId);
   void fetchRooms({bool isRefresh = false}) => _data.syncRooms(isRefresh: isRefresh);
 
   // Message
-  void fetchMessages({required String roomId}) => _data.syncMessages(roomId: roomId);
   void sendTextMessage({required String roomId, required String text, IMResponseObject? responseObject}) =>
       _data.sendTextMessage(roomId: roomId, text: text, responseObject: responseObject);
   void preSendImageMessage({required String roomId, required List<AssetEntity> assetEntities}) =>

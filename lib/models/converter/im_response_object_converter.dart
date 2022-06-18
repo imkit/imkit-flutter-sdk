@@ -18,7 +18,7 @@ class IMResponseObjectConverter extends TypeConverter<IMResponseObject?, String?
     if (value == null) {
       return null;
     } else {
-      return jsonEncode(value);
+      return jsonEncode(serializeIMResponseObject(value));
     }
   }
 }

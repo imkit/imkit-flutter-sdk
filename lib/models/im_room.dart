@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:collection/collection.dart';
 import 'package:floor/floor.dart';
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/models/im_member_property.dart';
 import 'package:imkit/models/im_tag.dart';
 import 'package:imkit/utils/json_from_parser.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -51,7 +54,7 @@ class IMRoom {
   bool isTranslationEnabled = true;
 
   @JsonKey(name: 'lastMessage', defaultValue: null)
-  IMMessage? lastMessage;
+  Map<String, dynamic>? lastMessage;
 
   @JsonKey(name: 'members')
   List<IMUser> members = [];
@@ -62,12 +65,25 @@ class IMRoom {
   @JsonKey(name: 'pref', fromJson: _toIMTags)
   List<IMTag> tags = [];
 
+  @JsonKey(name: 'memberProperties')
+  List<IMMemberProperty> memberProperties = [];
+
   @JsonKey(name: 'createdTimeMS', defaultValue: null, fromJson: toDateTime, toJson: toTimestamp)
   DateTime? createdAt;
 
   @JsonKey(name: 'updatedTimeMS', defaultValue: null, readValue: _toUpdatedAt, fromJson: toDateTime, toJson: toTimestamp)
   DateTime? updatedAt;
 
+  @ignore
+  IMMessage? get lastMessageObj {
+    final message = lastMessage;
+    if (message != null) {
+      return deserializeIMMessage(message);
+    }
+    return null;
+  }
+
+  @ignore
   String get title {
     if (type == IMRoomType.group) {
       if (members.isEmpty) {
@@ -79,10 +95,12 @@ class IMRoom {
     return name.isNotEmpty ? name : IMKit.S.rooms_cell_emptyChat;
   }
 
+  @ignore
   String get subtitle {
-    return lastMessage?.description ?? "";
+    return lastMessageObj?.description ?? "";
   }
 
+  @ignore
   String get numberOfUnreadMessagesCount {
     if (numberOfUnreadMessages <= 0) {
       return "";
@@ -108,11 +126,20 @@ class IMRoom {
     this.members = const [],
     this.roomTags = const [],
     this.tags = const [],
+    this.memberProperties = const [],
   });
 
   factory IMRoom.fromJson(Map<String, dynamic> json) => _$IMRoomFromJson(json);
 
   Map<String, dynamic> toJson() => _$IMRoomToJson(this);
+
+  void setMemberProperty(IMMemberProperty newMemberProperty) {
+    final index = memberProperties.indexWhere((element) => element.uid == newMemberProperty.uid);
+    if (index != -1) {
+      memberProperties.removeAt(index);
+    }
+    memberProperties.add(newMemberProperty);
+  }
 }
 
 String _toName(Map<dynamic, dynamic>? json, String key) {

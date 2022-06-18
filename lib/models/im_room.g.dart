@@ -23,9 +23,7 @@ IMRoom _$IMRoomFromJson(Map<String, dynamic> json) => IMRoom(
               true,
       createdAt: toDateTime(json['createdTimeMS'] as int?),
       updatedAt: toDateTime(_toUpdatedAt(json, 'updatedTimeMS') as int?),
-      lastMessage: json['lastMessage'] == null
-          ? null
-          : IMMessage.fromJson(json['lastMessage'] as Map<String, dynamic>),
+      lastMessage: json['lastMessage'] as Map<String, dynamic>?,
       members: (json['members'] as List<dynamic>?)
               ?.map((e) => IMUser.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -35,6 +33,10 @@ IMRoom _$IMRoomFromJson(Map<String, dynamic> json) => IMRoom(
               .toList() ??
           const [],
       tags: json['pref'] == null ? const [] : _toIMTags(json['pref'] as Map?),
+      memberProperties: (json['memberProperties'] as List<dynamic>?)
+              ?.map((e) => IMMemberProperty.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$IMRoomToJson(IMRoom instance) => <String, dynamic>{
@@ -51,6 +53,7 @@ Map<String, dynamic> _$IMRoomToJson(IMRoom instance) => <String, dynamic>{
       'members': instance.members,
       'roomTags': instance.roomTags,
       'pref': instance.tags,
+      'memberProperties': instance.memberProperties,
       'createdTimeMS': toTimestamp(instance.createdAt),
       'updatedTimeMS': toTimestamp(instance.updatedAt),
     };
