@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/services/data/im_data.dart';
@@ -6,11 +7,21 @@ import 'package:photo_manager/photo_manager.dart';
 
 typedef UploadProgress = void Function(double progress);
 
-class IMKitAction {
+class IMKitAction with WidgetsBindingObserver {
   late final IMData _data;
 
   IMKitAction(IMData data) {
     _data = data;
+    WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      fetchRooms();
+      connect();
+    }
   }
 
   // Socket
@@ -30,12 +41,13 @@ class IMKitAction {
   void fetchRooms({bool isRefresh = false}) => _data.syncRooms(isRefresh: isRefresh);
 
   // Message
-  void sendTextMessage({required String roomId, required String text, IMResponseObject? responseObject}) =>
+  Future<IMMessage> sendTextMessage({required String roomId, required String text, IMResponseObject? responseObject}) =>
       _data.sendTextMessage(roomId: roomId, text: text, responseObject: responseObject);
-  void preSendImageMessage({required String roomId, required List<AssetEntity> assetEntities}) =>
-      _data.preSendImageMessage(roomId: roomId, assetEntities: assetEntities);
-  void sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
+  Future<List<IMMessage>> preSendImageMessages({required String roomId, required List<AssetEntity> assetEntities}) =>
+      _data.preSendImageMessages(roomId: roomId, assetEntities: assetEntities);
+  Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
       _data.sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
-  void resendMessage({required IMMessage message}) => _data.resendMessage(message: message);
+  Future<IMMessage> resendMessage({required IMMessage message}) => _data.resendMessage(message: message);
   void deleteMessage({required IMMessage message}) => _data.deleteMessage(message: message);
+  void setRead({required String roomId, required IMMessage message}) => _data.setReadIfNeed(roomId: roomId, message: message);
 }

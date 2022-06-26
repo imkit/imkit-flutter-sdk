@@ -96,6 +96,8 @@ class IMSocketClient {
   disconnect() {
     _socket.dispose();
   }
+
+  bool get isConnected => _socket.connected;
 }
 
 // Events

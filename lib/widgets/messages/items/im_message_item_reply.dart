@@ -30,26 +30,28 @@ class IMMessageItemReply extends StatelessWidget {
               url: message.responseObject?.sender?.avatarUrl,
               size: 24,
             ),
-            Container(
-              margin: EdgeInsets.only(left: _padding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Visibility(
-                    visible: (message.responseObject?.sender?.nickname ?? "").isNotEmpty,
-                    child: Text(
-                      message.responseObject?.sender?.nickname ?? "",
-                      style: message.isMe ? IMKit.style.message.outgoing.replyNameTextSytle : IMKit.style.message.incoming.replyNameTextSytle,
+            Flexible(
+              child: Container(
+                margin: EdgeInsets.only(left: _padding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Visibility(
+                      visible: (message.responseObject?.sender?.nickname ?? "").isNotEmpty,
+                      child: Text(
+                        message.responseObject?.sender?.nickname ?? "",
+                        style: message.isMe ? IMKit.style.message.outgoing.replyNameTextSytle : IMKit.style.message.incoming.replyNameTextSytle,
+                      ),
                     ),
-                  ),
-                  Visibility(
-                    visible: (message.responseObject?.text ?? "").isNotEmpty,
-                    child: Text((message.responseObject?.text ?? "").breakWord,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: message.isMe ? IMKit.style.message.outgoing.replyTextTextSytle : IMKit.style.message.incoming.replyTextTextSytle),
-                  ),
-                ],
+                    Visibility(
+                      visible: (message.responseObject?.text ?? "").isNotEmpty,
+                      child: Text((message.responseObject?.text ?? "").breakWord,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: message.isMe ? IMKit.style.message.outgoing.replyTextTextSytle : IMKit.style.message.incoming.replyTextTextSytle),
+                    ),
+                  ],
+                ),
               ),
             ),
             Visibility(

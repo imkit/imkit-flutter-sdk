@@ -79,7 +79,7 @@ extension DateExtension on DateTime {
     } else if (isThisYear) {
       return DateFormat("EE, M/dd").format(this);
     } else {
-      return DateFormat("yyyy/M/dd").format(this);
+      return DateFormat("EE, yyyy/M/dd").format(this);
     }
   }
 }

@@ -10,23 +10,18 @@ class IMMessageItemSystem extends StatelessWidget {
   const IMMessageItemSystem({Key? key, required this.message}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            clipBehavior: Clip.hardEdge,
-            decoration: BoxDecoration(
-              color: IMKit.style.message.system.backgroundColor,
-              borderRadius: BorderRadius.circular(IMKit.style.message.cornerRadius),
-            ),
-            padding: const EdgeInsets.all(8),
-            child: Text(
-              _getText() ?? "",
-              style: IMKit.style.message.system.textSytle,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
+  Widget build(BuildContext context) => Container(
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+          color: IMKit.style.message.system.backgroundColor,
+          borderRadius: BorderRadius.circular(IMKit.style.message.cornerRadius),
+        ),
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          _getText() ?? "",
+          style: IMKit.style.message.system.textSytle,
+          textAlign: TextAlign.center,
+        ),
       );
 
   String? _getText() {

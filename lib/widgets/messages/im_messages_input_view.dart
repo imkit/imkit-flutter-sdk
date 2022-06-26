@@ -6,6 +6,7 @@ import 'package:imkit/sdk/imkit.dart';
 import 'package:imkit/widgets/components/im_circle_avatar_widget.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
 import 'package:imkit/widgets/components/im_rounded_image_widget.dart';
+import 'package:imkit/widgets/messages/im_messages_list_widget.dart';
 import 'package:imkit/widgets/messages/input_view/im_photo_input_view.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -168,13 +169,14 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                           child: IMIconButtonWidget(
                             size: _height,
                             icon: Icon(Icons.send, color: IMKit.style.inputBar.iconColor),
-                            onPressed: () {
+                            onPressed: () async {
                               final text = _controller.text;
-                              IMKit.instance.action.sendTextMessage(roomId: widget.roomId, text: text, responseObject: _responseObject);
                               _controller.text = "";
                               setState(() {
                                 _responseObject = null;
                               });
+                              await IMKit.instance.action.sendTextMessage(roomId: widget.roomId, text: text, responseObject: _responseObject);
+                              messagesListWidgetKey.currentState?.jumpToBottom();
                             },
                           ),
                         ),
@@ -200,9 +202,11 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                           IMIconButtonWidget(
                             size: _height,
                             icon: Icon(Icons.send, color: IMKit.style.inputBar.iconColor),
-                            onPressed: () {
-                              IMKit.instance.action.preSendImageMessage(roomId: widget.roomId, assetEntities: _selectedAssetEntities);
+                            onPressed: () async {
+                              await IMKit.instance.action.preSendImageMessages(roomId: widget.roomId, assetEntities: _selectedAssetEntities);
                               updateInputType(IMMessagesInputViewType.none);
+
+                              messagesListWidgetKey.currentState?.jumpToBottom();
                             },
                           ),
                         ],

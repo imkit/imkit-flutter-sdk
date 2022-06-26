@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:imkit/generated/l10n.dart';
 import 'package:imkit/models/im_state.dart';
 import 'package:imkit/services/data/im_data.dart';
@@ -6,7 +5,7 @@ import 'package:imkit/services/data/storage/im_local_storage.dart';
 import 'package:imkit/services/db/im_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class IMKitInternal with WidgetsBindingObserver {
+class IMKitInternal {
   late final IMState _state;
   IMState get state => _state;
 

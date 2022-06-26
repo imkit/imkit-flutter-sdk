@@ -16,5 +16,5 @@ class IMKitListener {
   Stream<IMRoom?> watchRoom({required String roomId}) => _database.roomDao.findRoom(roomId);
 
   // Message
-  Stream<List<IMMessage>> watchMessages({required String roomId}) => _database.messageDao.findMessages(roomId);
+  Stream<List<IMMessage>> watchMessages({required String roomId}) => _database.messageDao.findMessagesDESC(roomId);
 }

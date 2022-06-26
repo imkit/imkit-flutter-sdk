@@ -14,6 +14,10 @@ class IMMessageDataManager extends IMBaseDataManager {
     return database.messageDao.findMessagesByIds(ids);
   }
 
+  Future<IMMessage?> findMessage({required String id}) {
+    return database.messageDao.findMessage(id);
+  }
+
   Future<IMMessage?> findLatestMessage({required String roomId}) {
     return database.messageDao.findLatestMessage(roomId);
   }
@@ -48,25 +52,58 @@ class IMMessageDataManager extends IMBaseDataManager {
     return message;
   }
 
-  void sendNewMessage({required IMMessage localMessage}) async {
+  Future<IMMessage> sendNewMessage({required IMMessage localMessage}) async {
     try {
       final serverMessage = await _sendMessageToServer(message: localMessage);
       await Future.wait([
         deleteItem(localMessage),
         insertItem(serverMessage),
       ]);
+      return serverMessage;
     } catch (error) {
       localMessage.status = IMMessageStatus.undelivered;
       await updateItem(localMessage);
+
+      return localMessage;
     }
   }
 
-  void resendMessage({required IMMessage localMessage}) async {
+  Future<IMMessage> resendMessage({required IMMessage localMessage}) async {
     localMessage.status = IMMessageStatus.sent;
     await updateItem(localMessage);
 
     if (localMessage.type == IMMessageType.text) {
-      sendNewMessage(localMessage: localMessage);
+      return sendNewMessage(localMessage: localMessage);
+    }
+    return localMessage;
+  }
+
+  void onSocketDidReceiveMessage(IMMessage message) {
+    if (message.id.isEmpty) {
+      return;
+    }
+    insertItem(message);
+  }
+
+  void onSocketDidReceiveLastReadMessage(String roomId, String uid, String messageId) async {
+    final DateTime? lastReadMessageCreatedAt = (await findMessage(id: messageId))?.createdAt;
+    if (uid == IMKit.uid || lastReadMessageCreatedAt == null) {
+      return;
+    }
+    final List<IMMessage> messagesSentByMe = (await findMessages(roomId: roomId)).where((element) => element.sender?.id == IMKit.uid).toList();
+    final List<IMMessage> descendingMessageSentByMe = messagesSentByMe.reversed.toList();
+    final List<IMMessage> updatedMessages = [];
+
+    for (var message in descendingMessageSentByMe) {
+      if ((message.createdAt?.compareTo(lastReadMessageCreatedAt) ?? 0) < 0) {
+        if (!message.membersWhoHaveRead.contains(uid)) {
+          message.read(uid);
+          updatedMessages.add(message);
+        }
+      }
+    }
+    if (updatedMessages.isNotEmpty) {
+      updateItems(updatedMessages);
     }
   }
 }

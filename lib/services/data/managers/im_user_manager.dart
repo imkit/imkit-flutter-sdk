@@ -19,6 +19,10 @@ class IMUserDataManager extends IMBaseDataManager {
     return me;
   }
 
+  void syncMe() async {
+    insertItem(await _fetchMe());
+  }
+
   Future<IMUser?> _findMe() {
     return database.userDao.findUser(IMKit.uid);
   }

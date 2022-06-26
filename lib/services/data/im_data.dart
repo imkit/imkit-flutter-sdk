@@ -91,6 +91,25 @@ class IMData {
     return;
   }
 
+  Future<void> setReadIfNeed({required String roomId, required IMMessage message}) async {
+    if (message.isMe || message.status != IMMessageStatus.delivered) {
+      return;
+    }
+    final room = await _roomDataManager.findRoom(roomId: roomId);
+    if (room != null) {
+      final lastReadMessageId = room.memberProperties.firstWhereOrNull((element) => element.uid == IMKit.uid)?.lastReadMessageId;
+      if ((lastReadMessageId ?? "").isNotEmpty && message.createdAt != null) {
+        final lastReadMessageCreatedAt = (await _messageDataManager.findMessage(id: lastReadMessageId!))?.createdAt;
+        if (lastReadMessageCreatedAt != null && (message.createdAt?.isAfter(lastReadMessageCreatedAt) ?? false)) {
+          final memberProperty = await _roomDataManager.setRead(roomId: roomId, lastReadMessageId: message.id);
+          room.setMemberProperty(memberProperty);
+          room.numberOfUnreadMessages = memberProperty.badge;
+          _roomDataManager.updateItem(room);
+        }
+      }
+    }
+  }
+
   // void _updateRoomLastMessage({required IMMessage? message}) async {
   //   if (message != null) {
   //     final room = await _roomDataManager.fetchRoom(roomId: message.roomId);
@@ -107,7 +126,7 @@ class IMData {
     _syncMembersWhoHaveRead(roomId: roomId);
   }
 
-  void sendTextMessage({required String roomId, required String text, IMResponseObject? responseObject}) async {
+  Future<IMMessage> sendTextMessage({required String roomId, required String text, IMResponseObject? responseObject}) async {
     final IMMessage localMessage = IMMessage.fromText(
       roomId: roomId,
       sender: await getMe(),
@@ -115,11 +134,12 @@ class IMData {
       text: text,
     );
     final newMessage = await _messageDataManager.preSendMessage(localMessage: localMessage);
-    _messageDataManager.sendNewMessage(localMessage: newMessage);
+    return _messageDataManager.sendNewMessage(localMessage: newMessage);
   }
 
-  void preSendImageMessage({required String roomId, required List<AssetEntity> assetEntities}) async {
-    List<IMImage?> images = await Future.wait(assetEntities.map((element) async {
+  Future<List<IMMessage>> preSendImageMessages({required String roomId, required List<AssetEntity> assetEntities}) async {
+    final me = await getMe();
+    final messages = await Future.wait(assetEntities.map((element) async {
       final list = await element.thumbnailDataWithSize(const ThumbnailSize.square(1500), quality: 90);
       final originalFile = await element.file;
       final originalFileSize = await originalFile?.length();
@@ -132,7 +152,7 @@ class IMData {
       }
 
       if (originalFile != null) {
-        return IMImage(
+        final image = IMImage(
           originalUrl: "",
           thumbnailUrl: "",
           width: element.width,
@@ -140,34 +160,37 @@ class IMData {
           originalPath: originalFile.path,
           thumbnailPath: thumbnailFile?.path ?? originalFile.path,
         );
+        final message = IMMessage.fromImages(
+          roomId: roomId,
+          sender: me,
+          images: [image],
+        );
+        return _messageDataManager.preSendMessage(localMessage: message);
       }
       return null;
     }));
-    final IMMessage localMessage = IMMessage.fromImages(
-      roomId: roomId,
-      sender: await getMe(),
-      images: images.whereNotNull().toList(),
-    );
-    _messageDataManager.preSendMessage(localMessage: localMessage);
+
+    return messages.whereNotNull().toList();
   }
 
-  void sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
+  Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
     try {
       message.images = await Future.wait(
         message.images.map(
           (element) => _fileDataManager.uploadImage(image: element, uploadProgress: uploadProgress, cancelToken: cancelToken),
         ),
       );
-      _messageDataManager.sendNewMessage(localMessage: message);
+      return _messageDataManager.sendNewMessage(localMessage: message);
     } catch (_) {
       uploadProgress?.call(0);
       message.status = IMMessageStatus.undelivered;
       _messageDataManager.updateItem(message);
+      return message;
     }
   }
 
-  void resendMessage({required IMMessage message}) async {
-    _messageDataManager.resendMessage(localMessage: message);
+  Future<IMMessage> resendMessage({required IMMessage message}) async {
+    return _messageDataManager.resendMessage(localMessage: message);
   }
 
   void deleteMessage({required IMMessage message}) {
@@ -176,18 +199,18 @@ class IMData {
 
   Future<void> _syncMessages({required String roomId, int limit = 20}) async {
     final localMessages = await _messageDataManager.findMessages(roomId: roomId);
-    final latestMessage = localMessages.lastOrNull;
-
-    String? latestMessageId = latestMessage?.id;
+    final localMessageIds = localMessages.map((e) => e.id);
+    String? latestMessageId;
     bool isCountinue = true;
 
     do {
       final messages = await _messageDataManager.fetchMessages(roomId: roomId, beforeMessageId: latestMessageId, limit: limit);
       for (var message in messages) {
+        isCountinue &= !localMessageIds.contains(message.id);
         message.membersWhoHaveRead = localMessages.firstWhereOrNull((element) => element.id == message.id)?.membersWhoHaveRead ?? [];
       }
       _messageDataManager.insertItems(messages);
-      isCountinue = messages.length >= limit;
+      isCountinue &= messages.length >= limit;
       latestMessageId = messages.lastOrNull?.id;
     } while (isCountinue);
 
@@ -243,7 +266,9 @@ class IMData {
 
   /// Socket
   socketConnect() {
-    _socketClient.connect();
+    if (!_socketClient.isConnected) {
+      _socketClient.connect();
+    }
   }
 
   socketReconnect() {
@@ -257,12 +282,28 @@ class IMData {
 
 // Socket
 extension on IMData {
-  void onSocketDidReceiveRoom(IMRoom room) {}
-  void onSocketDidReceiveMessage(IMMessage message) {}
-  void onSocketDidReceiveLastReadMessage(String roomId, String uid, String messageId) {}
+  void onSocketDidReceiveRoom(IMRoom room) {
+    _roomDataManager.onSocketDidReceiveRoom(room);
+  }
+
+  void onSocketDidReceiveMessage(IMMessage message) {
+    _roomDataManager.onSocketDidReceiveMessage(message);
+    _messageDataManager.onSocketDidReceiveMessage(message);
+  }
+
+  void onSocketDidReceiveLastReadMessage(String roomId, String uid, String messageId) {
+    _roomDataManager.onSocketDidReceiveLastReadMessage(roomId, uid, messageId);
+    _messageDataManager.onSocketDidReceiveLastReadMessage(roomId, uid, messageId);
+  }
+
   void onSocketDidReceiveTyping(String roomId, String uid) {}
   void onSocketDidReceiveInvitation(IMInvitation invitation) {}
   void onSocketDidReceiveCancelInvitation(String invitationId) {}
-  void onSocketDidReceiveMyPrefChange(Map<String, dynamic> json) {}
-  void onSocketDidReceiveRoomPref(Map<String, dynamic> json) {}
+  void onSocketDidReceiveMyPrefChange(Map<String, dynamic> json) {
+    _userDataManager.syncMe();
+  }
+
+  void onSocketDidReceiveRoomPref(Map<String, dynamic> json) {
+    _roomDataManager.onSocketDidReceiveRoomPref(json);
+  }
 }
