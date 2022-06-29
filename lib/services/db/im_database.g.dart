@@ -494,6 +494,37 @@ class _$IMMessageDao extends IMMessageDao {
   }
 
   @override
+  Stream<List<IMMessage>> findMessagesByType(
+      String roomId, IMMessageType type) {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM IMMessage WHERE roomId = ?1 AND type = ?2 ORDER BY createdAt ASC',
+        mapper: (Map<String, Object?> row) => IMMessage(
+            id: row['id'] as String,
+            roomId: row['roomId'] as String,
+            type: _iMMessageTypeConverter.decode(row['type'] as String),
+            systemEvent:
+                _iMSystemEventConverter.decode(row['systemEvent'] as String?),
+            sender: _iMUserConverter.decode(row['sender'] as String?),
+            createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
+            updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
+            text: row['text'] as String?,
+            stickerId: row['stickerId'] as String?,
+            responseObject: _iMResponseObjectConverter
+                .decode(row['responseObject'] as String?),
+            mentions: _iMStringListConverter.decode(row['mentions'] as String),
+            images: _iMImageListConverter.decode(row['images'] as String),
+            file: _iMFileConverter.decode(row['file'] as String?),
+            location: _iMLocationConverter.decode(row['location'] as String?),
+            extra: _iMMapConverter.decode(row['extra'] as String?),
+            status: _iMMessageStatusConverter.decode(row['status'] as String),
+            membersWhoHaveRead: _iMStringListConverter
+                .decode(row['membersWhoHaveRead'] as String)),
+        arguments: [roomId, _iMMessageTypeConverter.encode(type)],
+        queryableName: 'IMMessage',
+        isView: false);
+  }
+
+  @override
   Future<List<IMMessage>> findMessagesByFuture(String roomId) async {
     return _queryAdapter.queryList(
         'SELECT * FROM IMMessage WHERE roomId = ?1 ORDER BY createdAt ASC',

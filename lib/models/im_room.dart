@@ -85,14 +85,13 @@ class IMRoom {
 
   @ignore
   String get title {
-    if (type == IMRoomType.group) {
-      if (members.isEmpty) {
-        return IMKit.S.n_noMembers;
-      } else {
-        return "$name (${members.length})";
-      }
-    }
-    return name.isNotEmpty ? name : IMKit.S.rooms_cell_emptyChat;
+    final emptyName = IMKit.S.rooms_cell_emptyChat;
+    final displayName = name.isNotEmpty ? name : emptyName;
+    return (type == IMRoomType.group)
+        ? members.isEmpty
+            ? emptyName
+            : "$displayName (${members.length})"
+        : displayName;
   }
 
   @ignore

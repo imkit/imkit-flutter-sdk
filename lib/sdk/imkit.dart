@@ -1,6 +1,7 @@
 import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:imkit/generated/l10n.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/sdk/internal/imkit_action.dart';
@@ -21,6 +22,9 @@ class IMKit {
 
   late final IMKitListener _listener;
   IMKitListener get listener => _listener;
+
+  late final navigatorObservers = [IMRouteListenWidget.routeObserver, FlutterSmartDialog.observer];
+  late final builder = FlutterSmartDialog.init();
 
   late final IMKitStyle _style = IMKitStyle();
 

@@ -3,7 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:imkit/extensions/date_ext.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/third_party/popup_menu/src/popup_menu.dart';
-import 'package:imkit/widgets/messages/im_message_floating_action_widget.dart';
+import 'package:imkit/widgets/messages/im_messages_floating_action_widget.dart';
 import 'package:imkit/widgets/messages/im_messages_list_item.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_date.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_menu.dart';

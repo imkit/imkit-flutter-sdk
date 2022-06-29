@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
 import 'package:imkit/widgets/messages/im_messages_list_widget.dart';
 
-final GlobalKey<IMMessageFloatingActionWidgetState> floatingActionWidgetKey = GlobalKey();
+final GlobalKey<IMMessagesFloatingActionWidgetState> floatingActionWidgetKey = GlobalKey();
 
-class IMMessageFloatingActionWidget extends StatefulWidget {
-  const IMMessageFloatingActionWidget({Key? key}) : super(key: key);
+class IMMessagesFloatingActionWidget extends StatefulWidget {
+  const IMMessagesFloatingActionWidget({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => IMMessageFloatingActionWidgetState();
+  State<StatefulWidget> createState() => IMMessagesFloatingActionWidgetState();
 }
 
-class IMMessageFloatingActionWidgetState extends State<IMMessageFloatingActionWidget> {
+class IMMessagesFloatingActionWidgetState extends State<IMMessagesFloatingActionWidget> {
   bool _isVisiable = false;
 
   @override

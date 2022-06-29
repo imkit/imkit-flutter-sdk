@@ -17,4 +17,5 @@ class IMKitListener {
 
   // Message
   Stream<List<IMMessage>> watchMessages({required String roomId}) => _database.messageDao.findMessagesDESC(roomId);
+  Stream<List<IMMessage>> watchMessagesByType({required String roomId, required IMMessageType type}) => _database.messageDao.findMessagesByType(roomId, type);
 }

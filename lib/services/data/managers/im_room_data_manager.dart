@@ -56,7 +56,7 @@ class IMRoomDataManager extends IMBaseDataManager {
           message.systemEvent?.members.indexWhere((element) => element.id == IMKit.uid) != -1) {
         room.coverUrl = "";
         room.numberOfUnreadMessages = 0;
-        room.name = IMKit.S.n_noMembers;
+        room.name = "";
       } else {
         room.numberOfUnreadMessages += 1;
       }
