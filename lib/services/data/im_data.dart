@@ -193,6 +193,10 @@ class IMData {
     return _messageDataManager.resendMessage(localMessage: message);
   }
 
+  Future<IMMessage> recallMessage({required IMMessage message}) {
+    return _messageDataManager.recallMessage(localMessage: message);
+  }
+
   void deleteMessage({required IMMessage message}) {
     _messageDataManager.deleteItem(message);
   }

@@ -1,4 +1,5 @@
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/models/im_system_event.dart';
 import 'package:imkit/services/data/managers/im_base_data_manager.dart';
 
 class IMMessageDataManager extends IMBaseDataManager {
@@ -54,7 +55,7 @@ class IMMessageDataManager extends IMBaseDataManager {
 
   Future<IMMessage> sendNewMessage({required IMMessage localMessage}) async {
     try {
-      final serverMessage = await _sendMessageToServer(message: localMessage);
+      final serverMessage = await _sendMessageToServer(roomId: localMessage.roomId, body: localMessage.parameters);
       await Future.wait([
         deleteItem(localMessage),
         insertItem(serverMessage),
@@ -76,6 +77,16 @@ class IMMessageDataManager extends IMBaseDataManager {
       return sendNewMessage(localMessage: localMessage);
     }
     return localMessage;
+  }
+
+  Future<IMMessage> recallMessage({required IMMessage localMessage}) async {
+    final serverMessage = await _sendMessageToServer(roomId: localMessage.roomId, body: {
+      "_id": localMessage.id,
+      "messageType": IMMessageSystemEventType.recall.name,
+    });
+    await updateItem(serverMessage);
+
+    return serverMessage;
   }
 
   void onSocketDidReceiveMessage(IMMessage message) {
@@ -109,7 +120,7 @@ class IMMessageDataManager extends IMBaseDataManager {
 }
 
 extension on IMMessageDataManager {
-  Future<IMMessage> _sendMessageToServer({required IMMessage message}) {
-    return api.message.sendMessage(roomId: message.roomId, body: message.parameters);
+  Future<IMMessage> _sendMessageToServer({required String roomId, required Map<String, dynamic> body}) {
+    return api.message.sendMessage(roomId: roomId, body: body);
   }
 }

@@ -63,6 +63,7 @@ extension on IMMessageItemMenu {
       case IMMessageAction.copy:
         break;
       case IMMessageAction.unsend:
+        IMKit.instance.action.recallMessage(message: message);
         break;
       case IMMessageAction.edit:
         break;

@@ -48,6 +48,7 @@ class IMKitAction with WidgetsBindingObserver {
   Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
       _data.sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
   Future<IMMessage> resendMessage({required IMMessage message}) => _data.resendMessage(message: message);
+  Future<IMMessage> recallMessage({required IMMessage message}) => _data.recallMessage(message: message);
   void deleteMessage({required IMMessage message}) => _data.deleteMessage(message: message);
   void setRead({required String roomId, required IMMessage message}) => _data.setReadIfNeed(roomId: roomId, message: message);
 }
