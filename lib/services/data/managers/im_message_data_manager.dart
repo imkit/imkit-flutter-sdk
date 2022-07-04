@@ -89,6 +89,16 @@ class IMMessageDataManager extends IMBaseDataManager {
     return serverMessage;
   }
 
+  Future<IMMessage> editMessage({required IMMessage localMessage}) async {
+    Map<String, dynamic> body = localMessage.parameters;
+    body["_id"] = localMessage.id;
+
+    final serverMessage = await _sendMessageToServer(roomId: localMessage.roomId, body: body);
+    await updateItem(serverMessage);
+
+    return serverMessage;
+  }
+
   void onSocketDidReceiveMessage(IMMessage message) {
     if (message.id.isEmpty) {
       return;

@@ -197,6 +197,10 @@ class IMData {
     return _messageDataManager.recallMessage(localMessage: message);
   }
 
+  Future<IMMessage> editMessage({required IMMessage message}) {
+    return _messageDataManager.editMessage(localMessage: message);
+  }
+
   void deleteMessage({required IMMessage message}) {
     _messageDataManager.deleteItem(message);
   }

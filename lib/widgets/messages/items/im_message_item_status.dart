@@ -52,7 +52,7 @@ extension on IMMessageItemStatus {
         ),
         Visibility(
           visible: message.createdAt != null,
-          child: Text(IMMessageItemComponent.dateFormat.format(message.createdAt ?? DateTime.now()), style: IMKit.style.message.timeTextSytle),
+          child: Text(_timeText(), style: IMKit.style.message.timeTextSytle),
         )
       ];
 
@@ -67,5 +67,21 @@ extension on IMMessageItemStatus {
       }
     }
     return value;
+  }
+
+  String _timeText() {
+    final createdAt = message.createdAt;
+    final updatedAt = message.updatedAt;
+
+    if (createdAt == null) {
+      return "";
+    }
+
+    final createdAtFormat = IMMessageItemComponent.dateFormat.format(createdAt);
+    if (updatedAt != null && createdAt.compareTo(updatedAt) != 0 && message.status == IMMessageStatus.delivered) {
+      return "${IMKit.S.messages_edited} $createdAtFormat";
+    } else {
+      return createdAtFormat;
+    }
   }
 }

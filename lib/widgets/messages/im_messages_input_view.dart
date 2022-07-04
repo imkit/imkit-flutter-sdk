@@ -36,6 +36,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
   bool _isEnableInputText = true;
   List<AssetEntity> _selectedAssetEntities = [];
   IMResponseObject? _responseObject;
+  IMMessage? _editMessage;
 
   @override
   void dispose() {
@@ -175,8 +176,15 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                               setState(() {
                                 _responseObject = null;
                               });
-                              await IMKit.instance.action.sendTextMessage(roomId: widget.roomId, text: text, responseObject: _responseObject);
-                              messagesListWidgetKey.currentState?.jumpToBottom();
+                              if (_editMessage != null) {
+                                _editMessage?.text = text;
+                                updateInputType(IMMessagesInputViewType.none);
+                                await IMKit.instance.action.editMessage(message: _editMessage!);
+                                _editMessage = null;
+                              } else {
+                                await IMKit.instance.action.sendTextMessage(roomId: widget.roomId, text: text, responseObject: _responseObject);
+                                messagesListWidgetKey.currentState?.jumpToBottom();
+                              }
                             },
                           ),
                         ),
@@ -246,6 +254,20 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
       }
       _inputViewType = type;
       _isEnableInputText = [IMMessagesInputViewType.none, IMMessagesInputViewType.text].contains(type);
+    });
+  }
+
+  void editingMessage({required IMMessage message}) {
+    _editMessage = message;
+    final text = _editMessage?.text ?? "";
+    updateInputType(IMMessagesInputViewType.text);
+    _controller.value = _controller.value.copyWith(
+      text: text,
+      selection: TextSelection.collapsed(offset: text.length),
+    );
+    _focusNode.requestFocus();
+    setState(() {
+      _isEditing = text.isNotEmpty;
     });
   }
 

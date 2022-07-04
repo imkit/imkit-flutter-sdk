@@ -66,6 +66,7 @@ extension on IMMessageItemMenu {
         IMKit.instance.action.recallMessage(message: message);
         break;
       case IMMessageAction.edit:
+        inputViewWidgetKey.currentState?.editingMessage(message: message);
         break;
       case IMMessageAction.report:
         break;
