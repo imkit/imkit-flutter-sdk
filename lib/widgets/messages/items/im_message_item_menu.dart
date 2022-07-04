@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/sdk/internal/imkit_accessor.dart';
 import 'package:imkit/third_party/popup_menu/popup_menu.dart';
@@ -61,6 +62,7 @@ extension on IMMessageItemMenu {
       case IMMessageAction.forward:
         break;
       case IMMessageAction.copy:
+        Clipboard.setData(ClipboardData(text: message.text));
         break;
       case IMMessageAction.unsend:
         IMKit.instance.action.recallMessage(message: message);
