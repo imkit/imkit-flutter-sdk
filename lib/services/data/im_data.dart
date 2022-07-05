@@ -274,17 +274,20 @@ class IMData {
 
   /// Socket
   socketConnect() {
+    socketDisconnect();
+    _socketClient.connect();
+  }
+
+  socketReconnectIfNeed() {
     if (!_socketClient.isConnected) {
-      _socketClient.connect();
+      socketConnect();
     }
   }
 
-  socketReconnect() {
-    _socketClient.reconnect();
-  }
-
   socketDisconnect() {
-    _socketClient.disconnect();
+    if (_socketClient.isConnected) {
+      _socketClient.disconnect();
+    }
   }
 }
 

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:enume/enume.dart';
-import 'package:flutter/foundation.dart';
 import 'package:imkit/models/im_invitation.dart';
 import 'package:imkit/models/im_message.dart';
 import 'package:imkit/models/im_room.dart';
@@ -89,12 +88,16 @@ class IMSocketClient {
   }
 
   reconnect() {
-    disconnect();
+    if (isConnected) {
+      disconnect();
+    }
     connect();
   }
 
   disconnect() {
-    _socket.dispose();
+    if (isConnected) {
+      _socket.dispose();
+    }
   }
 
   bool get isConnected => _socket.connected;
@@ -127,72 +130,64 @@ extension on IMSocketClient {
   }
 
   _onRoomEvent(dynamic data) {
-    compute(_convertSocketData, data).then((json) {
-      if (json.isNotEmpty) {
-        IMRoom room = IMRoom.fromJson(json);
-        if (room.id.isNotEmpty) {
-          _event.onDidReceiveRoom(room);
-        }
+    Map<String, dynamic> json = _convertSocketData(data);
+    if (json.isNotEmpty) {
+      IMRoom room = IMRoom.fromJson(json);
+      if (room.id.isNotEmpty) {
+        _event.onDidReceiveRoom(room);
       }
-    });
+    }
   }
 
   _onMessageEvent(dynamic data) async {
-    compute(_convertSocketData, data).then((json) {
-      if (json.isNotEmpty) {
-        IMMessage message = IMMessage.fromJson(json);
-        if (message.roomId.isNotEmpty) {
-          _event.onDidReceiveMessage(message);
-        }
+    Map<String, dynamic> json = _convertSocketData(data);
+    if (json.isNotEmpty) {
+      IMMessage message = IMMessage.fromJson(json);
+      if (message.roomId.isNotEmpty) {
+        _event.onDidReceiveMessage(message);
       }
-    });
+    }
   }
 
   _onTypingEvent(dynamic data) {
-    compute(_convertSocketData, data).then((json) {
-      if (json.isNotEmpty) {
-        _event.onDidReceiveTyping((json["room"] ?? "").toString(), (json["sender"] ?? "").toString());
-      }
-    });
+    Map<String, dynamic> json = _convertSocketData(data);
+    if (json.isNotEmpty) {
+      _event.onDidReceiveTyping((json["room"] ?? "").toString(), (json["sender"] ?? "").toString());
+    }
   }
 
   _onLastReadEvent(dynamic data) {
-    compute(_convertSocketData, data).then((json) {
-      if (json.isNotEmpty) {
-        _event.onDidReceiveLastReadMessage((json["roomID"] ?? "").toString(), (json["memberID"] ?? "").toString(), (json["messageID"] ?? "").toString());
-      }
-    });
+    Map<String, dynamic> json = _convertSocketData(data);
+    if (json.isNotEmpty) {
+      _event.onDidReceiveLastReadMessage((json["roomID"] ?? "").toString(), (json["memberID"] ?? "").toString(), (json["messageID"] ?? "").toString());
+    }
   }
 
   _onInvitationEvent(dynamic data) {
-    compute(_convertSocketData, data).then((json) {
-      if (json.isNotEmpty) {
-        _event.onDidReceiveInvitation(IMInvitation.fromJson(json));
-      }
-    });
+    Map<String, dynamic> json = _convertSocketData(data);
+    if (json.isNotEmpty) {
+      _event.onDidReceiveInvitation(IMInvitation.fromJson(json));
+    }
   }
 
   _onCancelInvitationEvent(dynamic data) {
-    compute(_convertSocketData, data).then((json) {
-      if (json.isNotEmpty) {
-        _event.onDidReceiveCancelInvitation((json["room"] ?? "").toString());
-      }
-    });
+    Map<String, dynamic> json = _convertSocketData(data);
+    if (json.isNotEmpty) {
+      _event.onDidReceiveCancelInvitation((json["room"] ?? "").toString());
+    }
   }
 
   _onMyPrefChangeEvent(dynamic data) {
-    compute(_convertSocketData, data).then((json) {
-      if (json.isNotEmpty) {
-        _event.onDidReceiveMyPrefChange(json);
-      }
-    });
+    Map<String, dynamic> json = _convertSocketData(data);
+    if (json.isNotEmpty) {
+      _event.onDidReceiveMyPrefChange(json);
+    }
   }
 
   _onRoomPrefEvent(dynamic data) {
-    compute(_convertSocketData, data).then((json) {
-      if (json.isNotEmpty) {
-        _event.onDidReceiveRoomPref(json);
-      }
-    });
+    Map<String, dynamic> json = _convertSocketData(data);
+    if (json.isNotEmpty) {
+      _event.onDidReceiveRoomPref(json);
+    }
   }
 }

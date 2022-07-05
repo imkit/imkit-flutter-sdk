@@ -20,17 +20,8 @@ class IMKitAction with WidgetsBindingObserver {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
       fetchRooms();
-      connect();
+      _data.socketReconnectIfNeed();
     }
-  }
-
-  // Socket
-  void connect() {
-    _data.socketConnect();
-  }
-
-  void disconnect() {
-    _data.socketDisconnect();
   }
 
   // User

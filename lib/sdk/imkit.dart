@@ -49,28 +49,34 @@ class IMKit {
       db: database,
     );
 
-    // IMKitS.delegate;
-
     _action = IMKitAction(_internal.data);
     _listener = IMKitListener(database);
+
+    socketConnect();
   }
 
   void setUid(String uid) {
     if (_internal.state.uid != uid) {
       _internal.state.uid = uid;
-      if (_internal.state.uid.isNotEmpty && _internal.state.token.isNotEmpty) {
-        _internal.data.socketReconnect();
-      }
+      socketConnect();
     }
   }
 
   void setToken(String token) {
     if (_internal.state.token != token) {
       _internal.state.token = token;
-      if (_internal.state.uid.isNotEmpty && _internal.state.token.isNotEmpty) {
-        _internal.data.socketReconnect();
-      }
+      socketConnect();
     }
+  }
+
+  void socketConnect() {
+    if (_internal.state.uid.isNotEmpty && _internal.state.token.isNotEmpty) {
+      _internal.data.socketConnect();
+    }
+  }
+
+  void socketDisConnect() {
+    _internal.data.socketDisconnect();
   }
 
   static String get uid => _instance._internal.state.uid;

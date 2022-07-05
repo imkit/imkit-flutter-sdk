@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/sdk/internal/imkit_accessor.dart';
-import 'package:imkit/third_party/popup_menu/popup_menu.dart';
+import 'package:imkit/third_party/popup_menu/popup_menu.dart' as pm;
 import 'package:imkit/widgets/messages/im_messages_input_view.dart';
 
 enum IMMessageAction {
@@ -20,40 +20,40 @@ class IMMessageItemMenu with IMAccessor {
 
   IMMessageItemMenu(this.message);
 
-  PopupMenu getPopupMenu(BuildContext context) => PopupMenu(
+  pm.PopupMenu getPopupMenu(BuildContext context) => pm.PopupMenu(
         context: context,
         items: items,
-        config: MenuConfig(maxColumn: 4, direction: message.isMe ? DirectionType.rtl : DirectionType.ltr),
+        config: pm.MenuConfig(maxColumn: 4, direction: message.isMe ? pm.DirectionType.rtl : pm.DirectionType.ltr),
         onClickMenu: onClickMenu,
       );
 }
 
 extension on IMMessageItemMenu {
-  List<MenuItem> get items {
-    List<MenuItem> items = [];
+  List<pm.MenuItem> get items {
+    List<pm.MenuItem> items = [];
     if (state.copyableMessageTypes.contains(message.type)) {
-      items.add(MenuItem(title: IMKit.S.messages_action_copy, userInfo: IMMessageAction.copy));
+      items.add(pm.MenuItem(title: IMKit.S.messages_action_copy, userInfo: IMMessageAction.copy));
     }
     if (state.replyableMessageTypes.contains(message.type)) {
-      items.add(MenuItem(title: IMKit.S.messages_action_reply, userInfo: IMMessageAction.reply));
+      items.add(pm.MenuItem(title: IMKit.S.messages_action_reply, userInfo: IMMessageAction.reply));
     }
     if (state.editableMessageTypes.contains(message.type)) {
-      items.add(MenuItem(title: IMKit.S.messages_action_edit, userInfo: IMMessageAction.edit));
+      items.add(pm.MenuItem(title: IMKit.S.messages_action_edit, userInfo: IMMessageAction.edit));
     }
     if (state.unsendableMessageTypes.contains(message.type)) {
-      items.add(MenuItem(title: IMKit.S.messages_action_unsend, userInfo: IMMessageAction.unsend));
+      items.add(pm.MenuItem(title: IMKit.S.messages_action_unsend, userInfo: IMMessageAction.unsend));
     }
     if (state.forwardableMessageTypes.contains(message.type)) {
-      items.add(MenuItem(title: IMKit.S.messages_action_forward, userInfo: IMMessageAction.forward));
+      items.add(pm.MenuItem(title: IMKit.S.messages_action_forward, userInfo: IMMessageAction.forward));
     }
     if (state.reportableMessageTypes.contains(message.type) && !message.isMe) {
-      items.add(MenuItem(title: IMKit.S.messages_action_report, userInfo: IMMessageAction.report));
+      items.add(pm.MenuItem(title: IMKit.S.messages_action_report, userInfo: IMMessageAction.report));
     }
     return items;
   }
 
-  void onClickMenu(MenuItemProvider item) {
-    final menuItem = item as MenuItem;
+  void onClickMenu(pm.MenuItemProvider item) {
+    final menuItem = item as pm.MenuItem;
     final action = menuItem.userInfo as IMMessageAction;
     switch (action) {
       case IMMessageAction.reply:
