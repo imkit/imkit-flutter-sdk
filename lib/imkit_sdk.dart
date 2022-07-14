@@ -10,6 +10,7 @@ export 'sdk/style/imkit_room_cell_style.dart';
 // Widget
 export 'widgets/components/im_route_listen_widget.dart';
 export 'widgets/rooms/im_rooms_view.dart';
+export 'widgets/rooms/im_unread_message_widget.dart';
 
 // Models
 export 'models/im_invitation.dart';

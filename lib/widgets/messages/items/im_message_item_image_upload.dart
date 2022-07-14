@@ -72,9 +72,11 @@ class _IMMessageItemImageUploadState extends State<IMMessageItemImageUpload> {
   void _sendImageMessage() => IMKit.instance.action.sendImageMessage(
       message: widget.message,
       uploadProgress: (progress) {
-        setState(() {
-          _progress = progress;
-        });
+        if (mounted) {
+          setState(() {
+            _progress = progress;
+          });
+        }
       },
       cancelToken: _cancelToken);
 }

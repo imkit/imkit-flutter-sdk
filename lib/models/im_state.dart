@@ -19,11 +19,11 @@ class IMState {
   ];
 
   List<IMMessageType> forwardableMessageTypes = [
-    IMMessageType.text,
-    IMMessageType.image,
-    IMMessageType.audio,
-    IMMessageType.video,
-    IMMessageType.file,
+    // IMMessageType.text,
+    // IMMessageType.image,
+    // IMMessageType.audio,
+    // IMMessageType.video,
+    // IMMessageType.file,
   ];
 
   List<IMMessageType> copyableMessageTypes = [
@@ -37,11 +37,11 @@ class IMState {
   ];
 
   List<IMMessageType> reportableMessageTypes = [
-    IMMessageType.text,
-    IMMessageType.image,
-    IMMessageType.audio,
-    IMMessageType.video,
-    IMMessageType.file,
+    // IMMessageType.text,
+    // IMMessageType.image,
+    // IMMessageType.audio,
+    // IMMessageType.video,
+    // IMMessageType.file,
   ];
 
   Map<String, String> headers() {

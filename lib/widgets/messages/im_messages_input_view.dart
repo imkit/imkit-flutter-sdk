@@ -172,6 +172,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                             icon: Icon(Icons.send, color: IMKit.style.inputBar.iconColor),
                             onPressed: () async {
                               final text = _controller.text;
+                              final tmpResponseObject = _responseObject;
                               _controller.text = "";
                               setState(() {
                                 _responseObject = null;
@@ -182,7 +183,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                                 await IMKit.instance.action.editMessage(message: _editMessage!);
                                 _editMessage = null;
                               } else {
-                                await IMKit.instance.action.sendTextMessage(roomId: widget.roomId, text: text, responseObject: _responseObject);
+                                await IMKit.instance.action.sendTextMessage(roomId: widget.roomId, text: text, responseObject: tmpResponseObject);
                                 messagesListWidgetKey.currentState?.jumpToBottom();
                               }
                             },

@@ -9,16 +9,10 @@ class IMRoomsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => IMRouteListenWidget(
         onAppear: (_) => IMKit.instance.action.fetchRooms(),
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(IMKit.S.rooms_title),
-            backgroundColor: IMKit.style.primaryColor,
-          ),
-          body: RefreshIndicator(
-              onRefresh: () => Future.delayed(const Duration(milliseconds: 500), () {
-                    IMKit.instance.action.fetchRooms(isRefresh: true);
-                  }),
-              child: const IMRoomsListWidget()),
-        ),
+        child: RefreshIndicator(
+            onRefresh: () => Future.delayed(const Duration(milliseconds: 500), () {
+                  IMKit.instance.action.fetchRooms(isRefresh: true);
+                }),
+            child: const IMRoomsListWidget()),
       );
 }
