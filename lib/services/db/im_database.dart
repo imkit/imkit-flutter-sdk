@@ -60,5 +60,7 @@ abstract class IMDatabase extends FloorDatabase {
 
   void clean() {
     roomDao.deleteAll();
+    messageDao.deleteAll();
+    userDao.deleteAll();
   }
 }

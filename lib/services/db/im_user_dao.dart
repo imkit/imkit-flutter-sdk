@@ -8,4 +8,7 @@ abstract class IMUserDao extends IMBaseDao<IMUser> {
 
   @Query('SELECT * FROM $table WHERE id = :id')
   Future<IMUser?> findUser(String id);
+
+  @Query('DELETE FROM $table')
+  Future<void> deleteAll();
 }

@@ -727,6 +727,11 @@ class _$IMUserDao extends IMUserDao {
   }
 
   @override
+  Future<void> deleteAll() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM IMUser');
+  }
+
+  @override
   Future<void> insertItem(IMUser item) async {
     await _iMUserInsertionAdapter.insert(item, OnConflictStrategy.replace);
   }
