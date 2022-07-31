@@ -177,7 +177,7 @@ class IMData {
     try {
       message.images = await Future.wait(
         message.images.map(
-          (element) => _fileDataManager.uploadImage(image: element, uploadProgress: uploadProgress, cancelToken: cancelToken),
+              (element) => _fileDataManager.uploadImage(image: element, uploadProgress: uploadProgress, cancelToken: cancelToken),
         ),
       );
       return _messageDataManager.sendNewMessage(localMessage: message);
@@ -187,6 +187,17 @@ class IMData {
       _messageDataManager.updateItem(message);
       return message;
     }
+  }
+
+  Future<IMMessage> sendStickerMessage({required String roomId, required String sticker, IMResponseObject? responseObject}) async {
+    final IMMessage localMessage = IMMessage.fromSticker(
+      roomId: roomId,
+      sender: await getMe(),
+      stickerId: sticker,
+      responseObject: responseObject
+    );
+    final newMessage = await _messageDataManager.preSendMessage(localMessage: localMessage);
+    return _messageDataManager.sendNewMessage(localMessage: newMessage);
   }
 
   Future<IMMessage> resendMessage({required IMMessage message}) async {

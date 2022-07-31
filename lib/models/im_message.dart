@@ -325,6 +325,7 @@ class IMMessage {
     required String roomId,
     required IMUser sender,
     required String stickerId,
+    IMResponseObject? responseObject,
   }) =>
       IMMessage(
         id: Utils.uuid(),
@@ -332,6 +333,7 @@ class IMMessage {
         type: IMMessageType.sticker,
         sender: sender,
         stickerId: stickerId,
+        responseObject: responseObject,
       );
 
   factory IMMessage.fromLocation({

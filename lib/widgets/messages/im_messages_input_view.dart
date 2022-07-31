@@ -10,7 +10,6 @@ import 'package:imkit/widgets/messages/im_messages_list_widget.dart';
 import 'package:imkit/widgets/messages/input_view/im_photo_input_view.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import '../../utils/toast.dart';
 import 'input_view/im_sticker_input_view.dart';
 
 final GlobalKey<IMMessagesInputViewState> inputViewWidgetKey = GlobalKey();
@@ -254,10 +253,13 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
             Visibility(
               visible: _inputViewType == IMMessagesInputViewType.sticker,
               child: IMStickerInputView(
-                onSelected: (sticker) {
+                onSelected: (sticker) async {
+                  final tmpResponseObject = _responseObject;
                   setState(() {
-                    Toast.basic(text: sticker);
+                    _responseObject = null;
                   });
+                  await IMKit.instance.action.sendStickerMessage(roomId: widget.roomId, sticker: sticker, responseObject: tmpResponseObject);
+                  messagesListWidgetKey.currentState?.jumpToBottom();
                 },
               ),
             ),

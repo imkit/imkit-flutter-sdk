@@ -12,6 +12,8 @@ import 'package:imkit/widgets/messages/items/im_message_item_system.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_text.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_video.dart';
 
+import 'items/im_message_item_sticker.dart';
+
 class IMMessageListItem extends StatelessWidget {
   final IMRoom? room;
   final IMMessage message;
@@ -82,7 +84,11 @@ extension on IMMessageListItem {
       clipBehavior: Clip.hardEdge,
       margin: const EdgeInsets.symmetric(horizontal: 6),
       decoration: BoxDecoration(
-        color: message.isMe ? IMKit.style.message.outgoing.backgroundColor : IMKit.style.message.incoming.backgroundColor,
+        color: message.type == IMMessageType.sticker
+            ? Colors.transparent
+            : message.isMe
+                ? IMKit.style.message.outgoing.backgroundColor
+                : IMKit.style.message.incoming.backgroundColor,
         borderRadius: BorderRadius.circular(IMKit.style.message.cornerRadius),
       ),
       child: Column(key: itemKey, crossAxisAlignment: CrossAxisAlignment.start, children: [_replyWidget(), _bodyWidget(context: context)]));
@@ -107,8 +113,8 @@ extension on IMMessageListItem {
       // case IMMessageType.location:
       //   return;
 
-      // case IMMessageType.sticker:
-      //   return;
+      case IMMessageType.sticker:
+        return IMMessageItemSticker(message: message);
 
       case IMMessageType.system:
         return IMMessageItemSystem(message: message);

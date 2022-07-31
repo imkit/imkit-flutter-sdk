@@ -38,6 +38,8 @@ class IMKitAction with WidgetsBindingObserver {
       _data.preSendImageMessages(roomId: roomId, assetEntities: assetEntities);
   Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
       _data.sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
+  Future<IMMessage> sendStickerMessage({required String roomId, required String sticker, IMResponseObject? responseObject}) =>
+      _data.sendStickerMessage(roomId: roomId, sticker: sticker, responseObject: responseObject);
   Future<IMMessage> resendMessage({required IMMessage message}) => _data.resendMessage(message: message);
   Future<IMMessage> recallMessage({required IMMessage message}) => _data.recallMessage(message: message);
   Future<IMMessage> editMessage({required IMMessage message}) => _data.editMessage(message: message);
