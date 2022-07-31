@@ -7,6 +7,7 @@ class IMState {
   String bucket = "";
   String uid = "";
   String token = "";
+  String packageName = "";
 
   List<IMMessageType> replyableMessageTypes = [
     IMMessageType.text,
@@ -70,6 +71,7 @@ class IMStateBuilder {
   String _bucket = "chatserver-upload";
   String _uid = "";
   String _token = "";
+  String _packageName = "imkit";
 
   IMStateBuilder setClientKey(String value) {
     _clientKey = value;
@@ -101,11 +103,17 @@ class IMStateBuilder {
     return this;
   }
 
+  IMStateBuilder setPackageName(String value) {
+    _packageName = value;
+    return this;
+  }
+
   IMState build() => IMState()
     ..clientKey = _clientKey
     ..chatServerURL = _chatServerURL
     ..translationApiKey = _translationApiKey
     ..bucket = _bucket
     ..uid = _uid
-    ..token = _token;
+    ..token = _token
+    ..packageName = _packageName;
 }

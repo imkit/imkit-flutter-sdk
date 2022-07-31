@@ -9,54 +9,54 @@
 
 import 'package:flutter/widgets.dart';
 
-class $AssetsImagesGen {
-  const $AssetsImagesGen();
+class $AssetsStickersGen {
+  const $AssetsStickersGen();
 
-  /// File path: assets/images/sticker_1.png
+  /// File path: assets/stickers/sticker_1.png
   AssetGenImage get sticker1 =>
-      const AssetGenImage('assets/images/sticker_1.png');
+      const AssetGenImage('assets/stickers/sticker_1.png');
 
-  /// File path: assets/images/sticker_10.png
+  /// File path: assets/stickers/sticker_10.png
   AssetGenImage get sticker10 =>
-      const AssetGenImage('assets/images/sticker_10.png');
+      const AssetGenImage('assets/stickers/sticker_10.png');
 
-  /// File path: assets/images/sticker_2.png
+  /// File path: assets/stickers/sticker_2.png
   AssetGenImage get sticker2 =>
-      const AssetGenImage('assets/images/sticker_2.png');
+      const AssetGenImage('assets/stickers/sticker_2.png');
 
-  /// File path: assets/images/sticker_3.png
+  /// File path: assets/stickers/sticker_3.png
   AssetGenImage get sticker3 =>
-      const AssetGenImage('assets/images/sticker_3.png');
+      const AssetGenImage('assets/stickers/sticker_3.png');
 
-  /// File path: assets/images/sticker_4.png
+  /// File path: assets/stickers/sticker_4.png
   AssetGenImage get sticker4 =>
-      const AssetGenImage('assets/images/sticker_4.png');
+      const AssetGenImage('assets/stickers/sticker_4.png');
 
-  /// File path: assets/images/sticker_5.png
+  /// File path: assets/stickers/sticker_5.png
   AssetGenImage get sticker5 =>
-      const AssetGenImage('assets/images/sticker_5.png');
+      const AssetGenImage('assets/stickers/sticker_5.png');
 
-  /// File path: assets/images/sticker_6.png
+  /// File path: assets/stickers/sticker_6.png
   AssetGenImage get sticker6 =>
-      const AssetGenImage('assets/images/sticker_6.png');
+      const AssetGenImage('assets/stickers/sticker_6.png');
 
-  /// File path: assets/images/sticker_7.png
+  /// File path: assets/stickers/sticker_7.png
   AssetGenImage get sticker7 =>
-      const AssetGenImage('assets/images/sticker_7.png');
+      const AssetGenImage('assets/stickers/sticker_7.png');
 
-  /// File path: assets/images/sticker_8.png
+  /// File path: assets/stickers/sticker_8.png
   AssetGenImage get sticker8 =>
-      const AssetGenImage('assets/images/sticker_8.png');
+      const AssetGenImage('assets/stickers/sticker_8.png');
 
-  /// File path: assets/images/sticker_9.png
+  /// File path: assets/stickers/sticker_9.png
   AssetGenImage get sticker9 =>
-      const AssetGenImage('assets/images/sticker_9.png');
+      const AssetGenImage('assets/stickers/sticker_9.png');
 }
 
 class Assets {
   Assets._();
 
-  static const $AssetsImagesGen images = $AssetsImagesGen();
+  static const $AssetsStickersGen stickers = $AssetsStickersGen();
 }
 
 class AssetGenImage {

@@ -10,12 +10,16 @@ import 'package:imkit/widgets/messages/im_messages_list_widget.dart';
 import 'package:imkit/widgets/messages/input_view/im_photo_input_view.dart';
 import 'package:photo_manager/photo_manager.dart';
 
+import '../../utils/toast.dart';
+import 'input_view/im_sticker_input_view.dart';
+
 final GlobalKey<IMMessagesInputViewState> inputViewWidgetKey = GlobalKey();
 
 enum IMMessagesInputViewType {
   none,
   text,
   photo,
+  sticker,
 }
 
 class IMMessagesInputView extends StatefulWidget {
@@ -129,34 +133,46 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                         ),
                         // 文字輸入
                         Expanded(
-                          child: TextFormField(
-                              controller: _controller,
-                              style: IMKit.style.inputBar.textFieldTextSytle,
-                              keyboardType: TextInputType.multiline,
-                              focusNode: _focusNode,
-                              minLines: 1,
-                              maxLines: 3,
-                              readOnly: !_isEnableInputText,
-                              decoration: InputDecoration(
-                                fillColor: IMKit.style.inputBar.textFieldBackgroundColor,
-                                filled: true,
-                                isDense: true,
-                                hintStyle: IMKit.style.inputBar.textFieldPlaceholderSytle,
-                                contentPadding: const EdgeInsets.all(8),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide.none,
+                          child: Stack(children: [
+                            TextFormField(
+                                controller: _controller,
+                                style: IMKit.style.inputBar.textFieldTextSytle,
+                                keyboardType: TextInputType.multiline,
+                                focusNode: _focusNode,
+                                minLines: 1,
+                                maxLines: 3,
+                                readOnly: !_isEnableInputText,
+                                decoration: InputDecoration(
+                                  fillColor: IMKit.style.inputBar.textFieldBackgroundColor,
+                                  filled: true,
+                                  isDense: true,
+                                  hintStyle: IMKit.style.inputBar.textFieldPlaceholderSytle,
+                                  contentPadding: const EdgeInsets.all(8),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide.none,
+                                  ),
                                 ),
-                              ),
-                              onTap: () => updateInputType(IMMessagesInputViewType.text),
-                              onChanged: (value) {
-                                final isNotEmpty = value.isNotEmpty;
-                                if (_isEditing != isNotEmpty) {
-                                  setState(() {
-                                    _isEditing = isNotEmpty;
-                                  });
-                                }
-                              }),
+                                onTap: () => updateInputType(IMMessagesInputViewType.text),
+                                onChanged: (value) {
+                                  final isNotEmpty = value.isNotEmpty;
+                                  if (_isEditing != isNotEmpty) {
+                                    setState(() {
+                                      _isEditing = isNotEmpty;
+                                    });
+                                  }
+                                }),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: IMIconButtonWidget(
+                                size: _height,
+                                icon: Icon(Icons.emoji_emotions_outlined, color: IMKit.style.inputBar.iconColor),
+                                onPressed: () => {
+                                  updateInputType(IMMessagesInputViewType.sticker)
+                                },
+                              )
+                            )
+                          ])
                         ),
 
                         // 送出按鈕 + // 錄音按鈕
@@ -231,6 +247,16 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                 onSelected: (entities) {
                   setState(() {
                     _selectedAssetEntities = entities;
+                  });
+                },
+              ),
+            ),
+            Visibility(
+              visible: _inputViewType == IMMessagesInputViewType.sticker,
+              child: IMStickerInputView(
+                onSelected: (sticker) {
+                  setState(() {
+                    Toast.basic(text: sticker);
                   });
                 },
               ),
