@@ -59,12 +59,18 @@ dev_dependencies:
   #Util
   enume_generator: ^1.0.0
   collection: ^1.15.0
+
+  # For Assets
+  flutter_gen_runner: ^4.0.0
   
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
+
+  assets:
+    - assets/images/
 
   # To add assets to your package, add an assets section, like this:
   # assets:
