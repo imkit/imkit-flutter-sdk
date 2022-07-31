@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:imkit/gen/assets.gen.dart';
+import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -16,8 +16,7 @@ class IMStickerInputView extends StatefulWidget {
 }
 
 class _IMStickerInputViewState extends State<IMStickerInputView> {
-  AssetGenImage? _image;
-  List<AssetGenImage>? _images;
+  List<String>? _stickers;
 
   @override
   void initState() {
@@ -33,29 +32,16 @@ class _IMStickerInputViewState extends State<IMStickerInputView> {
       );
 
   Future<void> _requestAssets() async {
-    final List<AssetGenImage> images = [
-      Assets.stickers.sticker1,
-      Assets.stickers.sticker2,
-      Assets.stickers.sticker3,
-      Assets.stickers.sticker4,
-      Assets.stickers.sticker5,
-      Assets.stickers.sticker6,
-      Assets.stickers.sticker7,
-      Assets.stickers.sticker8,
-      Assets.stickers.sticker9,
-      Assets.stickers.sticker10
-    ];
     if (!mounted) {
       return;
     }
     setState(() {
-      _image = images.first;
-      _images = images;
+      _stickers = IMKit.instance.internal.state.stickers;
     });
   }
 
   Widget _buildBody(BuildContext context) {
-    if (_image == null || _images?.isNotEmpty != true) {
+    if (_stickers?.isNotEmpty != true) {
       return const Center(child: SizedBox());
     }
     return GridView.custom(
@@ -63,20 +49,20 @@ class _IMStickerInputViewState extends State<IMStickerInputView> {
           crossAxisCount: 4, crossAxisSpacing: 1, mainAxisSpacing: 1),
       childrenDelegate: SliverChildBuilderDelegate(
         (BuildContext context, int index) {
-          final AssetGenImage entity = _images![index];
+          final String entity = _stickers![index];
           return IMStickerItem(
             key: ValueKey<int>(index),
             entity: entity,
             option: const ThumbnailOption(size: ThumbnailSize.square(200)),
             onTap: (entity) {
-              List<String> splitPath = entity.path.split('assets/stickers/');
+              List<String> splitPath = entity.split('assets/stickers/');
               if (splitPath.length > 1) {
                 widget.onSelected.call(splitPath.last);
               }
             },
           );
         },
-        childCount: _images!.length,
+        childCount: _stickers!.length,
         findChildIndexCallback: (Key key) {
           if (key is ValueKey<int>) {
             return key.value;

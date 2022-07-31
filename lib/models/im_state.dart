@@ -7,7 +7,7 @@ class IMState {
   String bucket = "";
   String uid = "";
   String token = "";
-  String packageName = "";
+  List<String> stickers = [];
 
   List<IMMessageType> replyableMessageTypes = [
     IMMessageType.text,
@@ -71,7 +71,7 @@ class IMStateBuilder {
   String _bucket = "chatserver-upload";
   String _uid = "";
   String _token = "";
-  String _packageName = "imkit";
+  List<String> _stickers = [];
 
   IMStateBuilder setClientKey(String value) {
     _clientKey = value;
@@ -103,8 +103,8 @@ class IMStateBuilder {
     return this;
   }
 
-  IMStateBuilder setPackageName(String value) {
-    _packageName = value;
+  IMStateBuilder setStickers(List<String> value) {
+    _stickers = value;
     return this;
   }
 
@@ -115,5 +115,5 @@ class IMStateBuilder {
     ..bucket = _bucket
     ..uid = _uid
     ..token = _token
-    ..packageName = _packageName;
+    ..stickers = _stickers;
 }
