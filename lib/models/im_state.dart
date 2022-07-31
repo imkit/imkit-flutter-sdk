@@ -1,3 +1,4 @@
+import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_message.dart';
 
 class IMState {
@@ -8,6 +9,7 @@ class IMState {
   String uid = "";
   String token = "";
   List<String> stickers = [];
+  String sdkPackageName = "";
 
   List<IMMessageType> replyableMessageTypes = [
     IMMessageType.text,
@@ -72,6 +74,7 @@ class IMStateBuilder {
   String _uid = "";
   String _token = "";
   List<String> _stickers = [];
+  String _sdkPackageName = "imkit";
 
   IMStateBuilder setClientKey(String value) {
     _clientKey = value;
@@ -108,6 +111,11 @@ class IMStateBuilder {
     return this;
   }
 
+  IMStateBuilder setSDKPackageName(String value) {
+    _sdkPackageName = value;
+    return this;
+  }
+
   IMState build() => IMState()
     ..clientKey = _clientKey
     ..chatServerURL = _chatServerURL
@@ -115,5 +123,6 @@ class IMStateBuilder {
     ..bucket = _bucket
     ..uid = _uid
     ..token = _token
-    ..stickers = _stickers;
+    ..stickers = _stickers
+    ..sdkPackageName = _sdkPackageName;
 }

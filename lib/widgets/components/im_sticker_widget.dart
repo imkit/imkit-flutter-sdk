@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:imkit/imkit_sdk.dart';
 
 class IMStickerWidget extends StatelessWidget {
   const IMStickerWidget({Key? key, this.sticker}) : super(key: key);
@@ -9,6 +10,14 @@ class IMStickerWidget extends StatelessWidget {
   Widget build(BuildContext context) => _getChild();
 
   Widget _getChild() {
-    return Image.asset("assets/stickers/$sticker");
+    String prefix;
+    if (IMKit.instance.internal.state.stickers.isNotEmpty == true) {
+      prefix = "assets/stickers/";
+    } else {
+      prefix =
+          "packages/${IMKit.instance.internal.state.sdkPackageName}/assets/stickers/";
+    }
+
+    return Image.asset("$prefix$sticker");
   }
 }

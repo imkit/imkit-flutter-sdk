@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:imkit/gen/assets.gen.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -36,7 +37,23 @@ class _IMStickerInputViewState extends State<IMStickerInputView> {
       return;
     }
     setState(() {
-      _stickers = IMKit.instance.internal.state.stickers;
+      if (IMKit.instance.internal.state.stickers.isNotEmpty == true) {
+        _stickers = IMKit.instance.internal.state.stickers;
+      } else {
+        String prefix = "packages/${IMKit.instance.internal.state.sdkPackageName}/";
+        _stickers = [
+          prefix + Assets.stickers.sticker1.path,
+          prefix + Assets.stickers.sticker2.path,
+          prefix + Assets.stickers.sticker3.path,
+          prefix + Assets.stickers.sticker4.path,
+          prefix + Assets.stickers.sticker5.path,
+          prefix + Assets.stickers.sticker6.path,
+          prefix + Assets.stickers.sticker7.path,
+          prefix + Assets.stickers.sticker8.path,
+          prefix + Assets.stickers.sticker9.path,
+          prefix + Assets.stickers.sticker10.path
+        ];
+      }
     });
   }
 
