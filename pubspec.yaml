@@ -28,7 +28,7 @@ dependencies:
   floor: ^1.2.0
 
   # Photo
-  photo_manager: ^2.1.2
+  photo_manager: ^2.1.4
   photo_view: ^0.14.0
 
   # Util
