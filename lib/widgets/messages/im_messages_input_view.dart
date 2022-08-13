@@ -1,13 +1,17 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/extensions/string_ext.dart';
 import 'package:imkit/models/im_message.dart';
 import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/sdk/imkit.dart';
+import 'package:imkit/utils/toast.dart';
+import 'package:imkit/widgets/common/take_picture_screen.dart';
 import 'package:imkit/widgets/components/im_circle_avatar_widget.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
 import 'package:imkit/widgets/components/im_rounded_image_widget.dart';
 import 'package:imkit/widgets/messages/im_messages_list_widget.dart';
 import 'package:imkit/widgets/messages/input_view/im_photo_input_view.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 import 'input_view/im_sticker_input_view.dart';
@@ -122,7 +126,39 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                         IMIconButtonWidget(
                           size: _height,
                           icon: Icon(Icons.photo_camera_outlined, color: IMKit.style.inputBar.iconColor),
-                          onPressed: () => {},
+                          onPressed: () async {
+                            var status = await Permission.camera.status;
+                            bool granted = status.isGranted;
+                            if (!granted) {
+                              await [Permission.camera].request();
+                              status = await Permission.camera.status;
+                              granted = status.isGranted;
+                            }
+
+                            if (granted) {
+                              final cameras = await availableCameras();
+                              final AssetEntity result =
+                                  await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              TakePictureScreen(
+                                                  camera: cameras.first)));
+                              if (result.relativePath != null) {
+                                await IMKit.instance.action.preSendImageMessage(
+                                    roomId: widget.roomId,
+                                    path: result.relativePath!,
+                                    width: result.width,
+                                    height: result.height);
+                                updateInputType(IMMessagesInputViewType.none);
+
+                                messagesListWidgetKey.currentState
+                                    ?.jumpToBottom();
+                              }
+                            } else {
+                              Toast.basic(
+                                  text: "Camera permission is not granted");
+                            }
+                          },
                         ),
                         // 相簿按鈕
                         IMIconButtonWidget(

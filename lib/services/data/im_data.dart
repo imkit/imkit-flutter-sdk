@@ -173,6 +173,24 @@ class IMData {
     return messages.whereNotNull().toList();
   }
 
+  Future<IMMessage> preSendImageMessage({required String roomId, required String path, required int width, required int height}) async {
+    final me = await getMe();
+    final image = IMImage(
+      originalUrl: "",
+      thumbnailUrl: "",
+      width: width,
+      height: height,
+      originalPath: path,
+      thumbnailPath: path,
+    );
+    final message = IMMessage.fromImages(
+      roomId: roomId,
+      sender: me,
+      images: [image],
+    );
+    return _messageDataManager.preSendMessage(localMessage: message);
+  }
+
   Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
     try {
       message.images = await Future.wait(
