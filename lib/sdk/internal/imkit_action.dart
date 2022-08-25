@@ -12,7 +12,7 @@ class IMKitAction with WidgetsBindingObserver {
 
   IMKitAction(IMData data) {
     _data = data;
-    WidgetsBinding.instance?.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -30,6 +30,34 @@ class IMKitAction with WidgetsBindingObserver {
   // Room
   void initEntryRoom({required String roomId}) => _data.initEntryRoom(roomId: roomId);
   void fetchRooms({bool isRefresh = false}) => _data.syncRooms(isRefresh: isRefresh);
+  Future<IMRoom> createRoom({String? roomId, String? roomName, String? description, String? cover}) => _data.createRoom(
+        roomId: roomId,
+        roomName: roomName,
+        description: description,
+        cover: cover,
+      );
+  Future<IMRoom> createDirectRoom(
+          {required String invitee, String? roomId, String? roomName, String? description, String? cover, bool isSystemMessageEnabled = false}) =>
+      _data.createDirectRoom(
+          invitee: invitee, roomId: roomId, roomName: roomName, description: description, cover: cover, isSystemMessageEnabled: isSystemMessageEnabled);
+  Future<IMRoom> createGroupRoom(
+          {required String roomId,
+          required List<String> invitees,
+          String? roomName,
+          String? description,
+          String? cover,
+          bool isSystemMessageEnabled = true,
+          bool needsInvitation = false}) =>
+      _data.createGroupRoom(
+          invitees: invitees,
+          roomId: roomId,
+          roomName: roomName,
+          description: description,
+          cover: cover,
+          isSystemMessageEnabled: isSystemMessageEnabled,
+          needsInvitation: needsInvitation);
+  Future<IMRoom> joinRoom({required String roomId, bool isSystemMessageEnabled = true}) =>
+      _data.joinRoom(roomId: roomId, isSystemMessageEnabled: isSystemMessageEnabled);
 
   // Message
   Future<IMMessage> sendTextMessage({required String roomId, required String text, IMResponseObject? responseObject}) =>

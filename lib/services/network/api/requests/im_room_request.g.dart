@@ -42,6 +42,114 @@ class _IMRoomRequest implements IMRoomRequest {
   }
 
   @override
+  Future<IMRoom> createRoom({roomId, roomName, description, cover}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      '_id': roomId,
+      'name': roomName,
+      'description': description,
+      'cover': cover
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<IMRoom>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options, '/rooms',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = IMRoom.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<IMRoom> createDirectRoom(
+      {required roomId,
+      roomType = IMRoomType.direct,
+      required invitee,
+      roomName,
+      description,
+      cover,
+      isSystemMessageEnabled = false}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      '_id': roomId,
+      'roomType': roomType,
+      'invitee': invitee,
+      'name': roomName,
+      'description': description,
+      'cover': cover,
+      'systemMessage': isSystemMessageEnabled
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<IMRoom>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options, '/rooms/createAndJoin',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = IMRoom.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<IMRoom> createGroupRoom(
+      {required roomId,
+      roomType = IMRoomType.group,
+      required invitees,
+      roomName,
+      description,
+      cover,
+      isSystemMessageEnabled = true,
+      needsInvitation = false}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = {
+      '_id': roomId,
+      'roomType': roomType,
+      'invitee': invitees,
+      'name': roomName,
+      'description': description,
+      'cover': cover,
+      'systemMessage': isSystemMessageEnabled,
+      'invitationRequired': needsInvitation
+    };
+    _data.removeWhere((k, v) => v == null);
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<IMRoom>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options, '/rooms/createAndJoin',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = IMRoom.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<IMRoom> joinRoom(
+      {required roomId, isSystemMessageEnabled = true}) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = {'systemMessage': isSystemMessageEnabled};
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<IMRoom>(
+            Options(method: 'POST', headers: _headers, extra: _extra)
+                .compose(_dio.options, '/rooms/${roomId}/join',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = IMRoom.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
   Future<IMRoom> fetchRoom({required roomId}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

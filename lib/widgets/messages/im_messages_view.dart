@@ -22,11 +22,11 @@ class IMMessagesView extends StatelessWidget with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) => IMStatefulWrapper(
         onInit: () {
-          WidgetsBinding.instance?.addObserver(this);
+          WidgetsBinding.instance.addObserver(this);
           IMKit.instance.action.initEntryRoom(roomId: roomId);
         },
         onDispose: () {
-          WidgetsBinding.instance?.removeObserver(this);
+          WidgetsBinding.instance.removeObserver(this);
         },
         child: StreamBuilder<IMRoom?>(
           initialData: room,

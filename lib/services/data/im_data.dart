@@ -43,6 +43,34 @@ class IMData {
   Future<IMUser> getMe() => _userDataManager.getMe();
 
   /// Room
+  Future<IMRoom> createRoom({String? roomId, String? roomName, String? description, String? cover}) =>
+      _roomDataManager.createRoom(roomId: roomId, roomName: roomName, description: description, cover: cover);
+
+  Future<IMRoom> createDirectRoom(
+          {required String invitee, String? roomId, String? roomName, String? description, String? cover, bool isSystemMessageEnabled = false}) =>
+      _roomDataManager.createDirectRoom(
+          invitee: invitee, roomId: roomId, roomName: roomName, description: description, cover: cover, isSystemMessageEnabled: isSystemMessageEnabled);
+
+  Future<IMRoom> createGroupRoom(
+          {required String roomId,
+          required List<String> invitees,
+          String? roomName,
+          String? description,
+          String? cover,
+          bool isSystemMessageEnabled = true,
+          bool needsInvitation = false}) =>
+      _roomDataManager.createGroupRoom(
+          invitees: invitees,
+          roomId: roomId,
+          roomName: roomName,
+          description: description,
+          cover: cover,
+          isSystemMessageEnabled: isSystemMessageEnabled,
+          needsInvitation: needsInvitation);
+
+  Future<IMRoom> joinRoom({required String roomId, bool isSystemMessageEnabled = true}) =>
+      _roomDataManager.joinRoom(roomId: roomId, isSystemMessageEnabled: isSystemMessageEnabled);
+
   void syncRooms({bool isRefresh = false}) async {
     final lastUpdatedAt = isRefresh ? null : localStorege.getValue(key: IMLocalStoregeKey.lastRoomUpdatedAt);
     final localRooms = await _roomDataManager.findRooms();
@@ -195,7 +223,7 @@ class IMData {
     try {
       message.images = await Future.wait(
         message.images.map(
-              (element) => _fileDataManager.uploadImage(image: element, uploadProgress: uploadProgress, cancelToken: cancelToken),
+          (element) => _fileDataManager.uploadImage(image: element, uploadProgress: uploadProgress, cancelToken: cancelToken),
         ),
       );
       return _messageDataManager.sendNewMessage(localMessage: message);
@@ -208,12 +236,7 @@ class IMData {
   }
 
   Future<IMMessage> sendStickerMessage({required String roomId, required String sticker, IMResponseObject? responseObject}) async {
-    final IMMessage localMessage = IMMessage.fromSticker(
-      roomId: roomId,
-      sender: await getMe(),
-      stickerId: sticker,
-      responseObject: responseObject
-    );
+    final IMMessage localMessage = IMMessage.fromSticker(roomId: roomId, sender: await getMe(), stickerId: sticker, responseObject: responseObject);
     final newMessage = await _messageDataManager.preSendMessage(localMessage: localMessage);
     return _messageDataManager.sendNewMessage(localMessage: newMessage);
   }

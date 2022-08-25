@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_member_property.dart';
 import 'package:imkit/models/im_system_event.dart';
@@ -35,6 +38,65 @@ class IMRoomDataManager extends IMBaseDataManager {
 
   Future<void> updateItem(IMRoom room) {
     return database.roomDao.updateItem(room);
+  }
+
+  Future<IMRoom> createRoom({String? roomId, String? roomName, String? description, String? cover}) async {
+    final room = await api.room.createRoom(
+      roomId: roomId,
+      roomName: roomName,
+      description: description,
+      cover: cover,
+    );
+    await insertItem(room);
+
+    return room;
+  }
+
+  Future<IMRoom> createDirectRoom(
+      {required String invitee, String? roomId, String? roomName, String? description, String? cover, bool isSystemMessageEnabled = false}) async {
+    final room = await api.room.createDirectRoom(
+      roomId: roomId ?? generateDefaultRoomID(invitee: invitee),
+      roomName: roomName ?? "",
+      description: description,
+      invitee: invitee,
+      cover: cover,
+      isSystemMessageEnabled: isSystemMessageEnabled,
+    );
+    await insertItem(room);
+
+    return room;
+  }
+
+  Future<IMRoom> createGroupRoom(
+      {required String roomId,
+      required List<String> invitees,
+      String? roomName,
+      String? description,
+      String? cover,
+      bool isSystemMessageEnabled = true,
+      bool needsInvitation = false}) async {
+    final room = await api.room.createGroupRoom(
+      roomId: roomId,
+      roomName: roomName ?? "",
+      description: description,
+      cover: cover,
+      invitees: invitees.where((element) => element != IMKit.uid).toList(),
+      isSystemMessageEnabled: isSystemMessageEnabled,
+      needsInvitation: needsInvitation,
+    );
+    await insertItem(room);
+
+    return room;
+  }
+
+  Future<IMRoom> joinRoom({required String roomId, bool isSystemMessageEnabled = true}) async {
+    final room = await api.room.joinRoom(
+      roomId: roomId,
+      isSystemMessageEnabled: isSystemMessageEnabled,
+    );
+    await insertItem(room);
+
+    return room;
   }
 
   void onSocketDidReceiveRoom(IMRoom room) {
@@ -89,5 +151,13 @@ class IMRoomDataManager extends IMBaseDataManager {
     }
     room.tags = results;
     updateItem(room);
+  }
+}
+
+extension on IMRoomDataManager {
+  String generateDefaultRoomID({required String invitee}) {
+    final userIds = [IMKit.uid, invitee].map((e) => e.toLowerCase()).toList();
+    userIds.sort((lhs, rhs) => lhs.compareTo(rhs));
+    return md5.convert(utf8.encode(userIds.join("_"))).toString();
   }
 }
