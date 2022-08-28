@@ -19,6 +19,18 @@ class IMUserDataManager extends IMBaseDataManager {
     return me;
   }
 
+  Future<IMUser> updateMe({String? nickname, String? avatarUrl, String? description}) async {
+    final oldMe = await getMe();
+    final newMe = await api.user.updateMe(
+      nickname: nickname ?? oldMe.nickname,
+      avatarUrl: avatarUrl ?? oldMe.avatarUrl,
+      description: description ?? oldMe.desc,
+    );
+    insertItem(newMe);
+
+    return newMe;
+  }
+
   void syncMe() async {
     insertItem(await _fetchMe());
   }

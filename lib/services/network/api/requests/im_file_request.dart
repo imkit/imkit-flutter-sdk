@@ -8,9 +8,11 @@ part 'im_file_request.g.dart';
 
 @RestApi(parser: Parser.JsonSerializable)
 abstract class IMFileRequest {
+  static const String endpoint = "/files";
+
   factory IMFileRequest(Dio dio, {String baseUrl}) = _IMFileRequest;
 
-  @POST("/files/{bucket}")
+  @POST("$endpoint/{bucket}")
   @MultiPart()
   Future<IMUploadFile> upload({
     @Header("Content-Type") required String mimeType,

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_state.dart';
 
 class IMApiWrapper extends Interceptor {

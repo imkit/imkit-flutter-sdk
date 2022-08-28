@@ -67,7 +67,7 @@ class _IMRoomRequest implements IMRoomRequest {
   @override
   Future<IMRoom> createDirectRoom(
       {required roomId,
-      roomType = IMRoomType.direct,
+      required roomType,
       required invitee,
       roomName,
       description,
@@ -100,7 +100,7 @@ class _IMRoomRequest implements IMRoomRequest {
   @override
   Future<IMRoom> createGroupRoom(
       {required roomId,
-      roomType = IMRoomType.group,
+      required roomType,
       required invitees,
       roomName,
       description,

@@ -1,4 +1,5 @@
 import 'package:imkit/services/network/api/im_api_dio.dart';
+import 'package:imkit/services/network/api/requests/im_auth_request.dart';
 import 'package:imkit/services/network/api/requests/im_file_request.dart';
 import 'package:imkit/services/network/api/requests/im_message_request.dart';
 import 'package:imkit/services/network/api/requests/im_room_request.dart';
@@ -8,6 +9,9 @@ class IMApiClient {
   late final dio = IMApiDio();
 
   // Requests
+  late final IMAuthRequest _auth = IMAuthRequest(dio);
+  IMAuthRequest get auth => _auth;
+
   late final IMUserRequest _user = IMUserRequest(dio);
   IMUserRequest get user => _user;
 

@@ -7,9 +7,10 @@ part 'im_room_request.g.dart';
 
 @RestApi(parser: Parser.JsonSerializable)
 abstract class IMRoomRequest {
+  static const String endpoint = "/rooms";
   factory IMRoomRequest(Dio dio, {String baseUrl}) = _IMRoomRequest;
 
-  @GET("/rooms")
+  @GET(endpoint)
   Future<List<IMRoom>> fetchRooms({
     @Query("skip") required int skip,
     @Query("limit") required int limit,
@@ -17,7 +18,7 @@ abstract class IMRoomRequest {
     @Query("sort") String sort = "lastMessage",
   });
 
-  @POST("/rooms")
+  @POST(endpoint)
   Future<IMRoom> createRoom({
     @Field("_id") String? roomId,
     @Field("name") String? roomName,
@@ -25,10 +26,10 @@ abstract class IMRoomRequest {
     @Field("cover") String? cover,
   });
 
-  @POST("/rooms/createAndJoin")
+  @POST("$endpoint/createAndJoin")
   Future<IMRoom> createDirectRoom({
     @Field("_id") required String roomId,
-    @Field("roomType") IMRoomType roomType = IMRoomType.direct,
+    @Field("roomType") required String roomType,
     @Field("invitee") required String invitee,
     @Field("name") String? roomName,
     @Field("description") String? description,
@@ -36,10 +37,10 @@ abstract class IMRoomRequest {
     @Field("systemMessage") bool isSystemMessageEnabled = false,
   });
 
-  @POST("/rooms/createAndJoin")
+  @POST("$endpoint/createAndJoin")
   Future<IMRoom> createGroupRoom({
     @Field("_id") required String roomId,
-    @Field("roomType") IMRoomType roomType = IMRoomType.group,
+    @Field("roomType") required String roomType,
     @Field("invitee") required List<String> invitees,
     @Field("name") String? roomName,
     @Field("description") String? description,
@@ -48,18 +49,18 @@ abstract class IMRoomRequest {
     @Field("invitationRequired") bool needsInvitation = false,
   });
 
-  @POST("/rooms/{id}/join")
+  @POST("$endpoint/{id}/join")
   Future<IMRoom> joinRoom({
     @Path("id") required String roomId,
     @Field("systemMessage") bool isSystemMessageEnabled = true,
   });
 
-  @GET("/rooms/{id}")
+  @GET("$endpoint/{id}")
   Future<IMRoom> fetchRoom({
     @Path("id") required String roomId,
   });
 
-  @PUT("/rooms/{id}/lastRead")
+  @PUT("$endpoint/{id}/lastRead")
   Future<IMMemberProperty> setRead({
     @Path("id") required String roomId,
     @Field("message") required String lastReadMessageId,

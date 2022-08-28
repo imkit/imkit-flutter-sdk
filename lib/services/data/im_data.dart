@@ -4,10 +4,12 @@ import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:imkit/extensions/list_ext.dart';
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/models/im_client.dart';
 import 'package:imkit/models/im_image.dart';
 import 'package:imkit/models/im_member_property.dart';
 import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/sdk/internal/imkit_action.dart';
+import 'package:imkit/services/data/managers/im_auth_manager.dart';
 import 'package:imkit/services/data/managers/im_file_data_manager.dart';
 import 'package:imkit/services/data/managers/im_message_data_manager.dart';
 import 'package:imkit/services/data/managers/im_room_data_manager.dart';
@@ -21,6 +23,7 @@ class IMData {
   final IMState state;
   late final IMRoomDataManager _roomDataManager = IMRoomDataManager();
   late final IMMessageDataManager _messageDataManager = IMMessageDataManager();
+  late final IMAuthDataManager _authDataManager = IMAuthDataManager();
   late final IMUserDataManager _userDataManager = IMUserDataManager();
   late final IMFileDataManager _fileDataManager = IMFileDataManager();
   late final IMLocalStorage localStorege;
@@ -39,8 +42,16 @@ class IMData {
 
   IMData({required this.state, required this.localStorege});
 
+  /// Auth
+  Future<IMClient> getToken({required String userId}) => _authDataManager.fetchToken(userId: userId);
+
   /// User
   Future<IMUser> getMe() => _userDataManager.getMe();
+  Future<IMUser> updateMe({String? nickname, String? avatarUrl, String? description}) => _userDataManager.updateMe(
+        nickname: nickname,
+        avatarUrl: avatarUrl,
+        description: description,
+      );
 
   /// Room
   Future<IMRoom> createRoom({String? roomId, String? roomName, String? description, String? cover}) =>

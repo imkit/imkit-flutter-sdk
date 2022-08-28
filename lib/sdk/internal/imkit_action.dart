@@ -12,13 +12,13 @@ class IMKitAction with WidgetsBindingObserver {
 
   IMKitAction(IMData data) {
     _data = data;
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance?.addObserver(this);
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed && IMKit.uid.isNotEmpty) {
       fetchRooms();
       _data.socketReconnectIfNeed();
     }
@@ -26,6 +26,11 @@ class IMKitAction with WidgetsBindingObserver {
 
   // User
   Future<IMUser> getMe() => _data.getMe();
+  Future<IMUser> updateMe({String? nickname, String? avatarUrl, String? description}) => _data.updateMe(
+        nickname: nickname,
+        avatarUrl: avatarUrl,
+        description: description,
+      );
 
   // Room
   void initEntryRoom({required String roomId}) => _data.initEntryRoom(roomId: roomId);

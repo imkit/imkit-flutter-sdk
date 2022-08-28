@@ -8,6 +8,7 @@ import 'package:imkit/sdk/internal/imkit_action.dart';
 import 'package:imkit/sdk/internal/imkit_internal.dart';
 import 'package:imkit/sdk/internal/imkit_listener.dart';
 import 'package:imkit/services/db/im_database.dart';
+import 'package:imkit/widgets/messages/im_messages_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class IMKit {
@@ -24,7 +25,7 @@ class IMKit {
   IMKitListener get listener => _listener;
 
   late final navigatorObservers = [IMRouteListenWidget.routeObserver, FlutterSmartDialog.observer];
-  late final builder = FlutterSmartDialog.init();
+  TransitionBuilder builder(TransitionBuilder? builder) => FlutterSmartDialog.init(builder: builder);
 
   late final IMKitStyle _style = IMKitStyle();
 
@@ -39,7 +40,12 @@ class IMKit {
 
   IMKit._();
 
-  init(IMStateBuilder builder) async {
+  static String get uid => _instance._internal.state.uid;
+  static String get bucket => _instance._internal.state.bucket;
+  static IMKitStyle get style => _instance._style;
+  static IMKitS get S => IMKitS.current;
+
+  static init(IMStateBuilder builder) async {
     final database = await $FloorIMDatabase.databaseBuilder('imkit_flutter_database.db').addMigrations([]).build();
 
     print(">>> database path: ${await sqfliteDatabaseFactory.getDatabasePath('imkit_flutter_database.db')}");
@@ -49,42 +55,42 @@ class IMKit {
       db: database,
     );
 
-    _action = IMKitAction(_internal.data);
-    _listener = IMKitListener(database);
+    _instance._action = IMKitAction(_instance._internal.data);
+    _instance._listener = IMKitListener(database);
 
-    socketConnect();
+    _instance.socketConnect();
   }
 
-  void setUid(String uid) {
-    if (_internal.state.uid != uid) {
-      _internal.state.uid = uid;
-      socketConnect();
-    }
-  }
+  static Future<IMUser?> login({required String uid, String? token}) => _instance._internal.login(uid: uid, token: token);
 
-  void setToken(String token) {
-    if (_internal.state.token != token) {
-      _internal.state.token = token;
-      socketConnect();
-    }
-  }
+  static void logout() => _instance._internal.logout();
 
+  static void toMessageView({required BuildContext context, required String roomId, IMRoom? room}) =>
+      Navigator.push(context, MaterialPageRoute(builder: (context) => IMMessagesView(roomId: roomId, room: room)));
+}
+
+extension on IMKit {
   void socketConnect() {
     if (_internal.state.uid.isNotEmpty && _internal.state.token.isNotEmpty) {
       _internal.data.socketConnect();
     }
   }
 
-  void socketDisConnect() {
-    _internal.data.socketDisconnect();
-  }
+  // void setUid(String uid) {
+  //   if (_internal.state.uid != uid) {
+  //     _internal.state.uid = uid;
+  //     socketConnect();
+  //   }
+  // }
 
-  void logout() {
-    _internal.logout();
-  }
+  // void setToken(String token) {
+  //   if (_internal.state.token != token) {
+  //     _internal.state.token = token;
+  //     socketConnect();
+  //   }
+  // }
 
-  static String get uid => _instance._internal.state.uid;
-  static String get bucket => _instance._internal.state.bucket;
-  static IMKitStyle get style => _instance._style;
-  static IMKitS get S => IMKitS.current;
+  // void socketDisConnect() {
+  //   _internal.data.socketDisconnect();
+  // }
 }

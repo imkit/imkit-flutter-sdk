@@ -56,6 +56,7 @@ class IMRoomDataManager extends IMBaseDataManager {
       {required String invitee, String? roomId, String? roomName, String? description, String? cover, bool isSystemMessageEnabled = false}) async {
     final room = await api.room.createDirectRoom(
       roomId: roomId ?? generateDefaultRoomID(invitee: invitee),
+      roomType: IMRoomType.direct.name,
       roomName: roomName ?? "",
       description: description,
       invitee: invitee,
@@ -77,6 +78,7 @@ class IMRoomDataManager extends IMBaseDataManager {
       bool needsInvitation = false}) async {
     final room = await api.room.createGroupRoom(
       roomId: roomId,
+      roomType: IMRoomType.group.name,
       roomName: roomName ?? "",
       description: description,
       cover: cover,

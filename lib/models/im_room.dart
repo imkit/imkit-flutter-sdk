@@ -87,11 +87,14 @@ class IMRoom {
   String get title {
     final emptyName = IMKit.S.rooms_cell_emptyChat;
     final displayName = name.isNotEmpty ? name : emptyName;
-    return (type == IMRoomType.group)
-        ? members.isEmpty
-            ? emptyName
-            : "$displayName (${members.length})"
-        : displayName;
+    if (type == IMRoomType.group) {
+      return members.isEmpty ? emptyName : "$displayName (${members.length})";
+    } else if (name.isEmpty && type == IMRoomType.direct && members.isNotEmpty) {
+      final firstMember = members.firstWhereOrNull((element) => element.id != IMKit.uid);
+      return firstMember?.nickname ?? displayName;
+    } else {
+      return displayName;
+    }
   }
 
   @ignore

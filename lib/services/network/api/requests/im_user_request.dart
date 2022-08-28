@@ -10,4 +10,11 @@ abstract class IMUserRequest {
 
   @GET("/me")
   Future<IMUser> fetchMe();
+
+  @POST("/me")
+  Future<IMUser> updateMe({
+    @Field("nickname") String? nickname,
+    @Field("avatarUrl") String? avatarUrl,
+    @Field("description") String? description,
+  });
 }

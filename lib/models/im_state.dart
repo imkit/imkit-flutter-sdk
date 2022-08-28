@@ -96,16 +96,6 @@ class IMStateBuilder {
     return this;
   }
 
-  IMStateBuilder setUid(String value) {
-    _uid = value;
-    return this;
-  }
-
-  IMStateBuilder setToken(String value) {
-    _token = value;
-    return this;
-  }
-
   IMStateBuilder setStickers(List<String> value) {
     _stickers = value;
     return this;
