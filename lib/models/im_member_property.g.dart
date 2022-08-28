@@ -9,7 +9,7 @@ part of 'im_member_property.dart';
 IMMemberProperty _$IMMemberPropertyFromJson(Map<String, dynamic> json) =>
     IMMemberProperty(
       uid: json['client'] as String,
-      badge: json['badge'] as int,
+      badge: json['badge'] as int? ?? 0,
       lastReadMessageId: json['lastRead'] as String? ?? "",
     );
 

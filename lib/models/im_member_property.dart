@@ -21,7 +21,7 @@ class IMMemberProperty {
 
   IMMemberProperty({
     required this.uid,
-    required this.badge,
+    this.badge = 0,
     this.lastReadMessageId = "",
   });
 

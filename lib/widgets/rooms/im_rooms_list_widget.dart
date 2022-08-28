@@ -18,7 +18,7 @@ class IMRoomsListWidget extends StatelessWidget {
           return ListView.separated(
               itemBuilder: (BuildContext context, int index) => IMRoomsListItem(key: ObjectKey(snapshot.data![index].id), room: snapshot.data![index]),
               separatorBuilder: (BuildContext context, int index) => const Divider(height: 1),
-              itemCount: snapshot.data?.length ?? 0);
+              itemCount: IMKit.uid.isNotEmpty ? snapshot.data?.length ?? 0 : 0);
         },
       );
 }
