@@ -10,6 +10,7 @@ class IMState {
   String token = "";
   List<String> stickers = [];
   String sdkPackageName = "";
+  final String sdkDefaultPackageName = "imkit";
 
   List<IMMessageType> replyableMessageTypes = [
     IMMessageType.text,

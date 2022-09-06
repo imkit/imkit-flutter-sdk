@@ -4,7 +4,8 @@ import 'package:imkit/sdk/imkit.dart';
 import 'package:imkit/widgets/rooms/im_rooms_list_item.dart';
 
 class IMRoomsListWidget extends StatelessWidget {
-  const IMRoomsListWidget({Key? key}) : super(key: key);
+  final Widget? emptyView;
+  const IMRoomsListWidget({Key? key, this.emptyView}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => StreamBuilder<List<IMRoom>>(
@@ -15,10 +16,15 @@ class IMRoomsListWidget extends StatelessWidget {
           print(">>> room list count: ${snapshot.data?.length ?? 0}");
           // inspect(snapshot.data);
           //return Container();
-          return ListView.separated(
-              itemBuilder: (BuildContext context, int index) => IMRoomsListItem(key: ObjectKey(snapshot.data![index].id), room: snapshot.data![index]),
-              separatorBuilder: (BuildContext context, int index) => const Divider(height: 1),
-              itemCount: IMKit.uid.isNotEmpty ? snapshot.data?.length ?? 0 : 0);
+          final itemCount = snapshot.data?.length ?? 0;
+          if (itemCount <= 0 && IMKit.uid.isNotEmpty) {
+            return emptyView ?? Container();
+          } else {
+            return ListView.separated(
+                itemBuilder: (BuildContext context, int index) => IMRoomsListItem(key: ObjectKey(snapshot.data![index].id), room: snapshot.data![index]),
+                separatorBuilder: (BuildContext context, int index) => const Divider(height: 1),
+                itemCount: IMKit.uid.isNotEmpty ? itemCount : 0);
+          }
         },
       );
 }

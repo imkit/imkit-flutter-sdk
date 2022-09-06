@@ -15,7 +15,12 @@ class IMApiWrapper extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    dynamic result = response.data?["result"];
+    dynamic result;
+    try {
+      result = response.data?["result"];
+    } catch (error) {
+      result = null;
+    }
 
     if (result == null) {
       return handler.next(response);

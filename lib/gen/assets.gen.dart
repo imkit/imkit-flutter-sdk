@@ -9,6 +9,18 @@
 
 import 'package:flutter/widgets.dart';
 
+class $AssetsImagesGen {
+  const $AssetsImagesGen();
+
+  /// File path: assets/images/reocrd_normal.png
+  AssetGenImage get reocrdNormal =>
+      const AssetGenImage('assets/images/reocrd_normal.png');
+
+  /// File path: assets/images/reocrd_pressed.png
+  AssetGenImage get reocrdPressed =>
+      const AssetGenImage('assets/images/reocrd_pressed.png');
+}
+
 class $AssetsStickersGen {
   const $AssetsStickersGen();
 
@@ -56,6 +68,7 @@ class $AssetsStickersGen {
 class Assets {
   Assets._();
 
+  static const $AssetsImagesGen images = $AssetsImagesGen();
   static const $AssetsStickersGen stickers = $AssetsStickersGen();
 }
 

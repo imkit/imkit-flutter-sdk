@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
@@ -75,9 +77,16 @@ class IMKitAction with WidgetsBindingObserver {
       _data.sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
   Future<IMMessage> sendStickerMessage({required String roomId, required String sticker, IMResponseObject? responseObject}) =>
       _data.sendStickerMessage(roomId: roomId, sticker: sticker, responseObject: responseObject);
+  Future<IMMessage> preSendAudioMessage({required String roomId, required String path, required int duration, IMResponseObject? responseObject}) =>
+      _data.preSendAudioMessage(roomId: roomId, path: path, duration: duration);
+  Future<IMMessage> sendAudioMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
+      _data.sendAudioMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
   Future<IMMessage> resendMessage({required IMMessage message}) => _data.resendMessage(message: message);
   Future<IMMessage> recallMessage({required IMMessage message}) => _data.recallMessage(message: message);
   Future<IMMessage> editMessage({required IMMessage message}) => _data.editMessage(message: message);
   void deleteMessage({required IMMessage message}) => _data.deleteMessage(message: message);
   void setRead({required String roomId, required IMMessage message}) => _data.setReadIfNeed(roomId: roomId, message: message);
+
+  // File
+  Future<File> downloadFileToCache({required String url, required String filename}) => _data.downloadFileToCache(url: url, filename: filename);
 }

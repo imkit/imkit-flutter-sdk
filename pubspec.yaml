@@ -34,6 +34,10 @@ dependencies:
   # Camera
   camera: ^0.10.0+1
 
+  # Microphone
+  audioplayers: ^1.0.1
+  record: ^3.0.4
+
   # Util
   enume: ^1.1.0
   crypto: ^3.0.1
@@ -75,6 +79,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/images/
     - assets/stickers/
 
   # To add assets to your package, add an assets section, like this:

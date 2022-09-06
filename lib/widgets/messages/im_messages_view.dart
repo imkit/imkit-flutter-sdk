@@ -34,6 +34,7 @@ class IMMessagesView extends StatelessWidget with WidgetsBindingObserver {
           builder: (BuildContext context, AsyncSnapshot<IMRoom?> snapshot) => Scaffold(
             appBar: AppBar(title: Text(snapshot.data?.title ?? ""), backgroundColor: IMKit.style.primaryColor),
             floatingActionButton: IMMessagesFloatingActionWidget(key: floatingActionWidgetKey),
+            backgroundColor: IMKit.style.backgroundColor,
             body: GestureDetector(
               onTap: () => inputViewWidgetKey.currentState?.updateInputType(IMMessagesInputViewType.none),
               child: Column(

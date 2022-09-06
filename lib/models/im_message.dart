@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:floor/floor.dart';
@@ -13,6 +14,7 @@ import 'package:imkit/models/im_user.dart';
 import 'package:imkit/sdk/imkit.dart';
 import 'package:imkit/utils/json_from_parser.dart';
 import 'package:imkit/utils/utils.dart';
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'im_message.g.dart';
@@ -333,6 +335,30 @@ class IMMessage {
         type: IMMessageType.sticker,
         sender: sender,
         stickerId: stickerId,
+        responseObject: responseObject,
+      );
+
+  factory IMMessage.fromAudio({
+    required String roomId,
+    required IMUser sender,
+    required String localPath,
+    required int duration,
+    required int bytes,
+    IMResponseObject? responseObject,
+  }) =>
+      IMMessage(
+        id: Utils.uuid(),
+        roomId: roomId,
+        type: IMMessageType.audio,
+        sender: sender,
+        file: IMFile(
+          url: localPath,
+          name: DateFormat('yyyyMMdd_HHmmss').format(DateTime.now()),
+          fileExtension: "m4a",
+          mimeType: "audio/m4a",
+          bytes: bytes,
+          duration: duration,
+        ),
         responseObject: responseObject,
       );
 

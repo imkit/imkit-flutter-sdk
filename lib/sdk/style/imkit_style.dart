@@ -13,4 +13,5 @@ class IMKitStyle {
   IMKitInputViewStyle inputView = IMKitInputViewStyle();
 
   Color primaryColor = const Color.fromRGBO(0, 160, 230, 1);
+  Color backgroundColor = const Color.fromRGBO(246, 246, 246, 1);
 }

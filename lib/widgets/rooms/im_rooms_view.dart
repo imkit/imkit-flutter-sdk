@@ -4,7 +4,8 @@ import 'package:imkit/widgets/components/im_route_listen_widget.dart';
 import 'package:imkit/widgets/rooms/im_rooms_list_widget.dart';
 
 class IMRoomsView extends StatelessWidget {
-  const IMRoomsView({Key? key}) : super(key: key);
+  final Widget? emptyView;
+  const IMRoomsView({Key? key, this.emptyView}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => IMRouteListenWidget(
@@ -15,6 +16,6 @@ class IMRoomsView extends StatelessWidget {
                     IMKit.instance.action.fetchRooms(isRefresh: true);
                   }
                 }),
-            child: const IMRoomsListWidget()),
+            child: IMRoomsListWidget(emptyView: emptyView)),
       );
 }

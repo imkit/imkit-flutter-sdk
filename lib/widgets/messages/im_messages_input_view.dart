@@ -4,6 +4,7 @@ import 'package:imkit/extensions/string_ext.dart';
 import 'package:imkit/models/im_message.dart';
 import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/sdk/imkit.dart';
+import 'package:imkit/utils/permission_manager.dart';
 import 'package:imkit/utils/toast.dart';
 import 'package:imkit/widgets/common/take_picture_screen.dart';
 import 'package:imkit/widgets/components/im_circle_avatar_widget.dart';
@@ -11,6 +12,7 @@ import 'package:imkit/widgets/components/im_icon_button_widget.dart';
 import 'package:imkit/widgets/components/im_rounded_image_widget.dart';
 import 'package:imkit/widgets/messages/im_messages_list_widget.dart';
 import 'package:imkit/widgets/messages/input_view/im_photo_input_view.dart';
+import 'package:imkit/widgets/messages/input_view/im_record_input_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -23,6 +25,7 @@ enum IMMessagesInputViewType {
   text,
   photo,
   sticker,
+  record,
 }
 
 class IMMessagesInputView extends StatefulWidget {
@@ -126,39 +129,25 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                         IMIconButtonWidget(
                           size: _height,
                           icon: Icon(Icons.photo_camera_outlined, color: IMKit.style.inputBar.iconColor),
-                          onPressed: () async {
-                            var status = await Permission.camera.status;
-                            bool granted = status.isGranted;
-                            if (!granted) {
-                              await [Permission.camera].request();
-                              status = await Permission.camera.status;
-                              granted = status.isGranted;
-                            }
+                          onPressed: () => PermissionManager.request(
+                            Permission.camera,
+                            (granted) async {
+                              if (granted) {
+                                final cameras = await availableCameras();
+                                final AssetEntity result =
+                                    await Navigator.of(context).push(MaterialPageRoute(builder: (context) => TakePictureScreen(camera: cameras.first)));
+                                if (result.relativePath != null) {
+                                  await IMKit.instance.action
+                                      .preSendImageMessage(roomId: widget.roomId, path: result.relativePath!, width: result.width, height: result.height);
+                                  updateInputType(IMMessagesInputViewType.none);
 
-                            if (granted) {
-                              final cameras = await availableCameras();
-                              final AssetEntity result =
-                                  await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              TakePictureScreen(
-                                                  camera: cameras.first)));
-                              if (result.relativePath != null) {
-                                await IMKit.instance.action.preSendImageMessage(
-                                    roomId: widget.roomId,
-                                    path: result.relativePath!,
-                                    width: result.width,
-                                    height: result.height);
-                                updateInputType(IMMessagesInputViewType.none);
-
-                                messagesListWidgetKey.currentState
-                                    ?.jumpToBottom();
+                                  messagesListWidgetKey.currentState?.jumpToBottom();
+                                }
+                              } else {
+                                Toast.basic(text: "Camera permission is not granted");
                               }
-                            } else {
-                              Toast.basic(
-                                  text: "Camera permission is not granted");
-                            }
-                          },
+                            },
+                          ),
                         ),
                         // 相簿按鈕
                         IMIconButtonWidget(
@@ -168,55 +157,59 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                         ),
                         // 文字輸入
                         Expanded(
-                          child: Stack(children: [
-                            TextFormField(
-                                controller: _controller,
-                                style: IMKit.style.inputBar.textFieldTextSytle,
-                                keyboardType: TextInputType.multiline,
-                                focusNode: _focusNode,
-                                minLines: 1,
-                                maxLines: 3,
-                                readOnly: !_isEnableInputText,
-                                decoration: InputDecoration(
-                                  fillColor: IMKit.style.inputBar.textFieldBackgroundColor,
-                                  filled: true,
-                                  isDense: true,
-                                  hintStyle: IMKit.style.inputBar.textFieldPlaceholderSytle,
-                                  contentPadding: const EdgeInsets.all(8),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: BorderSide.none,
-                                  ),
+                            child: Stack(children: [
+                          TextFormField(
+                              controller: _controller,
+                              style: IMKit.style.inputBar.textFieldTextSytle,
+                              keyboardType: TextInputType.multiline,
+                              focusNode: _focusNode,
+                              minLines: 1,
+                              maxLines: 3,
+                              readOnly: !_isEnableInputText,
+                              decoration: InputDecoration(
+                                fillColor: IMKit.style.inputBar.textFieldBackgroundColor,
+                                filled: true,
+                                isDense: true,
+                                hintStyle: IMKit.style.inputBar.textFieldPlaceholderSytle,
+                                contentPadding: const EdgeInsets.all(8),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: BorderSide.none,
                                 ),
-                                onTap: () => updateInputType(IMMessagesInputViewType.text),
-                                onChanged: (value) {
-                                  final isNotEmpty = value.isNotEmpty;
-                                  if (_isEditing != isNotEmpty) {
-                                    setState(() {
-                                      _isEditing = isNotEmpty;
-                                    });
-                                  }
-                                }),
-                            Align(
+                              ),
+                              onTap: () => updateInputType(IMMessagesInputViewType.text),
+                              onChanged: (value) {
+                                final isNotEmpty = value.isNotEmpty;
+                                if (_isEditing != isNotEmpty) {
+                                  setState(() {
+                                    _isEditing = isNotEmpty;
+                                  });
+                                }
+                              }),
+                          Align(
                               alignment: Alignment.centerRight,
                               child: IMIconButtonWidget(
                                 size: _height,
                                 icon: Icon(Icons.emoji_emotions_outlined, color: IMKit.style.inputBar.iconColor),
-                                onPressed: () => {
-                                  updateInputType(IMMessagesInputViewType.sticker)
-                                },
-                              )
-                            )
-                          ])
-                        ),
+                                onPressed: () => {updateInputType(IMMessagesInputViewType.sticker)},
+                              ))
+                        ])),
 
                         // 送出按鈕 + // 錄音按鈕
                         Visibility(
                           visible: _isEditing,
                           replacement: IMIconButtonWidget(
-                            size: _height,
-                            icon: Icon(Icons.mic_none_outlined, color: IMKit.style.inputBar.iconColor),
-                            onPressed: () {},
+                            size: _height, icon: Icon(Icons.mic_none_outlined, color: IMKit.style.inputBar.iconColor), onPressed: () => {},
+                            // onPressed: () => PermissionManager.request(
+                            //   Permission.microphone,
+                            //   (granted) async {
+                            //     if (granted) {
+                            //       updateInputType(IMMessagesInputViewType.record);
+                            //     } else {
+                            //       Toast.basic(text: "Microphone permission is not granted");
+                            //     }
+                            //   },
+                            // ),
                           ),
                           child: IMIconButtonWidget(
                             size: _height,
@@ -295,6 +288,19 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                     _responseObject = null;
                   });
                   await IMKit.instance.action.sendStickerMessage(roomId: widget.roomId, sticker: sticker, responseObject: tmpResponseObject);
+                  messagesListWidgetKey.currentState?.jumpToBottom();
+                },
+              ),
+            ),
+            Visibility(
+              visible: _inputViewType == IMMessagesInputViewType.record,
+              child: IMRecordInputView(
+                onRecordFinish: (path, duration) async {
+                  final tmpResponseObject = _responseObject;
+                  setState(() {
+                    _responseObject = null;
+                  });
+                  await IMKit.instance.action.preSendAudioMessage(roomId: widget.roomId, path: path, duration: duration, responseObject: tmpResponseObject);
                   messagesListWidgetKey.currentState?.jumpToBottom();
                 },
               ),

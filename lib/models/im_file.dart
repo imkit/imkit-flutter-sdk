@@ -28,6 +28,8 @@ class IMFile {
   @JsonKey(name: 'duration')
   int duration = 0;
 
+  String get filename => "${name ?? ""}.${fileExtension ?? ""}";
+
   IMFile({
     this.url,
     this.name,

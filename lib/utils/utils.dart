@@ -23,4 +23,19 @@ class Utils {
     buffer.writeAll(uuid);
     return buffer.toString();
   }
+
+  static String formatDuration(int duration) {
+    final String minutes = _formatNumber(duration ~/ 60);
+    final String seconds = _formatNumber(duration % 60);
+
+    return '$minutes:$seconds';
+  }
+
+  static String _formatNumber(int number) {
+    String numberStr = number.toString();
+    if (number < 10) {
+      numberStr = '0' + numberStr;
+    }
+    return numberStr;
+  }
 }

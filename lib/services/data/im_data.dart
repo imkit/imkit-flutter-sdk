@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
@@ -252,6 +253,43 @@ class IMData {
     return _messageDataManager.sendNewMessage(localMessage: newMessage);
   }
 
+  Future<IMMessage> preSendAudioMessage({required String roomId, required String path, required int duration}) async {
+    print(">>> Path: $path");
+    final me = await getMe();
+    final file = File.fromUri(Uri.parse(path));
+
+    final message = IMMessage.fromAudio(
+      roomId: roomId,
+      sender: me,
+      localPath: file.path,
+      duration: duration,
+      bytes: await file.length(),
+    );
+    return _messageDataManager.preSendMessage(localMessage: message);
+  }
+
+  Future<IMMessage> sendAudioMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
+    final file = message.file;
+    if (file == null || (file.mimeType ?? "").isEmpty || (file.url ?? "").isEmpty) {
+      return message;
+    }
+    try {
+      final uploadedFile = await _fileDataManager.upload(
+        mimeType: file.mimeType!,
+        file: File(file.url!),
+        onSendProgress: (count, total) => uploadProgress?.call(count / total),
+        cancelToken: cancelToken,
+      );
+      message.file?.url = uploadedFile.url;
+      return _messageDataManager.sendNewMessage(localMessage: message);
+    } catch (_) {
+      uploadProgress?.call(0);
+      message.status = IMMessageStatus.undelivered;
+      _messageDataManager.updateItem(message);
+      return message;
+    }
+  }
+
   Future<IMMessage> resendMessage({required IMMessage message}) async {
     return _messageDataManager.resendMessage(localMessage: message);
   }
@@ -334,6 +372,10 @@ class IMData {
       _messageDataManager.updateItems(updatedMessages);
     }
   }
+
+  /// File
+  Future<File> downloadFileToCache({required String url, required String filename}) async =>
+      (await _fileDataManager.downloadFileToCache(url: url, filename: filename));
 
   /// Socket
   socketConnect() {

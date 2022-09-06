@@ -1,8 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/models/im_message.dart';
-import 'package:imkit/sdk/imkit.dart';
 import 'package:imkit/widgets/components/im_image_widget.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_image_upload.dart';
