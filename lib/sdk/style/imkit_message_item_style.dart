@@ -10,15 +10,15 @@ class IMKitMessageItemStyle {
 
   double cornerRadius = 12;
 
-  TextStyle readReceiptTextSytle = const TextStyle(color: Color.fromRGBO(189, 189, 189, 1), fontSize: 10);
-  TextStyle timeTextSytle = const TextStyle(color: Color.fromRGBO(189, 189, 189, 1), fontSize: 10);
+  TextStyle readReceiptTextSytle = const TextStyle(color: Color.fromRGBO(189, 189, 189, 1), fontSize: 12);
+  TextStyle timeTextSytle = const TextStyle(color: Color.fromRGBO(189, 189, 189, 1), fontSize: 12);
 }
 
 class IMKitMessageItemOutgoingStyle {
   Color lineColor = const Color.fromRGBO(189, 189, 189, 1);
   Color backgroundColor = const Color.fromRGBO(227, 246, 255, 1);
 
-  TextStyle textSytle = const TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontSize: 14);
+  TextStyle textSytle = const TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontSize: 16);
   TextStyle replyNameTextSytle = const TextStyle(color: Color.fromRGBO(66, 66, 66, 1), fontSize: 13);
   TextStyle replyTextTextSytle = const TextStyle(color: Color.fromRGBO(117, 117, 117, 1), fontSize: 13);
 }
@@ -28,7 +28,7 @@ class IMKitMessageItemIncomingStyle {
   Color backgroundColor = const Color.fromRGBO(255, 255, 255, 1);
 
   TextStyle nameTextSytle = const TextStyle(color: Color.fromRGBO(189, 189, 189, 1), fontSize: 10);
-  TextStyle textSytle = const TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontSize: 14);
+  TextStyle textSytle = const TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontSize: 16);
 
   TextStyle replyNameTextSytle = const TextStyle(color: Color.fromRGBO(189, 189, 189, 1), fontSize: 13);
   TextStyle replyTextTextSytle = const TextStyle(color: Color.fromRGBO(117, 117, 117, 1), fontSize: 13);
