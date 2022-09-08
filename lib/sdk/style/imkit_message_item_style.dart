@@ -10,8 +10,8 @@ class IMKitMessageItemStyle {
 
   double cornerRadius = 12;
 
-  TextStyle readReceiptTextSytle = const TextStyle(color: Color.fromRGBO(189, 189, 189, 1), fontSize: 12);
-  TextStyle timeTextSytle = const TextStyle(color: Color.fromRGBO(189, 189, 189, 1), fontSize: 12);
+  TextStyle readReceiptTextSytle = const TextStyle(color: Color.fromRGBO(189, 189, 189, 1), fontSize: 10);
+  TextStyle timeTextSytle = const TextStyle(color: Color.fromRGBO(189, 189, 189, 1), fontSize: 10);
 }
 
 class IMKitMessageItemOutgoingStyle {

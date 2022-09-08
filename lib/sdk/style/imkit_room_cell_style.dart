@@ -8,4 +8,6 @@ class IMKitRoomCellStyle {
   TextStyle mentioned = const TextStyle(color: Color.fromRGBO(30, 136, 229, 1), fontSize: 12);
 
   Color numberOfUnreadBackgroundColor = const Color.fromRGBO(79, 195, 247, 1);
+
+  TextStyle emptyTitle = const TextStyle(color: Color.fromRGBO(147, 147, 147, 1), fontSize: 16);
 }
