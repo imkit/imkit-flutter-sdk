@@ -121,6 +121,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "rooms_cell_emptyChat":
             MessageLookupByLibrary.simpleMessage("Aucun membre"),
         "rooms_count": m3,
+        "rooms_empty": MessageLookupByLibrary.simpleMessage(
+            "Il n\'y a actuellement aucune salle de chat"),
         "rooms_leave": MessageLookupByLibrary.simpleMessage(
             "Vous avez quitté la salle de discussion"),
         "rooms_title":

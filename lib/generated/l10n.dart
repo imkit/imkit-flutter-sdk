@@ -909,6 +909,16 @@ class IMKitS {
       args: [],
     );
   }
+
+  /// `There are currently no chat rooms`
+  String get rooms_empty {
+    return Intl.message(
+      'There are currently no chat rooms',
+      name: 'rooms_empty',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<IMKitS> {

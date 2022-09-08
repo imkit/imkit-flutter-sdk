@@ -88,5 +88,6 @@
     "folder_create": "폴더 만들기",
     "folder_edit": "편집 폴더",
     "folder_choose_room": "이 폴더에 추가할 채팅방을 선택하세요",
-    "rooms_action_edit": "편집하다"
+    "rooms_action_edit": "편집하다",
+    "rooms_empty": "현재 채팅방이 없습니다"
 }

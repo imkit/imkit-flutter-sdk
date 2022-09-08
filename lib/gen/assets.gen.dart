@@ -12,6 +12,10 @@ import 'package:flutter/widgets.dart';
 class $AssetsImagesGen {
   const $AssetsImagesGen();
 
+  /// File path: assets/images/empty_rooms.png
+  AssetGenImage get emptyRooms =>
+      const AssetGenImage('assets/images/empty_rooms.png');
+
   /// File path: assets/images/reocrd_normal.png
   AssetGenImage get reocrdNormal =>
       const AssetGenImage('assets/images/reocrd_normal.png');

@@ -65,7 +65,7 @@
     "messages_linkPreview_tapOpen": "このリンクを開くには、ここをクリックしてください。",
     "messages_outgoingCell_read": "既読",
     "messages_single_typing": "{args} が入力中 ...",
-    "messages_multiple_typing": "{args1} と{args2} が入力中 ...",
+    "messages_multiple_typing": "{args} が入力中 ...",
     "messages_several_typing": "複数人が入力してます",
     "tag_name_placeholder": "タグ名を入力してください",
     "tag_create": "追加タグ",
@@ -88,5 +88,6 @@
     "folder_create": "フォルダ追加",
     "folder_edit": "編集フォルダ",
     "folder_choose_room": "チャットルームを選択してください",
-    "rooms_action_edit": "編集"
+    "rooms_action_edit": "編集",
+    "rooms_empty": "現在チャットルームはありません"
 }

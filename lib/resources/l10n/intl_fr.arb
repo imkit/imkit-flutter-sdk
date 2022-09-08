@@ -88,5 +88,6 @@
     "folder_create": "Créer le dossier",
     "folder_edit": "Modifier le dossier",
     "folder_choose_room": "Choisissez les salles de discussion",
-    "rooms_action_edit": "Éditer"
+    "rooms_action_edit": "Éditer",
+    "rooms_empty": "Il n'y a actuellement aucune salle de chat"
 }

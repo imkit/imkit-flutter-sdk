@@ -105,6 +105,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "rooms_action_tag": MessageLookupByLibrary.simpleMessage("태그"),
         "rooms_cell_emptyChat": MessageLookupByLibrary.simpleMessage("회원 없음"),
         "rooms_count": m3,
+        "rooms_empty": MessageLookupByLibrary.simpleMessage("현재 채팅방이 없습니다"),
         "rooms_leave": MessageLookupByLibrary.simpleMessage("당신은 대화방을 떠났습니다"),
         "rooms_title": MessageLookupByLibrary.simpleMessage("대화방"),
         "s_You_sent_a": m4,

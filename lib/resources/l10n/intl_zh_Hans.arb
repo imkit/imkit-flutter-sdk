@@ -88,5 +88,6 @@
     "folder_create": "建立资料夹",
     "folder_edit": "编辑资料夹",
     "folder_choose_room": "选择要放进资料夹的聊天室",
-    "rooms_action_edit": "编辑"
+    "rooms_action_edit": "编辑",
+    "rooms_empty": "目前没有聊天室"
 }

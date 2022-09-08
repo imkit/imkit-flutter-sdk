@@ -105,6 +105,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "rooms_action_tag": MessageLookupByLibrary.simpleMessage("標籤"),
         "rooms_cell_emptyChat": MessageLookupByLibrary.simpleMessage("沒有成員"),
         "rooms_count": m3,
+        "rooms_empty": MessageLookupByLibrary.simpleMessage("目前沒有聊天室"),
         "rooms_leave": MessageLookupByLibrary.simpleMessage("你已退出群組"),
         "rooms_title": MessageLookupByLibrary.simpleMessage("聊天室"),
         "s_You_sent_a": m4,

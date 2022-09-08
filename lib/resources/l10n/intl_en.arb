@@ -88,5 +88,6 @@
     "folder_create": "Create folder",
     "folder_edit": "Edit folder",
     "folder_choose_room": "Choose the chatrooms to add in this folder",
-    "rooms_action_edit": "Edit"
+    "rooms_action_edit": "Edit",
+    "rooms_empty": "There are currently no chat rooms"
 }
