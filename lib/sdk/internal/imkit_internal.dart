@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:imkit/generated/l10n.dart';
 import 'package:imkit/models/im_state.dart';
 import 'package:imkit/models/im_user.dart';
@@ -39,7 +40,7 @@ class IMKitInternal {
       _data.socketConnect();
       return _data.getMe();
     }).catchError((error) {
-      print(">>> IMKit.connect error: ${error.toString()}");
+      debugPrint(">>> IMKit.connect error: ${error.toString()}");
     });
   }
 

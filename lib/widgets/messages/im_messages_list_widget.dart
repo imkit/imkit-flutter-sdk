@@ -45,7 +45,7 @@ class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
           initialData: const [],
           stream: IMKit.instance.listener.watchMessages(roomId: widget.roomId),
           builder: (BuildContext context, AsyncSnapshot<List<IMMessage>> snapshot) {
-            print(">>> message list count: ${snapshot.data?.length ?? 0}");
+            debugPrint(">>> message list count: ${snapshot.data?.length ?? 0}");
             // inspect(snapshot.data);
             _messages = snapshot.data ?? [];
             return ListView.separated(

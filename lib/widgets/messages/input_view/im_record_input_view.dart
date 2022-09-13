@@ -79,17 +79,17 @@ extension on _IMRecordInputViewState {
           const SizedBox(height: 10),
           GestureDetector(
             onLongPressDown: ((details) async {
-              print("onLongPressDown");
+              debugPrint("onLongPressDown");
               recordStart();
             }),
             onLongPressEnd: (details) async {
-              print("onLongPressEnd globalPosition:" + details.globalPosition.toString());
-              print("onLongPressEnd localPosition:" + details.localPosition.toString());
-              print("onLongPressEnd velocity:" + details.velocity.toString());
+              debugPrint("onLongPressEnd globalPosition:" + details.globalPosition.toString());
+              debugPrint("onLongPressEnd localPosition:" + details.localPosition.toString());
+              debugPrint("onLongPressEnd velocity:" + details.velocity.toString());
               recordStop();
             },
             onLongPressCancel: () {
-              print("onLongPressCancel");
+              debugPrint("onLongPressCancel");
               recordCancel();
             },
             child: Assets.images.reocrdNormal.image(width: 276, package: IMKit.instance.internal.state.sdkDefaultPackageName),

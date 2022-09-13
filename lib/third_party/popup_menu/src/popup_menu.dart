@@ -100,8 +100,6 @@ class PopupMenu {
   }
 
   Widget build(_LayoutP layoutp, MenuLayout menuLayout) {
-    print(layoutp.attachRect.center.distanceSquared);
-
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () => dismiss(),

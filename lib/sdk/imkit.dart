@@ -48,7 +48,7 @@ class IMKit {
   static init(IMStateBuilder builder) async {
     final database = await $FloorIMDatabase.databaseBuilder('imkit_flutter_database.db').addMigrations([]).build();
 
-    print(">>> database path: ${await sqfliteDatabaseFactory.getDatabasePath('imkit_flutter_database.db')}");
+    debugPrint(">>> database path: ${await sqfliteDatabaseFactory.getDatabasePath('imkit_flutter_database.db')}");
     _instance._internal = IMKitInternal(
       builder: builder,
       prefs: await SharedPreferences.getInstance(),

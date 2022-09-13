@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:imkit/extensions/list_ext.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_client.dart';
@@ -254,7 +255,7 @@ class IMData {
   }
 
   Future<IMMessage> preSendAudioMessage({required String roomId, required String path, required int duration}) async {
-    print(">>> Path: $path");
+    debugPrint(">>> Path: $path");
     final me = await getMe();
     final file = File.fromUri(Uri.parse(path));
 
