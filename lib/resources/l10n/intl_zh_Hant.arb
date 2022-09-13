@@ -89,5 +89,7 @@
     "folder_edit": "編輯資料夾",
     "folder_choose_room": "選擇要放進資料夾的聊天室",
     "rooms_action_edit": "編輯",
-    "rooms_empty": "目前沒有聊天室"
+    "rooms_empty": "目前沒有聊天室",
+    "take_a_picture": "拍照",
+    "preview_picture": "預覽照片"
 }

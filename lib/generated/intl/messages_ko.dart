@@ -94,6 +94,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "n_yesterday": MessageLookupByLibrary.simpleMessage("어제"),
         "p_p_saved": MessageLookupByLibrary.simpleMessage("저장 됨"),
         "photo_select_count": m2,
+        "preview_picture": MessageLookupByLibrary.simpleMessage("사진 미리보기"),
         "rooms_action_delete": MessageLookupByLibrary.simpleMessage("삭제"),
         "rooms_action_edit": MessageLookupByLibrary.simpleMessage("편집하다"),
         "rooms_action_hide": MessageLookupByLibrary.simpleMessage("숨는 장소"),
@@ -138,6 +139,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "tag_edit": MessageLookupByLibrary.simpleMessage("편집 태그"),
         "tag_name_placeholder":
             MessageLookupByLibrary.simpleMessage("태그 이름을 입력하십시오"),
+        "take_a_picture": MessageLookupByLibrary.simpleMessage("사진을 찍다"),
         "v_cancel": MessageLookupByLibrary.simpleMessage("취소"),
         "v_clear": MessageLookupByLibrary.simpleMessage("지우다"),
         "v_clear_all": MessageLookupByLibrary.simpleMessage("모두 삭제"),

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/utils/toast.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -25,8 +26,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   void initState() {
     super.initState();
 
-    _controller = CameraController(widget.camera, ResolutionPreset.medium,
-        enableAudio: false);
+    _controller = CameraController(widget.camera, ResolutionPreset.medium, enableAudio: false);
 
     _initializeControllerFuture = _controller.initialize();
     Future.delayed(Duration.zero, _requestAssets);
@@ -44,7 +44,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(title: const Text('Take a picture')),
+      appBar: AppBar(title: Text(IMKit.S.take_a_picture)),
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
@@ -58,8 +58,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             } else {
               if (MediaQuery.of(context).orientation == Orientation.portrait) {
                 final mediaSize = MediaQuery.of(context).size;
-                final scale =
-                    1 / (_controller.value.aspectRatio * mediaSize.aspectRatio);
+                final scale = 1 / (_controller.value.aspectRatio * mediaSize.aspectRatio);
                 return ClipRect(
                   clipper: _MediaSizeClipper(mediaSize),
                   child: Transform.scale(
@@ -83,10 +82,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             await _initializeControllerFuture;
             final image = await _controller.takePicture();
             if (!mounted) return;
-            final AssetEntity result = await Navigator.of(context).push(
-                MaterialPageRoute(
-                    builder: (context) =>
-                        DisplayPictureScreen(imagePath: image.path)));
+            final AssetEntity result = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => DisplayPictureScreen(imagePath: image.path)));
             if (result.relativePath != null) {
               Navigator.pop(context, result);
             }
@@ -119,29 +115,23 @@ class _MediaSizeClipper extends CustomClipper<Rect> {
 class DisplayPictureScreen extends StatelessWidget {
   final String imagePath;
 
-  const DisplayPictureScreen({Key? key, required this.imagePath})
-      : super(key: key);
+  const DisplayPictureScreen({Key? key, required this.imagePath}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Image image = Image.file(File(imagePath));
+
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(title: const Text('Display the Picture')),
+      appBar: AppBar(title: Text(IMKit.S.preview_picture)),
       body: Center(
         child: Image.file(File(imagePath)),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          image.image
-              .resolve(const ImageConfiguration())
-              .addListener(ImageStreamListener((imageInfo, synchronousCall) {
-            AssetEntity assetEntity = AssetEntity(
-                id: imagePath,
-                typeInt: 1,
-                width: imageInfo.image.width,
-                height: imageInfo.image.height,
-                relativePath: imagePath);
+          image.image.resolve(const ImageConfiguration()).addListener(ImageStreamListener((imageInfo, synchronousCall) {
+            AssetEntity assetEntity =
+                AssetEntity(id: imagePath, typeInt: 1, width: imageInfo.image.width, height: imageInfo.image.height, relativePath: imagePath);
             Navigator.pop(context, assetEntity);
           }));
         },

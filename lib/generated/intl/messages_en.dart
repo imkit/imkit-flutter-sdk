@@ -102,6 +102,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "n_yesterday": MessageLookupByLibrary.simpleMessage("Yesterday"),
         "p_p_saved": MessageLookupByLibrary.simpleMessage("Saved"),
         "photo_select_count": m2,
+        "preview_picture": MessageLookupByLibrary.simpleMessage("Preview"),
         "rooms_action_delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "rooms_action_edit": MessageLookupByLibrary.simpleMessage("Edit"),
         "rooms_action_hide": MessageLookupByLibrary.simpleMessage("Hide"),
@@ -151,6 +152,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "tag_edit": MessageLookupByLibrary.simpleMessage("Edit tag"),
         "tag_name_placeholder":
             MessageLookupByLibrary.simpleMessage("Enter tag name"),
+        "take_a_picture":
+            MessageLookupByLibrary.simpleMessage("Take a picture"),
         "v_cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
         "v_clear": MessageLookupByLibrary.simpleMessage("Clear"),
         "v_clear_all": MessageLookupByLibrary.simpleMessage("Clear all"),

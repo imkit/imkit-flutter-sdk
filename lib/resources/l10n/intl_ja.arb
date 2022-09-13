@@ -89,5 +89,7 @@
     "folder_edit": "編集フォルダ",
     "folder_choose_room": "チャットルームを選択してください",
     "rooms_action_edit": "編集",
-    "rooms_empty": "現在チャットルームはありません"
+    "rooms_empty": "現在チャットルームはありません",
+    "take_a_picture": "写真を撮る",
+    "preview_picture": "プレビュー"
 }

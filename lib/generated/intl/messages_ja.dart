@@ -94,6 +94,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "n_yesterday": MessageLookupByLibrary.simpleMessage("昨日"),
         "p_p_saved": MessageLookupByLibrary.simpleMessage("保存しました"),
         "photo_select_count": m2,
+        "preview_picture": MessageLookupByLibrary.simpleMessage("プレビュー"),
         "rooms_action_delete": MessageLookupByLibrary.simpleMessage("削除"),
         "rooms_action_edit": MessageLookupByLibrary.simpleMessage("編集"),
         "rooms_action_hide": MessageLookupByLibrary.simpleMessage("非表示"),
@@ -140,6 +141,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "tag_edit": MessageLookupByLibrary.simpleMessage("タグを編集します"),
         "tag_name_placeholder":
             MessageLookupByLibrary.simpleMessage("タグ名を入力してください"),
+        "take_a_picture": MessageLookupByLibrary.simpleMessage("写真を撮る"),
         "v_cancel": MessageLookupByLibrary.simpleMessage("キャンセル"),
         "v_clear": MessageLookupByLibrary.simpleMessage("削除"),
         "v_clear_all": MessageLookupByLibrary.simpleMessage("すべて削除"),

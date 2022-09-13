@@ -89,5 +89,7 @@
     "folder_edit": "Modifier le dossier",
     "folder_choose_room": "Choisissez les salles de discussion",
     "rooms_action_edit": "Éditer",
-    "rooms_empty": "Il n'y a actuellement aucune salle de chat"
+    "rooms_empty": "Il n'y a actuellement aucune salle de chat",
+    "take_a_picture": "Prenez une photo",
+    "preview_picture": "Prévisualisation"
 }

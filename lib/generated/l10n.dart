@@ -919,6 +919,26 @@ class IMKitS {
       args: [],
     );
   }
+
+  /// `Take a picture`
+  String get take_a_picture {
+    return Intl.message(
+      'Take a picture',
+      name: 'take_a_picture',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Preview`
+  String get preview_picture {
+    return Intl.message(
+      'Preview',
+      name: 'preview_picture',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<IMKitS> {
