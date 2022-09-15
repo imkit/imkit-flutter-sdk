@@ -8,7 +8,7 @@ class IMUrlPreviewWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.only(top: 8),
       child: AnyLinkPreview(
         link: url,
         displayDirection: UIDirection.uiDirectionHorizontal,
