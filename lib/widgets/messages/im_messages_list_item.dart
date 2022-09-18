@@ -13,6 +13,7 @@ import 'package:imkit/widgets/messages/items/im_message_item_text.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_video.dart';
 
 import 'items/im_message_item_sticker.dart';
+import 'items/im_message_item_url.dart';
 
 class IMMessageListItem extends StatelessWidget {
   final IMRoom? room;
@@ -96,7 +97,27 @@ extension on IMMessageListItem {
   Widget _bodyWidget({required BuildContext context}) {
     switch (message.type) {
       case IMMessageType.text:
-        return IMMessageItemText(message: message);
+        {
+          String text = "";
+          if (message.text != null) {
+            text = message.text!;
+          }
+
+          List<String> urls = <String>[];
+          RegExp exp =
+          RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
+          Iterable<RegExpMatch> matches = exp.allMatches(text);
+
+          for (var match in matches) {
+            urls.add(text.substring(match.start, match.end));
+          }
+
+          if (urls.isEmpty) {
+            return IMMessageItemText(message: message);
+          } else {
+            return IMMessageItemUrl(message: message, urls: urls);
+          }
+        }
 
       case IMMessageType.image:
         return IMMessageItemImage(message: message);
