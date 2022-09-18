@@ -13,10 +13,9 @@ import 'package:imkit/widgets/components/im_rounded_image_widget.dart';
 import 'package:imkit/widgets/messages/im_messages_list_widget.dart';
 import 'package:imkit/widgets/messages/input_view/im_photo_input_view.dart';
 import 'package:imkit/widgets/messages/input_view/im_record_input_view.dart';
+import 'package:imkit/widgets/messages/input_view/im_sticker_input_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
-
-import 'input_view/im_sticker_input_view.dart';
 
 final GlobalKey<IMMessagesInputViewState> inputViewWidgetKey = GlobalKey();
 

@@ -39,6 +39,8 @@ class IMCircleAvatarWidget extends StatelessWidget {
           fit: fit,
           width: size ?? width,
           height: size ?? height,
+          maxWidthDiskCache: (size ?? width).toInt(),
+          maxHeightDiskCache: (size ?? height).toInt(),
           text: text,
           onError: onError,
         ),

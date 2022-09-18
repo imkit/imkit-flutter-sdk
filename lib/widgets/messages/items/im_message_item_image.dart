@@ -38,6 +38,7 @@ extension on IMMessageItemImage {
       child: IMImageWidget(
           url: url,
           fit: BoxFit.fitWidth,
+          maxWidthDiskCache: IMMessageItemComponent.getMaxCellWidth(context).toInt(),
           onError: _buildFromError,
           onProgress: (double? progress) => Container(
                 padding: const EdgeInsets.all(12),
