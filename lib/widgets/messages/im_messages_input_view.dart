@@ -16,6 +16,7 @@ import 'package:imkit/widgets/messages/input_view/im_record_input_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
+import '../common/take_location_screen.dart';
 import 'input_view/im_sticker_input_view.dart';
 
 final GlobalKey<IMMessagesInputViewState> inputViewWidgetKey = GlobalKey();
@@ -133,16 +134,18 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                             Permission.camera,
                             (granted) async {
                               if (granted) {
-                                final cameras = await availableCameras();
-                                final AssetEntity result =
-                                    await Navigator.of(context).push(MaterialPageRoute(builder: (context) => TakePictureScreen(camera: cameras.first)));
-                                if (result.relativePath != null) {
-                                  await IMKit.instance.action
-                                      .preSendImageMessage(roomId: widget.roomId, path: result.relativePath!, width: result.width, height: result.height);
-                                  updateInputType(IMMessagesInputViewType.none);
+                                Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TakeLocationScreen()));
 
-                                  messagesListWidgetKey.currentState?.jumpToBottom();
-                                }
+                                // final cameras = await availableCameras();
+                                // final AssetEntity result =
+                                //     await Navigator.of(context).push(MaterialPageRoute(builder: (context) => TakePictureScreen(camera: cameras.first)));
+                                // if (result.relativePath != null) {
+                                //   await IMKit.instance.action
+                                //       .preSendImageMessage(roomId: widget.roomId, path: result.relativePath!, width: result.width, height: result.height);
+                                //   updateInputType(IMMessagesInputViewType.none);
+                                //
+                                //   messagesListWidgetKey.currentState?.jumpToBottom();
+                                // }
                               } else {
                                 Toast.basic(text: "Camera permission is not granted");
                               }
