@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:imkit/sdk/imkit.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 
@@ -21,6 +22,7 @@ class _TakeLocationScreenState extends State<TakeLocationScreen> {
   late final MapController _mapController;
 
   CustomPoint _textPos = const CustomPoint(10.0, 10.0);
+  LatLng currentLatLng = LatLng(0, 0);
 
   @override
   void initState() {
@@ -37,6 +39,8 @@ class _TakeLocationScreenState extends State<TakeLocationScreen> {
         LatLng(currentLocation.latitude!, currentLocation.longitude!),
         18,
       );
+      currentLatLng =
+          LatLng(currentLocation.latitude!, currentLocation.longitude!);
       final pt1 = _mapController.latLngToScreenPoint(
           LatLng(currentLocation.latitude!, currentLocation.longitude!));
       _textPos = CustomPoint(pt1!.x, pt1.y);
@@ -57,53 +61,66 @@ class _TakeLocationScreenState extends State<TakeLocationScreen> {
         appBar: AppBar(title: const Text('LatLng To Screen Point')),
         // drawer: buildDrawer(context, LatLngScreenPointTestPage.route),
         body: Stack(children: [
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child:
-                // Container())
-                FlutterMap(
-              mapController: _mapController,
-              options: MapOptions(
-                // onMapEvent: onMapEvent,
-                onTap: (tapPos, latLng) {
-                  print("latitude: ${latLng.latitude}");
-                  print("longitude: ${latLng.longitude}");
-                  final pt1 = _mapController.latLngToScreenPoint(latLng);
-                  _textPos = CustomPoint(pt1!.x, pt1.y);
-                  setState(() {});
-                },
-                center: LatLng(51.5, -0.09),
-                zoom: 11,
-                rotation: 0,
-              ),
-              layers: [
-                TileLayerOptions(
-                  urlTemplate:
-                      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  subdomains: ['a', 'b', 'c'],
-                  userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-                ),
-              ],
+          FlutterMap(
+            mapController: _mapController,
+            options: MapOptions(
+              onTap: (tapPos, latLng) {
+                currentLatLng = latLng;
+                final pt1 = _mapController.latLngToScreenPoint(latLng);
+                _textPos = CustomPoint(pt1!.x, pt1.y);
+                setState(() {});
+              },
+              center: LatLng(51.5, -0.09),
+              zoom: 11,
+              rotation: 0,
             ),
+            layers: [
+              TileLayerOptions(
+                urlTemplate:
+                    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                subdomains: ['a', 'b', 'c'],
+                userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+              ),
+            ],
           ),
           Positioned(
               left: _textPos.x.toDouble(),
               top: _textPos.y.toDouble(),
               width: 20,
               height: 20,
-              child: const Icon(Icons.location_on)),
-          CurrentLocation(mapController: _mapController),
+              child: Icon(Icons.location_pin,
+                  color: IMKit.style.inputBar.iconColor)),
+          Container(
+            alignment: Alignment.topRight,
+            child: CurrentLocation(
+                mapController: _mapController,
+                callback: (currentLocation) {
+                  currentLatLng = LatLng(
+                      currentLocation.latitude!, currentLocation.longitude!);
+                }),
+          ),
+          Container(
+              alignment: Alignment.bottomRight,
+              child: IconButton(
+                icon: const Icon(Icons.send),
+                color: IMKit.style.inputBar.iconColor,
+                onPressed: () => {Navigator.pop(context, currentLatLng)},
+              ))
         ]));
   }
 }
+
+typedef CurrentLocationCallback = void Function(LocationData data);
 
 class CurrentLocation extends StatefulWidget {
   const CurrentLocation({
     Key? key,
     required this.mapController,
+    required this.callback,
   }) : super(key: key);
 
   final MapController mapController;
+  final CurrentLocationCallback callback;
 
   @override
   _CurrentLocationState createState() => _CurrentLocationState();
@@ -155,6 +172,7 @@ class _CurrentLocationState extends State<CurrentLocation> {
       );
 
       setIcon(moved ? Icons.gps_fixed : Icons.gps_not_fixed);
+      widget.callback(currentLocation);
     } catch (e) {
       setIcon(Icons.gps_off);
     }
@@ -164,6 +182,7 @@ class _CurrentLocationState extends State<CurrentLocation> {
   Widget build(BuildContext context) {
     return IconButton(
       icon: Icon(icon),
+      color: IMKit.style.inputBar.iconColor,
       onPressed: _moveToCurrent,
     );
   }
