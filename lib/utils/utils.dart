@@ -38,4 +38,6 @@ class Utils {
     }
     return numberStr;
   }
+
+  static bool isUrl(String? value) => Uri.parse(value ?? "").isAbsolute;
 }

@@ -14,6 +14,7 @@ class IMMessageItemVideo extends StatelessWidget {
   Widget build(BuildContext context) => IMImageWidget(
         url: message.images.firstOrNull?.thumbnailUrl,
         fit: BoxFit.fitWidth,
+        maxWidthDiskCache: IMMessageItemComponent.getMaxCellWidth(context).toInt(),
         onError: IMMessageItemComponent.getLoadImageFailure,
         onProgress: (double? progress) => Container(
           padding: const EdgeInsets.all(12),

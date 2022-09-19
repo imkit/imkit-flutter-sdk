@@ -13,6 +13,8 @@ class IMImageWidget extends StatelessWidget {
     this.fit = BoxFit.cover,
     this.width,
     this.height,
+    this.maxWidthDiskCache,
+    this.maxHeightDiskCache,
     this.text,
     this.onError,
     this.onProgress,
@@ -21,9 +23,11 @@ class IMImageWidget extends StatelessWidget {
 
   final String? url;
   final Uint8List? bytes;
-  final BoxFit fit;
+  final BoxFit? fit;
   final double? width;
   final double? height;
+  final int? maxWidthDiskCache;
+  final int? maxHeightDiskCache;
   final String? text;
   final Function? onError;
   final Function(double?)? onProgress;
@@ -51,6 +55,8 @@ class IMImageWidget extends StatelessWidget {
         fit: fit,
         width: width,
         height: height,
+        maxWidthDiskCache: maxWidthDiskCache,
+        maxHeightDiskCache: maxHeightDiskCache,
         httpHeaders: IMKit.instance.internal.state.headers(),
         errorWidget: (context, url, error) {
           if (onError != null) {
