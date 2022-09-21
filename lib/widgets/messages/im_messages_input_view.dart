@@ -139,8 +139,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                                   await IMKit.instance.action
                                       .preSendImageMessage(roomId: widget.roomId, path: result.relativePath!, width: result.width, height: result.height);
                                   updateInputType(IMMessagesInputViewType.none);
-
-                                  messagesListWidgetKey.currentState?.jumpToBottom();
+                                  scrollToBottom();
                                 }
                               } else {
                                 Toast.basic(text: "Camera permission is not granted");
@@ -227,7 +226,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                                 _editMessage = null;
                               } else {
                                 await IMKit.instance.action.sendTextMessage(roomId: widget.roomId, text: text, responseObject: tmpResponseObject);
-                                messagesListWidgetKey.currentState?.jumpToBottom();
+                                scrollToBottom();
                               }
                             },
                           ),
@@ -257,8 +256,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                             onPressed: () async {
                               await IMKit.instance.action.preSendImageMessages(roomId: widget.roomId, assetEntities: _selectedAssetEntities);
                               updateInputType(IMMessagesInputViewType.none);
-
-                              messagesListWidgetKey.currentState?.jumpToBottom();
+                              scrollToBottom();
                             },
                           ),
                         ],
@@ -287,7 +285,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                     _responseObject = null;
                   });
                   await IMKit.instance.action.sendStickerMessage(roomId: widget.roomId, sticker: sticker, responseObject: tmpResponseObject);
-                  messagesListWidgetKey.currentState?.jumpToBottom();
+                  scrollToBottom();
                 },
               ),
             ),
@@ -300,7 +298,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                     _responseObject = null;
                   });
                   await IMKit.instance.action.preSendAudioMessage(roomId: widget.roomId, path: path, duration: duration, responseObject: tmpResponseObject);
-                  messagesListWidgetKey.currentState?.jumpToBottom();
+                  scrollToBottom();
                 },
               ),
             ),
@@ -347,4 +345,8 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
     });
     _focusNode.requestFocus();
   }
+}
+
+extension on IMMessagesInputViewState {
+  Future<bool>? scrollToBottom() => messagesListWidgetKey.currentState?.scrollToBottom();
 }

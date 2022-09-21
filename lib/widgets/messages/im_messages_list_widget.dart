@@ -22,9 +22,12 @@ class IMMessagesListWidget extends StatefulWidget {
 }
 
 class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
-  late final AutoScrollController _controller = AutoScrollController();
+  late final AutoScrollController _controller = AutoScrollController(
+    viewportBoundaryGetter: () => const Rect.fromLTRB(0, 0, 0, 8),
+  );
 
   late List<IMMessage> _messages = [];
+  late bool _isInitial = false;
   PopupMenu? _popupMenu;
 
   @override
@@ -46,22 +49,27 @@ class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
           stream: IMKit.instance.listener.watchMessages(roomId: widget.roomId),
           builder: (BuildContext context, AsyncSnapshot<List<IMMessage>> snapshot) {
             debugPrint(">>> message list count: ${snapshot.data?.length ?? 0}");
-            // inspect(snapshot.data);
+
             _messages = snapshot.data ?? [];
+            int itemCount = _messages.length;
+            if (itemCount > 0 && !_isInitial) {
+              _isInitial = true;
+              _jumpToLastReadMessage(_messages);
+            }
             return ListView.separated(
               controller: _controller,
               padding: const EdgeInsets.all(8),
-              itemCount: snapshot.data?.length ?? 0,
-              reverse: true,
+              itemCount: itemCount,
               separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 8),
               itemBuilder: (BuildContext context, int index) {
-                final prevMessageCreatedAt = _messages.firstWhereIndexedOrNull((i, _) => i == index + 1)?.createdAt;
+                final prevMessageCreatedAt = _messages.firstWhereIndexedOrNull((i, _) => i == index - 1)?.createdAt;
                 final currentMessage = _messages[index];
-                if (index == 0) {
+                if (index == (itemCount - 1)) {
                   IMKit.instance.action.setRead(roomId: widget.roomId, message: currentMessage);
                 }
+                final key = ValueKey(currentMessage.id);
                 return AutoScrollTag(
-                  key: ValueKey(index),
+                  key: key,
                   index: index,
                   controller: _controller,
                   child: Column(
@@ -74,7 +82,7 @@ class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
                         ),
                       ),
                       IMMessageListItem(
-                        key: ValueKey(currentMessage.id),
+                        key: key,
                         room: widget.room,
                         message: currentMessage,
                         onLoginPress: (itemKey, itemMenu) => _onLoginPress(context: context, itemKey: itemKey, itemMenu: itemMenu),
@@ -88,8 +96,9 @@ class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
         ),
       );
 
-  void jumpTo(IMMessage message) => _scrollTo(_messages.indexWhere((element) => element.id == message.id));
-  void jumpToBottom() => _scrollTo(0);
+  Future<bool> scrollTo(String? messageId) => _scrollTo(_messages.indexWhere((element) => element.id == (messageId ?? "")), AutoScrollPosition.middle);
+  Future<bool> scrollToBottom() => _scrollTo(_messages.length - 1, AutoScrollPosition.end);
+  void jumpToBottom() => _controller.jumpTo(_controller.position.maxScrollExtent);
 }
 
 extension on IMMessagesListWidgetState {
@@ -102,12 +111,30 @@ extension on IMMessagesListWidgetState {
   }
 
   void _onScrollControllerListener() {
-    floatingActionWidgetKey.currentState?.updateStatus((_controller.position.pixels >= 300));
+    double maxScroll = _controller.position.maxScrollExtent;
+    double currentScroll = _controller.position.pixels;
+    double delta = 300.0;
+    floatingActionWidgetKey.currentState?.updateStatus(!(maxScroll - currentScroll <= delta));
   }
 
-  void _scrollTo(int index) {
-    if (index != -1) {
-      _controller.scrollToIndex(index, preferPosition: AutoScrollPosition.end);
+  Future<bool> _scrollTo(int index, AutoScrollPosition preferPosition) async {
+    if (index >= 0) {
+      return _controller.scrollToIndex(index, preferPosition: preferPosition).then((value) => true);
     }
+    return Future.value(true);
+  }
+
+  void _jumpToLastReadMessage(List<IMMessage> messages) {
+    final total = messages.length;
+    final lastReadMessageIndex = messages.lastIndexWhere((element) => element.membersWhoHaveRead.contains(IMKit.uid));
+    WidgetsBinding.instance?.addPostFrameCallback(
+      (_) {
+        if (lastReadMessageIndex >= 0 && lastReadMessageIndex < (total - 1)) {
+          scrollTo(messages[lastReadMessageIndex].id);
+        } else {
+          jumpToBottom();
+        }
+      },
+    );
   }
 }
