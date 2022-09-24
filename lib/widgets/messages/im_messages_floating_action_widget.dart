@@ -27,7 +27,7 @@ class IMMessagesFloatingActionWidgetState extends State<IMMessagesFloatingAction
         child: IMIconButtonWidget(
           size: 35,
           icon: Icon(Icons.vertical_align_bottom, color: Colors.grey[600]),
-          onPressed: messagesListWidgetKey.currentState?.jumpToBottom,
+          onPressed: messagesListWidgetKey.currentState?.scrollToBottom,
         ),
       ),
     );
