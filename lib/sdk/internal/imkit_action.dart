@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/models/im_location.dart';
 import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/services/data/im_data.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -75,6 +76,8 @@ class IMKitAction with WidgetsBindingObserver {
       _data.preSendImageMessage(roomId: roomId, path: path, width: width, height: height);
   Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
       _data.sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
+  Future<IMMessage> sendLocationMessage({required String roomId, required IMLocation location, IMResponseObject? responseObject}) =>
+      _data.sendLocationMessage(roomId: roomId, location: location, responseObject: responseObject);
   Future<IMMessage> sendStickerMessage({required String roomId, required String sticker, IMResponseObject? responseObject}) =>
       _data.sendStickerMessage(roomId: roomId, sticker: sticker, responseObject: responseObject);
   Future<IMMessage> preSendAudioMessage({required String roomId, required String path, required int duration, IMResponseObject? responseObject}) =>

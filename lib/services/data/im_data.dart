@@ -8,6 +8,7 @@ import 'package:imkit/extensions/list_ext.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_client.dart';
 import 'package:imkit/models/im_image.dart';
+import 'package:imkit/models/im_location.dart';
 import 'package:imkit/models/im_member_property.dart';
 import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/sdk/internal/imkit_action.dart';
@@ -246,6 +247,12 @@ class IMData {
       _messageDataManager.updateItem(message);
       return message;
     }
+  }
+
+  Future<IMMessage> sendLocationMessage({required String roomId, required IMLocation location, IMResponseObject? responseObject}) async {
+    final IMMessage localMessage = IMMessage.fromLocation(roomId: roomId, sender: await getMe(), location: location, responseObject: responseObject);
+    final newMessage = await _messageDataManager.preSendMessage(localMessage: localMessage);
+    return _messageDataManager.sendNewMessage(localMessage: newMessage);
   }
 
   Future<IMMessage> sendStickerMessage({required String roomId, required String sticker, IMResponseObject? responseObject}) async {

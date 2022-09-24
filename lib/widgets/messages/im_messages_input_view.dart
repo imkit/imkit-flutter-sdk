@@ -1,11 +1,13 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/extensions/string_ext.dart';
+import 'package:imkit/models/im_location.dart';
 import 'package:imkit/models/im_message.dart';
 import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/sdk/imkit.dart';
 import 'package:imkit/utils/permission_manager.dart';
 import 'package:imkit/utils/toast.dart';
+import 'package:imkit/widgets/common/take_location_screen.dart';
 import 'package:imkit/widgets/common/take_picture_screen.dart';
 import 'package:imkit/widgets/components/im_circle_avatar_widget.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
@@ -16,9 +18,7 @@ import 'package:imkit/widgets/messages/input_view/im_record_input_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import '../common/take_location_screen.dart';
 import 'input_view/im_sticker_input_view.dart';
-import 'package:latlong2/latlong.dart' as latlong2;
 
 final GlobalKey<IMMessagesInputViewState> inputViewWidgetKey = GlobalKey();
 
@@ -167,9 +167,13 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                                     Permission.camera,
                                     (granted) async {
                                       if (granted) {
-                                        final latlong2.LatLng point = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TakeLocationScreen()));
-                                        print("latitude: ${point.latitude}");
-                                        print("longitude: ${point.longitude}");
+                                        final IMLocation location = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TakeLocationScreen()));
+                                        final tmpResponseObject = _responseObject;
+                                        setState(() {
+                                          _responseObject = null;
+                                        });
+                                        await IMKit.instance.action.sendLocationMessage(roomId: widget.roomId, location: location, responseObject: tmpResponseObject);
+                                        messagesListWidgetKey.currentState?.jumpToBottom();
                                       } else {
                                         Toast.basic(
                                             text:

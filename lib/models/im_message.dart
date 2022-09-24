@@ -322,6 +322,22 @@ class IMMessage {
         images: [image],
       );
 
+  factory IMMessage.fromLocation({
+    required String roomId,
+    required IMUser sender,
+    required IMLocation location,
+    IMResponseObject? responseObject,
+  }) =>
+      IMMessage(
+        id: Utils.uuid(),
+        roomId: roomId,
+        type: IMMessageType.location,
+        sender: sender,
+        text: location.address,
+        location: location,
+        responseObject: responseObject,
+      );
+
   factory IMMessage.fromSticker({
     required String roomId,
     required IMUser sender,
@@ -359,22 +375,6 @@ class IMMessage {
           duration: duration,
         ),
         responseObject: responseObject,
-      );
-
-  factory IMMessage.fromLocation({
-    required String roomId,
-    required IMUser sender,
-    required double longitude,
-    required double latitude,
-    required String address,
-  }) =>
-      IMMessage(
-        id: Utils.uuid(),
-        roomId: roomId,
-        type: IMMessageType.location,
-        sender: sender,
-        text: address,
-        location: IMLocation(longitude: longitude, latitude: latitude, address: address),
       );
 
   factory IMMessage.fromCustom({

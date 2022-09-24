@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:geocoding/geocoding.dart' as geocoding;
+import 'package:imkit/models/im_location.dart';
 import 'package:imkit/sdk/imkit.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
@@ -104,7 +106,23 @@ class _TakeLocationScreenState extends State<TakeLocationScreen> {
               child: IconButton(
                 icon: const Icon(Icons.send),
                 color: IMKit.style.inputBar.iconColor,
-                onPressed: () => {Navigator.pop(context, currentLatLng)},
+                onPressed: () async {
+                  List<geocoding.Placemark> placemarks =
+                      await geocoding.placemarkFromCoordinates(
+                          currentLatLng.latitude, currentLatLng.longitude);
+                  String name = "";
+                  if (placemarks.isNotEmpty) {
+                    geocoding.Placemark place = placemarks.first;
+                    if (place.street != null && place.street!.isNotEmpty) {
+                      name = place.street!;
+                    }
+                  }
+                  IMLocation location = IMLocation(
+                      address: name,
+                      latitude: currentLatLng.latitude,
+                      longitude: currentLatLng.longitude);
+                  Navigator.pop(context, location);
+                },
               ))
         ]));
   }
