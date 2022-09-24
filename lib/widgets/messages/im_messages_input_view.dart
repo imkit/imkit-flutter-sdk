@@ -161,26 +161,23 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                             size: _height,
                             icon: Icon(Icons.location_on_outlined,
                                 color: IMKit.style.inputBar.iconColor),
-                            onPressed: () => {
-                                  PermissionManager.request(
-                                    Permission.camera,
-                                    (granted) async {
-                                      if (granted) {
-                                        final IMLocation location = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TakeLocationScreen()));
-                                        final tmpResponseObject = _responseObject;
-                                        setState(() {
-                                          _responseObject = null;
-                                        });
-                                        await IMKit.instance.action.sendLocationMessage(roomId: widget.roomId, location: location, responseObject: tmpResponseObject);
-                                        messagesListWidgetKey.currentState?.jumpToBottom();
-                                      } else {
-                                        Toast.basic(
-                                            text:
-                                                "Camera permission is not granted");
-                                      }
-                                    },
-                                  ),
-                                }),
+                            onPressed: () async {
+                              final IMLocation location =
+                                  await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const TakeLocationScreen()));
+                              final tmpResponseObject = _responseObject;
+                              setState(() {
+                                _responseObject = null;
+                              });
+                              await IMKit.instance.action.sendLocationMessage(
+                                  roomId: widget.roomId,
+                                  location: location,
+                                  responseObject: tmpResponseObject);
+                              messagesListWidgetKey.currentState
+                                  ?.jumpToBottom();
+                            }),
                         // 文字輸入
                         Expanded(
                             child: Stack(children: [

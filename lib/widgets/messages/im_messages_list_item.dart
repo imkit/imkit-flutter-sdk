@@ -4,6 +4,7 @@ import 'package:imkit/widgets/components/im_circle_avatar_widget.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_audio.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_image.dart';
+import 'package:imkit/widgets/messages/items/im_message_item_location.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_menu.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_reply.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_resend.dart';
@@ -131,8 +132,8 @@ extension on IMMessageListItem {
       // case IMMessageType.file:
       //   return;
 
-      // case IMMessageType.location:
-      //   return;
+      case IMMessageType.location:
+        return IMMessageItemLocation(message: message);
 
       case IMMessageType.sticker:
         return IMMessageItemSticker(message: message);

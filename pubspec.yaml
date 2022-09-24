@@ -55,6 +55,7 @@ dependencies:
   location: ^4.4.0
   latlong2: ^0.8.1
   geocoding: ^2.0.5
+  map_launcher: ^2.4.0
 
 dev_dependencies:
   flutter_test:

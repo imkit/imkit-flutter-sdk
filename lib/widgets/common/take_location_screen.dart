@@ -60,71 +60,116 @@ class _TakeLocationScreenState extends State<TakeLocationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('LatLng To Screen Point')),
-        // drawer: buildDrawer(context, LatLngScreenPointTestPage.route),
         body: Stack(children: [
-          FlutterMap(
+      FlutterMap(
+        mapController: _mapController,
+        options: MapOptions(
+          onTap: (tapPos, latLng) {
+            currentLatLng = latLng;
+            final pt1 = _mapController.latLngToScreenPoint(latLng);
+            _textPos = CustomPoint(pt1!.x, pt1.y);
+            setState(() {});
+          },
+          center: LatLng(51.5, -0.09),
+          zoom: 11,
+          rotation: 0,
+        ),
+        layers: [
+          TileLayerOptions(
+            urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            subdomains: ['a', 'b', 'c'],
+            userAgentPackageName: 'dev.fleaflet.flutter_map.example',
+          ),
+        ],
+      ),
+      Positioned(
+          left: _textPos.x.toDouble(),
+          top: _textPos.y.toDouble(),
+          width: 20,
+          height: 20,
+          child:
+              Icon(Icons.location_pin, color: IMKit.style.inputBar.iconColor)),
+      Container(
+        alignment: Alignment.topRight,
+        child: CurrentLocation(
             mapController: _mapController,
-            options: MapOptions(
-              onTap: (tapPos, latLng) {
-                currentLatLng = latLng;
-                final pt1 = _mapController.latLngToScreenPoint(latLng);
-                _textPos = CustomPoint(pt1!.x, pt1.y);
-                setState(() {});
-              },
-              center: LatLng(51.5, -0.09),
-              zoom: 11,
-              rotation: 0,
-            ),
-            layers: [
-              TileLayerOptions(
-                urlTemplate:
-                    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: ['a', 'b', 'c'],
-                userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-              ),
-            ],
-          ),
-          Positioned(
-              left: _textPos.x.toDouble(),
-              top: _textPos.y.toDouble(),
-              width: 20,
-              height: 20,
-              child: Icon(Icons.location_pin,
-                  color: IMKit.style.inputBar.iconColor)),
-          Container(
-            alignment: Alignment.topRight,
-            child: CurrentLocation(
-                mapController: _mapController,
-                callback: (currentLocation) {
-                  currentLatLng = LatLng(
-                      currentLocation.latitude!, currentLocation.longitude!);
-                }),
-          ),
-          Container(
-              alignment: Alignment.bottomRight,
-              child: IconButton(
-                icon: const Icon(Icons.send),
-                color: IMKit.style.inputBar.iconColor,
-                onPressed: () async {
-                  List<geocoding.Placemark> placemarks =
-                      await geocoding.placemarkFromCoordinates(
-                          currentLatLng.latitude, currentLatLng.longitude);
-                  String name = "";
-                  if (placemarks.isNotEmpty) {
-                    geocoding.Placemark place = placemarks.first;
-                    if (place.street != null && place.street!.isNotEmpty) {
-                      name = place.street!;
-                    }
+            callback: (currentLocation) {
+              currentLatLng =
+                  LatLng(currentLocation.latitude!, currentLocation.longitude!);
+            }),
+      ),
+      Container(
+          alignment: Alignment.bottomRight,
+          child: IconButton(
+            icon: const Icon(Icons.send),
+            color: IMKit.style.inputBar.iconColor,
+            onPressed: () async {
+              List<geocoding.Placemark> placemarks =
+                  await geocoding.placemarkFromCoordinates(
+                      currentLatLng.latitude, currentLatLng.longitude);
+              String name = "";
+              if (placemarks.isNotEmpty) {
+                //   I/flutter ( 8211):       Name: 106號,
+                // I/flutter ( 8211):       : No. 106號,
+                // I/flutter ( 8211):       ISO Country Code: TW,
+                // I/flutter ( 8211):       Country: Taiwan,
+                // I/flutter ( 8211):       Postal code: 333,
+                // I/flutter ( 8211):       Administrative area: Taoyuan City,
+                // I/flutter ( 8211):       Subadministrative area: ,
+                // I/flutter ( 8211):       Locality: Guishan District,
+                // I/flutter ( 8211):       Sublocality: 樂善里,
+                // I/flutter ( 8211):       Thoroughfare: Leshan 3rd Road,
+                // I/flutter ( 8211):       Subthoroughfare: 106號
+
+                geocoding.Placemark place = placemarks.first;
+                if (place.street != null) {
+                  name += place.street!;
+                }
+
+                if (place.thoroughfare != null) {
+                  if (name.isNotEmpty) {
+                    name += ", ";
                   }
-                  IMLocation location = IMLocation(
-                      address: name,
-                      latitude: currentLatLng.latitude,
-                      longitude: currentLatLng.longitude);
-                  Navigator.pop(context, location);
-                },
-              ))
-        ]));
+                  name += place.thoroughfare!;
+                }
+
+                if (place.locality != null) {
+                  if (name.isNotEmpty) {
+                    name += ", ";
+                  }
+                  name += place.locality!;
+                }
+
+                if (place.administrativeArea != null) {
+                  if (name.isNotEmpty) {
+                    name += ", ";
+                  }
+                  name += place.administrativeArea!;
+                }
+
+                if (place.country != null) {
+                  if (name.isNotEmpty) {
+                    name += ", ";
+                  }
+                  name += place.country!;
+                }
+
+                if (place.postalCode != null) {
+                  if (name.isNotEmpty) {
+                    name += " ";
+                  }
+                  name += place.postalCode!;
+                }
+              }
+
+              IMLocation location = IMLocation(
+                  address: name,
+                  latitude: currentLatLng.latitude,
+                  longitude: currentLatLng.longitude);
+              Navigator.pop(context, location);
+            },
+          ))
+    ]));
   }
 }
 
