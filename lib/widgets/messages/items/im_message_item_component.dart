@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class IMMessageItemComponent {
-  static final dateFormat = DateFormat("HH:MM");
-  static final dateFormatWith12Hours = DateFormat("a h:MM");
+  static final dateFormat = DateFormat("HH:mm");
+  static final dateFormatWith12Hours = DateFormat("a h:mm");
 
   static bool isPortrait(BuildContext context) => MediaQuery.of(context).orientation == Orientation.portrait;
 
