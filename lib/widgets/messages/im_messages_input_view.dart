@@ -158,65 +158,63 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                         ),
                         // 位置訊息
                         IMIconButtonWidget(
-                            size: _height,
-                            icon: Icon(Icons.location_on_outlined,
-                                color: IMKit.style.inputBar.iconColor),
-                            onPressed: () async {
-                              final IMLocation location =
-                                  await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const TakeLocationScreen()));
-                              final tmpResponseObject = _responseObject;
-                              setState(() {
-                                _responseObject = null;
-                              });
-                              await IMKit.instance.action.sendLocationMessage(
-                                  roomId: widget.roomId,
-                                  location: location,
-                                  responseObject: tmpResponseObject);
-                              messagesListWidgetKey.currentState
-                                  ?.jumpToBottom();
-                            }),
+                          size: _height,
+                          icon: Icon(Icons.location_on_outlined, color: IMKit.style.inputBar.iconColor),
+                          onPressed: () async {
+                            final IMLocation location = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TakeLocationScreen()));
+                            final tmpResponseObject = _responseObject;
+                            setState(() {
+                              _responseObject = null;
+                            });
+                            await IMKit.instance.action.sendLocationMessage(roomId: widget.roomId, location: location, responseObject: tmpResponseObject);
+                            messagesListWidgetKey.currentState?.jumpToBottom();
+                          },
+                        ),
                         // 文字輸入
                         Expanded(
-                            child: Stack(children: [
-                          TextFormField(
-                              controller: _controller,
-                              style: IMKit.style.inputBar.textFieldTextSytle,
-                              keyboardType: TextInputType.multiline,
-                              focusNode: _focusNode,
-                              minLines: 1,
-                              maxLines: 3,
-                              readOnly: !_isEnableInputText,
-                              decoration: InputDecoration(
-                                fillColor: IMKit.style.inputBar.textFieldBackgroundColor,
-                                filled: true,
-                                isDense: true,
-                                hintStyle: IMKit.style.inputBar.textFieldPlaceholderSytle,
-                                contentPadding: const EdgeInsets.all(8),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide.none,
+                          child: Stack(
+                            children: [
+                              TextFormField(
+                                controller: _controller,
+                                style: IMKit.style.inputBar.textFieldTextSytle,
+                                keyboardType: TextInputType.multiline,
+                                focusNode: _focusNode,
+                                minLines: 1,
+                                maxLines: 3,
+                                readOnly: !_isEnableInputText,
+                                decoration: InputDecoration(
+                                  fillColor: IMKit.style.inputBar.textFieldBackgroundColor,
+                                  filled: true,
+                                  isDense: true,
+                                  hintStyle: IMKit.style.inputBar.textFieldPlaceholderSytle,
+                                  contentPadding: const EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 32),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                ),
+                                onTap: () => updateInputType(IMMessagesInputViewType.text),
+                                onChanged: (value) {
+                                  final isNotEmpty = value.isNotEmpty;
+                                  if (_isEditing != isNotEmpty) {
+                                    setState(() {
+                                      _isEditing = isNotEmpty;
+                                    });
+                                  }
+                                },
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: IMIconButtonWidget(
+                                  size: _height,
+                                  icon: Icon(Icons.emoji_emotions_outlined, color: IMKit.style.inputBar.iconColor),
+                                  onPressed: () => updateInputType(IMMessagesInputViewType.sticker),
                                 ),
                               ),
-                              onTap: () => updateInputType(IMMessagesInputViewType.text),
-                              onChanged: (value) {
-                                final isNotEmpty = value.isNotEmpty;
-                                if (_isEditing != isNotEmpty) {
-                                  setState(() {
-                                    _isEditing = isNotEmpty;
-                                  });
-                                }
-                              }),
-                          Align(
-                              alignment: Alignment.centerRight,
-                              child: IMIconButtonWidget(
-                                size: _height,
-                                icon: Icon(Icons.emoji_emotions_outlined, color: IMKit.style.inputBar.iconColor),
-                                onPressed: () => {updateInputType(IMMessagesInputViewType.sticker)},
-                              ))
-                        ])),
+                            ],
+                          ),
+                        ),
 
                         // 送出按鈕 + // 錄音按鈕
                         Visibility(
