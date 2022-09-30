@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map/plugin_api.dart';
+import 'package:imkit/gen/assets.gen.dart';
 import 'package:imkit/sdk/imkit.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -79,8 +80,8 @@ class _ShowLocationScreenState extends State<ShowLocationScreen> {
           top: _textPos.y.toDouble(),
           width: 20,
           height: 20,
-          child:
-              Icon(Icons.location_pin, color: IMKit.style.inputBar.iconColor))
+          child: Assets.images.locationMark.image(
+              package: IMKit.instance.internal.state.sdkDefaultPackageName))
     ]));
   }
 }

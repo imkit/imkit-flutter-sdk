@@ -16,6 +16,14 @@ class $AssetsImagesGen {
   AssetGenImage get emptyRooms =>
       const AssetGenImage('assets/images/empty_rooms.png');
 
+  /// File path: assets/images/location_locate.png
+  AssetGenImage get locationLocate =>
+      const AssetGenImage('assets/images/location_locate.png');
+
+  /// File path: assets/images/location_mark.png
+  AssetGenImage get locationMark =>
+      const AssetGenImage('assets/images/location_mark.png');
+
   /// File path: assets/images/reocrd_normal.png
   AssetGenImage get reocrdNormal =>
       const AssetGenImage('assets/images/reocrd_normal.png');
