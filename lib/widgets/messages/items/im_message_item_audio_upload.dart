@@ -1,11 +1,11 @@
-import 'dart:io';
+// import 'dart:io';
 
-import 'package:collection/collection.dart';
+// import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
-import 'package:imkit/widgets/components/im_icon_button_widget.dart';
-import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
+// import 'package:imkit/widgets/components/im_icon_button_widget.dart';
+// import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
 
 class IMMessageItemAudioUpload extends StatefulWidget {
   final IMMessage message;
@@ -16,9 +16,9 @@ class IMMessageItemAudioUpload extends StatefulWidget {
 }
 
 class _IMMessageItemAudioUploadState extends State<IMMessageItemAudioUpload> {
-  late final File _file = File(widget.message.images.firstOrNull?.thumbnailPath ?? "");
+  // late final File _file = File(widget.message.images.firstOrNull?.thumbnailPath ?? "");
   late final CancelToken _cancelToken = CancelToken();
-  late double _progress = 0;
+  // late double _progress = 0;
 
   @override
   void initState() {
@@ -85,9 +85,9 @@ class _IMMessageItemAudioUploadState extends State<IMMessageItemAudioUpload> {
       message: widget.message,
       uploadProgress: (progress) {
         if (mounted) {
-          setState(() {
-            _progress = progress;
-          });
+          // setState(() {
+          //   _progress = progress;
+          // });
         }
       },
       cancelToken: _cancelToken);

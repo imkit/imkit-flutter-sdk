@@ -19,6 +19,7 @@ class IMRecordInputView extends StatefulWidget {
 class _IMRecordInputViewState extends State<IMRecordInputView> {
   late int _recordDuration = 0;
   late final _audioRecorder = Record();
+  late bool _isRecording = false;
   Timer? _timer;
 
   @override
@@ -39,6 +40,14 @@ class _IMRecordInputViewState extends State<IMRecordInputView> {
     _timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
       setState(() => _recordDuration++);
     });
+  }
+
+  void _setIsRecording(bool status) {
+    if (status != _isRecording) {
+      setState(() {
+        _isRecording = status;
+      });
+    }
   }
 }
 
@@ -64,38 +73,46 @@ extension on _IMRecordInputViewState {
     _recordDuration = 0;
     final path = (await _audioRecorder.stop()) ?? "";
     if (path.isNotEmpty) {
-      await File(path).delete();
+      try {
+        await File(path).delete();
+      } catch (error) {
+        debugPrint(">>> Delete file error: ${error.toString()}");
+      }
     }
   }
 
-  Widget _buildBody(BuildContext context) {
-    return Container(
-      // color: Colors.red,
-      child: Column(
+  Widget _buildBody(BuildContext context) => Column(
         mainAxisSize: MainAxisSize.max,
         children: [
           const SizedBox(height: 20),
           Text(Utils.formatDuration(_recordDuration), style: IMKit.style.inputView.record.timeTextStyle),
           const SizedBox(height: 10),
           GestureDetector(
-            onLongPressDown: ((details) async {
-              debugPrint("onLongPressDown");
+            onLongPressDown: ((details) {
+              _setIsRecording(true);
               recordStart();
             }),
-            onLongPressEnd: (details) async {
-              debugPrint("onLongPressEnd globalPosition:" + details.globalPosition.toString());
-              debugPrint("onLongPressEnd localPosition:" + details.localPosition.toString());
-              debugPrint("onLongPressEnd velocity:" + details.velocity.toString());
-              recordStop();
+            onLongPressEnd: (details) {
+              if (_isRecording) {
+                _setIsRecording(false);
+                recordStop();
+              }
             },
             onLongPressCancel: () {
-              debugPrint("onLongPressCancel");
-              recordCancel();
+              if (_isRecording) {
+                _setIsRecording(false);
+                recordCancel();
+              }
             },
-            child: Assets.images.reocrdNormal.image(width: 276, package: IMKit.instance.internal.state.sdkDefaultPackageName),
+            onLongPressMoveUpdate: ((details) {
+              if (_isRecording && (details.offsetFromOrigin.dx.abs() > 20 || details.offsetFromOrigin.dy.abs() > 20)) {
+                _setIsRecording(false);
+                recordCancel();
+              }
+            }),
+            child: (_isRecording ? Assets.images.reocrdPressed : Assets.images.reocrdNormal)
+                .image(width: 276, package: IMKit.instance.internal.state.sdkDefaultPackageName),
           ),
         ],
-      ),
-    );
-  }
+      );
 }

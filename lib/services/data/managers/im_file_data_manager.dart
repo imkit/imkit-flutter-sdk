@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -7,8 +6,7 @@ import 'package:imkit/models/im_image.dart';
 import 'package:imkit/models/im_upload_file.dart';
 import 'package:imkit/sdk/internal/imkit_action.dart';
 import 'package:imkit/services/data/managers/im_base_data_manager.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:imkit/utils/imkit_cache_manager.dart';
 
 class IMFileDataManager extends IMBaseDataManager {
   Future<IMImage> uploadImage({required IMImage image, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
@@ -54,7 +52,7 @@ class IMFileDataManager extends IMBaseDataManager {
   }
 
   Future<File> downloadFileToCache({required String url, required String filename}) async {
-    File file = await DefaultCacheManager().getSingleFile(url, headers: IMKit.instance.internal.state.headers());
+    File file = await IMKitCacheManager().getSingleFile(url, headers: IMKit.instance.internal.state.headers());
 
     return file.rename("${file.parent.path}/$filename");
   }
@@ -62,6 +60,6 @@ class IMFileDataManager extends IMBaseDataManager {
   Future<File> addImageToCache({required String url, required File file}) async {
     final fileBytes = await file.readAsBytes();
     final fileExtension = file.path.split(".").last;
-    return DefaultCacheManager().putFile(url, fileBytes, fileExtension: fileExtension);
+    return IMKitCacheManager().putFile(url, fileBytes, fileExtension: fileExtension);
   }
 }

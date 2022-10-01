@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/utils/imkit_cache_manager.dart';
 import 'package:imkit/utils/toast.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
@@ -43,7 +44,7 @@ class IMMessagesImageViewer extends StatelessWidget {
             onPressed: () async {
               final url = _currentUrl ?? "";
               if (url.isNotEmpty) {
-                final cacheManager = DefaultCacheManager();
+                final cacheManager = IMKitCacheManager();
                 FileInfo? fileInfo = await cacheManager.getFileFromCache(url);
                 fileInfo ??= await cacheManager.downloadFile(url, authHeaders: IMKit.instance.internal.state.headers());
 

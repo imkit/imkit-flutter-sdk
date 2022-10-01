@@ -15,10 +15,9 @@ import 'package:imkit/widgets/components/im_rounded_image_widget.dart';
 import 'package:imkit/widgets/messages/im_messages_list_widget.dart';
 import 'package:imkit/widgets/messages/input_view/im_photo_input_view.dart';
 import 'package:imkit/widgets/messages/input_view/im_record_input_view.dart';
+import 'package:imkit/widgets/messages/input_view/im_sticker_input_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
-
-import 'input_view/im_sticker_input_view.dart';
 
 final GlobalKey<IMMessagesInputViewState> inputViewWidgetKey = GlobalKey();
 
@@ -220,17 +219,18 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                         Visibility(
                           visible: _isEditing,
                           replacement: IMIconButtonWidget(
-                            size: _height, icon: Icon(Icons.mic_none_outlined, color: IMKit.style.inputBar.iconColor), onPressed: () => {},
-                            // onPressed: () => PermissionManager.request(
-                            //   Permission.microphone,
-                            //   (granted) async {
-                            //     if (granted) {
-                            //       updateInputType(IMMessagesInputViewType.record);
-                            //     } else {
-                            //       Toast.basic(text: "Microphone permission is not granted");
-                            //     }
-                            //   },
-                            // ),
+                            size: _height,
+                            icon: Icon(Icons.mic_none_outlined, color: IMKit.style.inputBar.iconColor),
+                            onPressed: () => PermissionManager.request(
+                              Permission.microphone,
+                              (granted) async {
+                                if (granted) {
+                                  updateInputType(IMMessagesInputViewType.record);
+                                } else {
+                                  Toast.basic(text: "Microphone permission is not granted");
+                                }
+                              },
+                            ),
                           ),
                           child: IMIconButtonWidget(
                             size: _height,
@@ -321,6 +321,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                     _responseObject = null;
                   });
                   await IMKit.instance.action.preSendAudioMessage(roomId: widget.roomId, path: path, duration: duration, responseObject: tmpResponseObject);
+                  updateInputType(IMMessagesInputViewType.none);
                   scrollToBottom();
                 },
               ),
