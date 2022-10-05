@@ -9,7 +9,7 @@ class IMMessageItemComponent {
   static bool isPortrait(BuildContext context) => MediaQuery.of(context).orientation == Orientation.portrait;
 
   static double getMaxCellWidth(BuildContext context) => MediaQuery.of(context).size.width * 0.7;
-  static double getStriceCellWidth(BuildContext context) => MediaQuery.of(context).size.width * 0.4;
+  static double getStrickerCellWidth(BuildContext context) => MediaQuery.of(context).size.width * 0.3;
 
   static Widget getLoadImageFailure() => Container(
         padding: const EdgeInsets.all(12),

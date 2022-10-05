@@ -13,6 +13,6 @@ class IMMessageItemSticker extends StatelessWidget {
   Widget build(BuildContext context) => IMStickerItem(
         value: StrickerUtils.getStricker(message.stickerId),
         fit: BoxFit.fitWidth,
-        width: IMMessageItemComponent.getStriceCellWidth(context),
+        width: IMMessageItemComponent.getStrickerCellWidth(context),
       );
 }
