@@ -3,6 +3,7 @@ import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/widgets/components/im_circle_avatar_widget.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_audio.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
+import 'package:imkit/widgets/messages/items/im_message_item_file.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_image.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_location.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_menu.dart';
@@ -105,8 +106,7 @@ extension on IMMessageListItem {
           }
 
           List<String> urls = <String>[];
-          RegExp exp =
-          RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
+          RegExp exp = RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
           Iterable<RegExpMatch> matches = exp.allMatches(text);
 
           for (var match in matches) {
@@ -129,8 +129,8 @@ extension on IMMessageListItem {
       case IMMessageType.video:
         return IMMessageItemVideo(message: message);
 
-      // case IMMessageType.file:
-      //   return;
+      case IMMessageType.file:
+        return IMMessageItemFile(message: message);
 
       case IMMessageType.location:
         return IMMessageItemLocation(message: message);

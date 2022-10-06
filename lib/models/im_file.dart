@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:imkit/imkit_sdk.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'im_file.g.dart';
@@ -28,7 +31,17 @@ class IMFile {
   @JsonKey(name: 'duration')
   int duration = 0;
 
+  String? originalPath;
+
   String get filename => "${name ?? ""}.${fileExtension ?? ""}";
+  String get filesize {
+    const suffixes = ["B", "KB", "MB", "GB", "TB"];
+    const decimals = 1;
+    final i = (log(bytes) / log(1024)).floor();
+    final size = ((bytes / pow(1024, i)).toStringAsFixed(decimals));
+
+    return "${IMKit.S.messages_fileCell_size} $size ${suffixes[i]}";
+  }
 
   IMFile({
     this.url,
@@ -37,6 +50,7 @@ class IMFile {
     this.mimeType,
     this.bytes = 0,
     this.duration = 0,
+    this.originalPath,
   });
 
   factory IMFile.fromJson(Map<String, dynamic> json) => _$IMFileFromJson(json);

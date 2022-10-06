@@ -1,12 +1,12 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:imkit/extensions/list_ext.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_client.dart';
+import 'package:imkit/models/im_file.dart';
 import 'package:imkit/models/im_image.dart';
 import 'package:imkit/models/im_location.dart';
 import 'package:imkit/models/im_member_property.dart';
@@ -20,6 +20,7 @@ import 'package:imkit/services/data/managers/im_user_manager.dart';
 import 'package:imkit/services/data/storage/im_local_storage.dart';
 import 'package:imkit/services/network/socket/im_socket_client.dart';
 import 'package:imkit/services/network/socket/im_socket_client_event.dart';
+import 'package:mime/mime.dart';
 import 'package:photo_manager/photo_manager.dart';
 
 class IMData {
@@ -262,7 +263,6 @@ class IMData {
   }
 
   Future<IMMessage> preSendAudioMessage({required String roomId, required String path, required int duration}) async {
-    debugPrint(">>> Path: $path");
     final me = await getMe();
     final file = File.fromUri(Uri.parse(path));
 
@@ -276,15 +276,33 @@ class IMData {
     return _messageDataManager.preSendMessage(localMessage: message);
   }
 
-  Future<IMMessage> sendAudioMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
+  Future<IMMessage> preSendFileMessage({required String roomId, required PlatformFile platformFile, IMResponseObject? responseObject}) async {
+    final me = await getMe();
+    final file = IMFile(
+        url: null,
+        name: platformFile.name.split('.').first,
+        fileExtension: platformFile.extension,
+        mimeType: lookupMimeType(platformFile.path ?? "", headerBytes: platformFile.bytes),
+        bytes: platformFile.size,
+        duration: 0,
+        originalPath: platformFile.path);
+    final message = IMMessage.fromFile(
+      roomId: roomId,
+      sender: me,
+      file: file,
+    );
+    return _messageDataManager.preSendMessage(localMessage: message);
+  }
+
+  Future<IMMessage> sendAndUploadFileMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
     final file = message.file;
-    if (file == null || (file.mimeType ?? "").isEmpty || (file.url ?? "").isEmpty) {
+    if (file == null || (file.mimeType ?? "").isEmpty || (file.originalPath ?? "").isEmpty) {
       return message;
     }
     try {
       final uploadedFile = await _fileDataManager.upload(
         mimeType: file.mimeType!,
-        file: File(file.url!),
+        file: File(file.originalPath!),
         onSendProgress: (count, total) => uploadProgress?.call(count / total),
         cancelToken: cancelToken,
       );
@@ -298,8 +316,24 @@ class IMData {
     }
   }
 
-  Future<IMMessage> resendMessage({required IMMessage message}) async {
-    return _messageDataManager.resendMessage(localMessage: message);
+  Future<IMMessage> resendMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
+    message.status = IMMessageStatus.sent;
+    await _messageDataManager.updateItem(message);
+
+    switch (message.type) {
+      case IMMessageType.image:
+        return await sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
+
+      case IMMessageType.audio:
+      case IMMessageType.file:
+        return await sendAndUploadFileMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
+
+      case IMMessageType.text:
+      case IMMessageType.location:
+      case IMMessageType.sticker:
+      default:
+        return await _messageDataManager.sendNewMessage(localMessage: message);
+    }
   }
 
   Future<IMMessage> recallMessage({required IMMessage message}) {
@@ -314,7 +348,7 @@ class IMData {
     _messageDataManager.deleteItem(message);
   }
 
-  Future<void> _syncMessages({required String roomId, int limit = 20}) async {
+  Future<void> _syncMessages({required String roomId, int limit = 50}) async {
     final localMessages = await _messageDataManager.findMessages(roomId: roomId);
     final localMessageIds = localMessages.map((e) => e.id);
     String? latestMessageId;

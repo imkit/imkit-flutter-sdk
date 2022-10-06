@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/extensions/string_ext.dart';
 import 'package:imkit/models/im_location.dart';
@@ -7,7 +8,6 @@ import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/sdk/imkit.dart';
 import 'package:imkit/utils/permission_manager.dart';
 import 'package:imkit/utils/toast.dart';
-import 'package:imkit/widgets/common/take_location_screen.dart';
 import 'package:imkit/widgets/common/take_picture_screen.dart';
 import 'package:imkit/widgets/components/im_circle_avatar_widget.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
@@ -16,6 +16,7 @@ import 'package:imkit/widgets/messages/im_messages_list_widget.dart';
 import 'package:imkit/widgets/messages/input_view/im_photo_input_view.dart';
 import 'package:imkit/widgets/messages/input_view/im_record_input_view.dart';
 import 'package:imkit/widgets/messages/input_view/im_sticker_input_view.dart';
+import 'package:imkit/widgets/messages/input_view/im_utility_input_view.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -27,6 +28,7 @@ enum IMMessagesInputViewType {
   photo,
   sticker,
   record,
+  utility,
 }
 
 class IMMessagesInputView extends StatefulWidget {
@@ -126,6 +128,15 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
+                        // 更多按鈕
+                        IMIconButtonWidget(
+                          size: _height,
+                          icon: Icon(_inputViewType == IMMessagesInputViewType.utility ? Icons.cancel : Icons.add_circle, color: IMKit.style.primaryColor),
+                          onPressed: () => updateInputType(
+                            _inputViewType == IMMessagesInputViewType.utility ? IMMessagesInputViewType.none : IMMessagesInputViewType.utility,
+                          ),
+                        ),
+
                         // 相機按鈕
                         IMIconButtonWidget(
                           size: _height,
@@ -156,19 +167,19 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                           onPressed: () => updateInputType(IMMessagesInputViewType.photo),
                         ),
                         // 位置訊息
-                        IMIconButtonWidget(
-                          size: _height,
-                          icon: Icon(Icons.location_on_outlined, color: IMKit.style.inputBar.iconColor),
-                          onPressed: () async {
-                            final IMLocation location = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TakeLocationScreen()));
-                            final tmpResponseObject = _responseObject;
-                            setState(() {
-                              _responseObject = null;
-                            });
-                            await IMKit.instance.action.sendLocationMessage(roomId: widget.roomId, location: location, responseObject: tmpResponseObject);
-                            messagesListWidgetKey.currentState?.jumpToBottom();
-                          },
-                        ),
+                        // IMIconButtonWidget(
+                        //   size: _height,
+                        //   icon: Icon(Icons.location_on_outlined, color: IMKit.style.inputBar.iconColor),
+                        //   onPressed: () async {
+                        //     final IMLocation location = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TakeLocationScreen()));
+                        //     final tmpResponseObject = _responseObject;
+                        //     setState(() {
+                        //       _responseObject = null;
+                        //     });
+                        //     await IMKit.instance.action.sendLocationMessage(roomId: widget.roomId, location: location, responseObject: tmpResponseObject);
+                        //     messagesListWidgetKey.currentState?.jumpToBottom();
+                        //   },
+                        // ),
                         // 文字輸入
                         Expanded(
                           child: Stack(
@@ -215,7 +226,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                           ),
                         ),
 
-                        // 送出按鈕 + // 錄音按鈕
+                        // 送出按鈕 + 錄音按鈕
                         Visibility(
                           visible: _isEditing,
                           replacement: IMIconButtonWidget(
@@ -290,6 +301,32 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
               ),
             ),
             Visibility(
+              visible: _inputViewType == IMMessagesInputViewType.utility,
+              child: IMUtilityInputView(onSelected: (results) async {
+                final tmpResponseObject = _responseObject;
+                IMMessage? _sentMessage;
+                setState(() {
+                  _responseObject = null;
+                });
+                switch (results.runtimeType) {
+                  case IMLocation:
+                    _sentMessage = await IMKit.instance.action.sendLocationMessage(roomId: widget.roomId, location: results, responseObject: tmpResponseObject);
+                    break;
+
+                  case FilePickerResult:
+                    final singlePlatformFile = results.files.single;
+                    _sentMessage = await IMKit.instance.action
+                        .preSendFileMessage(roomId: widget.roomId, platformFile: singlePlatformFile, responseObject: tmpResponseObject);
+                    break;
+                }
+
+                updateInputType(IMMessagesInputViewType.none);
+                if (_sentMessage != null) {
+                  scrollToBottom();
+                }
+              }),
+            ),
+            Visibility(
               visible: _inputViewType == IMMessagesInputViewType.photo,
               child: IMPhotoInputView(
                 onSelected: (entities) {
@@ -308,6 +345,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                     _responseObject = null;
                   });
                   await IMKit.instance.action.sendStickerMessage(roomId: widget.roomId, sticker: sticker, responseObject: tmpResponseObject);
+                  updateInputType(IMMessagesInputViewType.none);
                   scrollToBottom();
                 },
               ),

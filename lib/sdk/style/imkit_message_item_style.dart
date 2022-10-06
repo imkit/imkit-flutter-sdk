@@ -7,6 +7,7 @@ class IMKitMessageItemStyle {
   final IMKitMessageItemDateStyle date = IMKitMessageItemDateStyle();
   final IMKitMessageItemStatusStyle status = IMKitMessageItemStatusStyle();
   final IMKitMessageItemResponseStyle response = IMKitMessageItemResponseStyle();
+  final IMKitMessageItemFileStyle file = IMKitMessageItemFileStyle();
 
   double cornerRadius = 12;
 
@@ -54,4 +55,8 @@ class IMKitMessageItemStatusStyle {
 class IMKitMessageItemResponseStyle {
   TextStyle titleTextSytle = const TextStyle(color: Color.fromRGBO(66, 66, 66, 1), fontSize: 13);
   TextStyle subtitleTextSytle = const TextStyle(color: Color.fromRGBO(117, 117, 117, 1), fontSize: 13);
+}
+
+class IMKitMessageItemFileStyle {
+  TextStyle detailTextSytle = const TextStyle(color: Color.fromRGBO(117, 117, 117, 1), fontSize: 13);
 }

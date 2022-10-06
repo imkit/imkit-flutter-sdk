@@ -69,16 +69,6 @@ class IMMessageDataManager extends IMBaseDataManager {
     }
   }
 
-  Future<IMMessage> resendMessage({required IMMessage localMessage}) async {
-    localMessage.status = IMMessageStatus.sent;
-    await updateItem(localMessage);
-
-    if (localMessage.type == IMMessageType.text) {
-      return sendNewMessage(localMessage: localMessage);
-    }
-    return localMessage;
-  }
-
   Future<IMMessage> recallMessage({required IMMessage localMessage}) async {
     final serverMessage = await _sendMessageToServer(roomId: localMessage.roomId, body: {
       "_id": localMessage.id,

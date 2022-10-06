@@ -4,7 +4,7 @@ import 'package:imkit/models/im_message.dart';
 import 'package:imkit/widgets/components/im_image_widget.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_component.dart';
 import 'package:imkit/widgets/messages/items/im_message_item_image_upload.dart';
-import 'package:imkit/widgets/messages/sub_views/im_messages_image_viewer.dart';
+import 'package:imkit/widgets/messages/sub_views/im_message_image_viewer.dart';
 
 class IMMessageItemImage extends StatelessWidget {
   final IMMessage message;
@@ -31,7 +31,7 @@ extension on IMMessageItemImage {
       onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => IMMessagesImageViewer(defaultMessage: message),
+              builder: (context) => IMMessageImageViewer(defaultMessage: message),
               fullscreenDialog: true,
             ),
           ),

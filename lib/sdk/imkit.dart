@@ -1,5 +1,6 @@
 import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_file_view/flutter_file_view.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:imkit/generated/l10n.dart';
@@ -33,6 +34,7 @@ class IMKit {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
+        ViewerLocalizationsDelegate.delegate,
         IMKitS.delegate,
       ];
 

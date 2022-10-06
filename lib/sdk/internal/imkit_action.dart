@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_location.dart';
@@ -82,8 +83,11 @@ class IMKitAction with WidgetsBindingObserver {
       _data.sendStickerMessage(roomId: roomId, sticker: sticker, responseObject: responseObject);
   Future<IMMessage> preSendAudioMessage({required String roomId, required String path, required int duration, IMResponseObject? responseObject}) =>
       _data.preSendAudioMessage(roomId: roomId, path: path, duration: duration);
-  Future<IMMessage> sendAudioMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
-      _data.sendAudioMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
+  Future<IMMessage> preSendFileMessage({required String roomId, required PlatformFile platformFile, IMResponseObject? responseObject}) =>
+      _data.preSendFileMessage(roomId: roomId, platformFile: platformFile, responseObject: responseObject);
+  Future<IMMessage> sendAndUploadFileMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
+      _data.sendAndUploadFileMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
+
   Future<IMMessage> resendMessage({required IMMessage message}) => _data.resendMessage(message: message);
   Future<IMMessage> recallMessage({required IMMessage message}) => _data.recallMessage(message: message);
   Future<IMMessage> editMessage({required IMMessage message}) => _data.editMessage(message: message);

@@ -81,7 +81,7 @@ class _IMMessageItemAudioUploadState extends State<IMMessageItemAudioUpload> {
   //       ],
   //     );
 
-  void _sendAudioMessage() => IMKit.instance.action.sendAudioMessage(
+  void _sendAudioMessage() => IMKit.instance.action.sendAndUploadFileMessage(
       message: widget.message,
       uploadProgress: (progress) {
         if (mounted) {

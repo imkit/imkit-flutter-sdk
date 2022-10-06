@@ -367,26 +367,26 @@ class IMMessage {
         type: IMMessageType.audio,
         sender: sender,
         file: IMFile(
-          url: localPath,
+          url: null,
           name: DateFormat('yyyyMMdd_HHmmss').format(DateTime.now()),
           fileExtension: "m4a",
           mimeType: "audio/m4a",
           bytes: bytes,
           duration: duration,
+          originalPath: localPath,
         ),
         responseObject: responseObject,
       );
 
-  factory IMMessage.fromCustom({
+  factory IMMessage.fromFile({
     required String roomId,
     required IMUser sender,
-    required IMMessageType type,
     required IMFile file,
   }) =>
       IMMessage(
         id: Utils.uuid(),
         roomId: roomId,
-        type: type,
+        type: IMMessageType.file,
         sender: sender,
         file: file,
       );

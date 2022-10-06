@@ -12,12 +12,12 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 // ignore: must_be_immutable
-class IMMessagesImageViewer extends StatelessWidget {
+class IMMessageImageViewer extends StatelessWidget {
   final IMMessage defaultMessage;
   late String? _currentUrl;
   late final PageController _pageController = PageController();
   late bool isJumpToDefault = false;
-  IMMessagesImageViewer({Key? key, required this.defaultMessage}) : super(key: key);
+  IMMessageImageViewer({Key? key, required this.defaultMessage}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +96,7 @@ class IMMessagesImageViewer extends StatelessWidget {
   }
 }
 
-extension on IMMessagesImageViewer {
+extension on IMMessageImageViewer {
   String _url({required IMMessage message}) {
     final firstImage = message.images.first;
     if (firstImage.originalUrl.isNotEmpty) {

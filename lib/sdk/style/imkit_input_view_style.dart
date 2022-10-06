@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class IMKitInputViewStyle {
   final IMKitPhotoInputViewStyle photo = IMKitPhotoInputViewStyle();
   final IMKitRecordInputViewStyle record = IMKitRecordInputViewStyle();
+  final IMKitUtilityInputViewStyle utility = IMKitUtilityInputViewStyle();
 }
 
 class IMKitPhotoInputViewStyle {
@@ -11,4 +12,10 @@ class IMKitPhotoInputViewStyle {
 
 class IMKitRecordInputViewStyle {
   TextStyle timeTextStyle = const TextStyle(color: Color.fromRGBO(158, 158, 158, 1), fontSize: 16);
+}
+
+class IMKitUtilityInputViewStyle {
+  Color iconColor = const Color.fromRGBO(120, 120, 120, 1);
+
+  TextStyle textTextStyle = const TextStyle(color: Color.fromRGBO(117, 117, 117, 1), fontSize: 12);
 }
