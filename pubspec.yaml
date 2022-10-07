@@ -39,7 +39,7 @@ dependencies:
   record: ^3.0.4
 
   # File
-  file_picker: ^5.2.0+1
+  file_picker: ^4.6.1
   mime: ^1.0.2
   flutter_file_view: ^2.0.8+6
 
