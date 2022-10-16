@@ -5,6 +5,7 @@ class IMState {
   String clientKey = "";
   String chatServerURL = "";
   String translationApiKey = "";
+  String cloudTranslateAPIUrl = "";
   String bucket = "";
   String uid = "";
   String token = "";
@@ -71,6 +72,7 @@ class IMStateBuilder {
   String _clientKey = "";
   String _chatServerURL = "";
   String _translationApiKey = "";
+  String _cloudTranslateAPIUrl = "";
   String _bucket = "chatserver-upload";
   String _uid = "";
   String _token = "";
@@ -97,6 +99,11 @@ class IMStateBuilder {
     return this;
   }
 
+  IMStateBuilder setCloudTranslateAPIUrl(String value) {
+    _cloudTranslateAPIUrl = value;
+    return this;
+  }
+
   IMStateBuilder setStickers(List<String> value) {
     _stickers = value;
     return this;
@@ -111,6 +118,7 @@ class IMStateBuilder {
     ..clientKey = _clientKey
     ..chatServerURL = _chatServerURL
     ..translationApiKey = _translationApiKey
+    ..cloudTranslateAPIUrl = _cloudTranslateAPIUrl
     ..bucket = _bucket
     ..uid = _uid
     ..token = _token
