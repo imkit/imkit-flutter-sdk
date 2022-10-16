@@ -43,6 +43,10 @@ class IMMessageDataManager extends IMBaseDataManager {
     return database.messageDao.insertItems(messages);
   }
 
+  Future<void> deleteByRoom(String roomId) {
+    return database.messageDao.deleteByRoom(roomId);
+  }
+
   Future<IMMessage> preSendMessage({required IMMessage localMessage}) async {
     IMMessage message = localMessage;
     message.status = IMMessageStatus.sent;

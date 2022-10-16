@@ -18,6 +18,9 @@ abstract class IMRoomDao extends IMBaseDao<IMRoom> {
   @Query('SELECT * FROM $table WHERE id = :id')
   Future<IMRoom?> findRoomByFuture(String id);
 
+  @delete
+  Future<void> deleteRoom(IMRoom room);
+
   @Query('DELETE FROM $table')
   Future<void> deleteAll();
 }

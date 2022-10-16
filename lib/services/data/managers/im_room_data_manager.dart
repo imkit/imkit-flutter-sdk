@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_member_property.dart';
 import 'package:imkit/models/im_system_event.dart';
@@ -99,6 +100,19 @@ class IMRoomDataManager extends IMBaseDataManager {
     await insertItem(room);
 
     return room;
+  }
+
+  Future<bool> leaveRoom({required String roomId, required String userId, bool isSystemMessageEnabled = true}) async {
+    try {
+      await api.room.removeMembers(roomId: roomId, uids: [userId], isSystemMessageEnabled: isSystemMessageEnabled);
+    } catch (error) {
+      debugPrint(">>> leaveRoom error: ${error.toString()}");
+    }
+    final room = await findRoom(roomId: roomId);
+    if (room != null) {
+      await database.roomDao.deleteRoom(room);
+    }
+    return true;
   }
 
   void onSocketDidReceiveRoom(IMRoom room) {

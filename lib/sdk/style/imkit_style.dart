@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:imkit/sdk/style/imkit_avatar_style.dart';
+import 'package:imkit/sdk/style/imkit_button_style.dart';
 import 'package:imkit/sdk/style/imkit_input_view_style.dart';
 import 'package:imkit/sdk/style/imkit_message_input_bar_style.dart';
 import 'package:imkit/sdk/style/imkit_message_item_style.dart';
@@ -11,6 +12,7 @@ class IMKitStyle {
   IMKitMessageItemStyle message = IMKitMessageItemStyle();
   IMKitMessageInputBarStyle inputBar = IMKitMessageInputBarStyle();
   IMKitInputViewStyle inputView = IMKitInputViewStyle();
+  IMKitButtonStyle button = IMKitButtonStyle();
 
   Color primaryColor = const Color.fromRGBO(0, 160, 230, 1);
   Color backgroundColor = const Color.fromRGBO(246, 246, 246, 1);

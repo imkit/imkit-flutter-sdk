@@ -65,4 +65,11 @@ abstract class IMRoomRequest {
     @Path("id") required String roomId,
     @Field("message") required String lastReadMessageId,
   });
+
+  @POST("$endpoint/{id}/delete/members")
+  Future<IMRoom> removeMembers({
+    @Path("id") required String roomId,
+    @Field("members") required List<String> uids,
+    @Field("systemMessage") required bool isSystemMessageEnabled,
+  });
 }
