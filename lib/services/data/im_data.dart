@@ -421,6 +421,14 @@ class IMData {
   Future<File> downloadFileToCache({required String url, required String filename}) async =>
       (await _fileDataManager.downloadFileToCache(url: url, filename: filename));
 
+  /// Settings
+  Future<bool> leaveRoom({required String roomId}) async {
+    final result = await _roomDataManager.leaveRoom(roomId: roomId, userId: IMKit.uid, isSystemMessageEnabled: true);
+    await _messageDataManager.deleteByRoom(roomId);
+
+    return result;
+  }
+
   /// Language
   Future<String> doTranslate(
           {required String apiKey, required Map<String, dynamic> body}) =>

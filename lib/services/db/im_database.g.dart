@@ -327,6 +327,11 @@ class _$IMRoomDao extends IMRoomDao {
   }
 
   @override
+  Future<void> deleteRoom(IMRoom room) async {
+    await _iMRoomDeletionAdapter.delete(room);
+  }
+
+  @override
   Future<void> deleteItem(IMRoom item) async {
     await _iMRoomDeletionAdapter.delete(item);
   }
