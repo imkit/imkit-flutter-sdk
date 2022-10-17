@@ -96,4 +96,7 @@ class IMKitAction with WidgetsBindingObserver {
 
   // File
   Future<File> downloadFileToCache({required String url, required String filename}) => _data.downloadFileToCache(url: url, filename: filename);
+
+  // Language
+  Future<String> doTranslate(String apiKey, Map<String, dynamic> body) => _data.doTranslate(apiKey: apiKey, body: body);
 }

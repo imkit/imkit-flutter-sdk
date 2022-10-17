@@ -1,11 +1,11 @@
 import 'package:imkit/services/network/api/cloud_translate_api_dio.dart';
-import 'package:imkit/services/network/api/requests/cloud_translate_request.dart';
+import 'package:imkit/services/network/api/requests/language_request.dart';
 
 class CloudTranslateApiClient {
   late final dio = CloudTranslateApiDio();
 
   // Requests
-  late final CloudTranslateRequest _auth = CloudTranslateRequest(dio);
+  late final LanguageRequest _translate = LanguageRequest(dio);
 
-  CloudTranslateRequest get auth => _auth;
+  LanguageRequest get translate => _translate;
 }

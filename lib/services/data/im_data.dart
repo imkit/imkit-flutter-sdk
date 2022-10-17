@@ -12,6 +12,7 @@ import 'package:imkit/models/im_location.dart';
 import 'package:imkit/models/im_member_property.dart';
 import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/sdk/internal/imkit_action.dart';
+import 'package:imkit/services/data/managers/language_manager.dart';
 import 'package:imkit/services/data/managers/im_auth_manager.dart';
 import 'package:imkit/services/data/managers/im_file_data_manager.dart';
 import 'package:imkit/services/data/managers/im_message_data_manager.dart';
@@ -30,6 +31,7 @@ class IMData {
   late final IMAuthDataManager _authDataManager = IMAuthDataManager();
   late final IMUserDataManager _userDataManager = IMUserDataManager();
   late final IMFileDataManager _fileDataManager = IMFileDataManager();
+  late final LanguageDataManager _translateDataManager = LanguageDataManager();
   late final IMLocalStorage localStorege;
   late final IMSocketClient _socketClient = IMSocketClient(
       state: state,
@@ -418,6 +420,11 @@ class IMData {
   /// File
   Future<File> downloadFileToCache({required String url, required String filename}) async =>
       (await _fileDataManager.downloadFileToCache(url: url, filename: filename));
+
+  /// Language
+  Future<String> doTranslate(
+          {required String apiKey, required Map<String, dynamic> body}) =>
+      _translateDataManager.doTranslate(apiKey: apiKey, body: body);
 
   /// Socket
   socketConnect() {
