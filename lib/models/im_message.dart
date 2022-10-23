@@ -78,6 +78,8 @@ class IMMessage {
   @JsonKey(readValue: _toText)
   String? text;
 
+  String? translatedText;
+
   @JsonKey(name: 'sticker', defaultValue: null)
   String? stickerId;
 
@@ -261,6 +263,7 @@ class IMMessage {
     this.createdAt,
     this.updatedAt,
     this.text,
+    this.translatedText,
     this.stickerId,
     this.responseObject,
     this.mentions = const [],

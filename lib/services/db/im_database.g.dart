@@ -88,7 +88,7 @@ class _$IMDatabase extends IMDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `IMRoom` (`id` TEXT NOT NULL, `type` TEXT NOT NULL, `name` TEXT NOT NULL, `desc` TEXT, `coverUrl` TEXT, `numberOfUnreadMessages` INTEGER NOT NULL, `isMuted` INTEGER NOT NULL, `isMentioned` INTEGER NOT NULL, `isTranslationEnabled` INTEGER NOT NULL, `lastMessage` TEXT, `members` TEXT NOT NULL, `roomTags` TEXT NOT NULL, `tags` TEXT NOT NULL, `memberProperties` TEXT NOT NULL, `createdAt` INTEGER, `updatedAt` INTEGER, PRIMARY KEY (`id`))');
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `IMMessage` (`id` TEXT NOT NULL, `roomId` TEXT NOT NULL, `type` TEXT NOT NULL, `systemEvent` TEXT, `sender` TEXT, `createdAt` INTEGER, `updatedAt` INTEGER, `responseObject` TEXT, `text` TEXT, `stickerId` TEXT, `mentions` TEXT NOT NULL, `images` TEXT NOT NULL, `file` TEXT, `location` TEXT, `extra` TEXT, `status` TEXT NOT NULL, `membersWhoHaveRead` TEXT NOT NULL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `IMMessage` (`id` TEXT NOT NULL, `roomId` TEXT NOT NULL, `type` TEXT NOT NULL, `systemEvent` TEXT, `sender` TEXT, `createdAt` INTEGER, `updatedAt` INTEGER, `responseObject` TEXT, `text` TEXT, `translatedText` TEXT, `stickerId` TEXT, `mentions` TEXT NOT NULL, `images` TEXT NOT NULL, `file` TEXT, `location` TEXT, `extra` TEXT, `status` TEXT NOT NULL, `membersWhoHaveRead` TEXT NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `IMUser` (`id` TEXT NOT NULL, `nickname` TEXT NOT NULL, `desc` TEXT, `avatarUrl` TEXT, `lastLoginAt` INTEGER, PRIMARY KEY (`id`))');
 
@@ -360,6 +360,7 @@ class _$IMMessageDao extends IMMessageDao {
                   'responseObject':
                       _iMResponseObjectConverter.encode(item.responseObject),
                   'text': item.text,
+                  'translatedText': item.translatedText,
                   'stickerId': item.stickerId,
                   'mentions': _iMStringListConverter.encode(item.mentions),
                   'images': _iMImageListConverter.encode(item.images),
@@ -387,6 +388,7 @@ class _$IMMessageDao extends IMMessageDao {
                   'responseObject':
                       _iMResponseObjectConverter.encode(item.responseObject),
                   'text': item.text,
+                  'translatedText': item.translatedText,
                   'stickerId': item.stickerId,
                   'mentions': _iMStringListConverter.encode(item.mentions),
                   'images': _iMImageListConverter.encode(item.images),
@@ -414,6 +416,7 @@ class _$IMMessageDao extends IMMessageDao {
                   'responseObject':
                       _iMResponseObjectConverter.encode(item.responseObject),
                   'text': item.text,
+                  'translatedText': item.translatedText,
                   'stickerId': item.stickerId,
                   'mentions': _iMStringListConverter.encode(item.mentions),
                   'images': _iMImageListConverter.encode(item.images),
@@ -452,6 +455,7 @@ class _$IMMessageDao extends IMMessageDao {
             createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
             updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
             text: row['text'] as String?,
+            translatedText: row['translatedText'] as String?,
             stickerId: row['stickerId'] as String?,
             responseObject: _iMResponseObjectConverter
                 .decode(row['responseObject'] as String?),
@@ -482,6 +486,7 @@ class _$IMMessageDao extends IMMessageDao {
             createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
             updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
             text: row['text'] as String?,
+            translatedText: row['translatedText'] as String?,
             stickerId: row['stickerId'] as String?,
             responseObject: _iMResponseObjectConverter
                 .decode(row['responseObject'] as String?),
@@ -513,6 +518,7 @@ class _$IMMessageDao extends IMMessageDao {
             createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
             updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
             text: row['text'] as String?,
+            translatedText: row['translatedText'] as String?,
             stickerId: row['stickerId'] as String?,
             responseObject: _iMResponseObjectConverter
                 .decode(row['responseObject'] as String?),
@@ -543,6 +549,7 @@ class _$IMMessageDao extends IMMessageDao {
             createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
             updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
             text: row['text'] as String?,
+            translatedText: row['translatedText'] as String?,
             stickerId: row['stickerId'] as String?,
             responseObject: _iMResponseObjectConverter
                 .decode(row['responseObject'] as String?),
@@ -577,6 +584,7 @@ class _$IMMessageDao extends IMMessageDao {
             createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
             updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
             text: row['text'] as String?,
+            translatedText: row['translatedText'] as String?,
             stickerId: row['stickerId'] as String?,
             responseObject: _iMResponseObjectConverter
                 .decode(row['responseObject'] as String?),
@@ -595,7 +603,7 @@ class _$IMMessageDao extends IMMessageDao {
   Future<IMMessage?> findLatestMessage(String roomId) async {
     return _queryAdapter.query(
         'SELECT * FROM IMMessage WHERE roomId = ?1 ORDER BY createdAt DESC LIMIT 1',
-        mapper: (Map<String, Object?> row) => IMMessage(id: row['id'] as String, roomId: row['roomId'] as String, type: _iMMessageTypeConverter.decode(row['type'] as String), systemEvent: _iMSystemEventConverter.decode(row['systemEvent'] as String?), sender: _iMUserConverter.decode(row['sender'] as String?), createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?), updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?), text: row['text'] as String?, stickerId: row['stickerId'] as String?, responseObject: _iMResponseObjectConverter.decode(row['responseObject'] as String?), mentions: _iMStringListConverter.decode(row['mentions'] as String), images: _iMImageListConverter.decode(row['images'] as String), file: _iMFileConverter.decode(row['file'] as String?), location: _iMLocationConverter.decode(row['location'] as String?), extra: _iMMapConverter.decode(row['extra'] as String?), status: _iMMessageStatusConverter.decode(row['status'] as String), membersWhoHaveRead: _iMStringListConverter.decode(row['membersWhoHaveRead'] as String)),
+        mapper: (Map<String, Object?> row) => IMMessage(id: row['id'] as String, roomId: row['roomId'] as String, type: _iMMessageTypeConverter.decode(row['type'] as String), systemEvent: _iMSystemEventConverter.decode(row['systemEvent'] as String?), sender: _iMUserConverter.decode(row['sender'] as String?), createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?), updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?), text: row['text'] as String?, translatedText: row['translatedText'] as String?, stickerId: row['stickerId'] as String?, responseObject: _iMResponseObjectConverter.decode(row['responseObject'] as String?), mentions: _iMStringListConverter.decode(row['mentions'] as String), images: _iMImageListConverter.decode(row['images'] as String), file: _iMFileConverter.decode(row['file'] as String?), location: _iMLocationConverter.decode(row['location'] as String?), extra: _iMMapConverter.decode(row['extra'] as String?), status: _iMMessageStatusConverter.decode(row['status'] as String), membersWhoHaveRead: _iMStringListConverter.decode(row['membersWhoHaveRead'] as String)),
         arguments: [roomId]);
   }
 
@@ -612,6 +620,7 @@ class _$IMMessageDao extends IMMessageDao {
             createdAt: _iMDateTimeConverter.decode(row['createdAt'] as int?),
             updatedAt: _iMDateTimeConverter.decode(row['updatedAt'] as int?),
             text: row['text'] as String?,
+            translatedText: row['translatedText'] as String?,
             stickerId: row['stickerId'] as String?,
             responseObject: _iMResponseObjectConverter
                 .decode(row['responseObject'] as String?),

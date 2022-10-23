@@ -11,6 +11,8 @@ extension IMLocalStoregeKeyvalue on IMLocalStoregeKey {
     switch (this) {
       case IMLocalStoregeKey.lastRoomUpdatedAt:
         return 'lastRoomUpdatedAt';
+      case IMLocalStoregeKey.enableTranslate:
+        return 'enableTranslate';
     }
   }
 }

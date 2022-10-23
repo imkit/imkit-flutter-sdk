@@ -11,6 +11,7 @@ import 'package:imkit/models/im_image.dart';
 import 'package:imkit/models/im_location.dart';
 import 'package:imkit/models/im_member_property.dart';
 import 'package:imkit/models/im_response_object.dart';
+import 'package:imkit/models/language_translate.dart';
 import 'package:imkit/sdk/internal/imkit_action.dart';
 import 'package:imkit/services/data/managers/language_manager.dart';
 import 'package:imkit/services/data/managers/im_auth_manager.dart';
@@ -430,9 +431,13 @@ class IMData {
   }
 
   /// Language
-  Future<String> doTranslate(
+  Future<LanguageTranslate> doTranslate(
           {required String apiKey, required Map<String, dynamic> body}) =>
       _translateDataManager.doTranslate(apiKey: apiKey, body: body);
+
+  Future<void> updateMessage({required IMMessage message}) async {
+    await _messageDataManager.updateItem(message);
+  }
 
   /// Socket
   socketConnect() {

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_location.dart';
 import 'package:imkit/models/im_response_object.dart';
+import 'package:imkit/models/language_translate.dart';
 import 'package:imkit/services/data/im_data.dart';
 import 'package:photo_manager/photo_manager.dart';
 
@@ -101,5 +102,5 @@ class IMKitAction with WidgetsBindingObserver {
   Future<bool> leaveRoom({required String roomId}) => _data.leaveRoom(roomId: roomId);
 
   // Language
-  Future<String> doTranslate(String apiKey, Map<String, dynamic> body) => _data.doTranslate(apiKey: apiKey, body: body);
+  Future<LanguageTranslate> doTranslate(String apiKey, Map<String, dynamic> body) => _data.doTranslate(apiKey: apiKey, body: body);
 }

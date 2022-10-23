@@ -22,6 +22,7 @@ class IMKitMessageItemOutgoingStyle {
   TextStyle textSytle = const TextStyle(color: Color.fromRGBO(0, 0, 0, 1), fontSize: 16);
   TextStyle replyNameTextSytle = const TextStyle(color: Color.fromRGBO(66, 66, 66, 1), fontSize: 13);
   TextStyle replyTextTextSytle = const TextStyle(color: Color.fromRGBO(117, 117, 117, 1), fontSize: 13);
+  TextStyle translateTextStyle = const TextStyle(color: Color.fromRGBO(109, 109, 109, 1), fontSize: 16);
 }
 
 class IMKitMessageItemIncomingStyle {
