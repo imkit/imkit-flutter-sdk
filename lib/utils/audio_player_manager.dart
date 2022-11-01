@@ -31,6 +31,10 @@ class AudioPlayerManager {
       _audioPlayer = null;
     }
     _audioPlayer = player;
-    _audioPlayer?.play(source);
+    _audioPlayer?.play(
+      source,
+      volume: 1,
+      mode: ap.PlayerMode.lowLatency,
+    );
   }
 }
