@@ -5,7 +5,7 @@ class AudioPlayerManager {
   final ap.AudioContext _audioContext = ap.AudioContext(
     iOS: ap.AudioContextIOS(
       defaultToSpeaker: true,
-      category: ap.AVAudioSessionCategory.ambient,
+      category: ap.AVAudioSessionCategory.playback,
       options: [
         ap.AVAudioSessionOptions.defaultToSpeaker,
         ap.AVAudioSessionOptions.mixWithOthers,
@@ -14,9 +14,9 @@ class AudioPlayerManager {
     android: ap.AudioContextAndroid(
       isSpeakerphoneOn: true,
       stayAwake: true,
-      contentType: ap.AndroidContentType.sonification,
-      usageType: ap.AndroidUsageType.assistanceSonification,
-      audioFocus: ap.AndroidAudioFocus.none,
+      contentType: ap.AndroidContentType.music,
+      usageType: ap.AndroidUsageType.media,
+      audioFocus: ap.AndroidAudioFocus.gain,
     ),
   );
 
@@ -33,7 +33,6 @@ class AudioPlayerManager {
     _audioPlayer = player;
     _audioPlayer?.play(
       source,
-      volume: 1,
       mode: ap.PlayerMode.lowLatency,
     );
   }
