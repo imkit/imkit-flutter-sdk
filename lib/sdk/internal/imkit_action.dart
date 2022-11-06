@@ -91,6 +91,7 @@ class IMKitAction with WidgetsBindingObserver {
   Future<IMMessage> resendMessage({required IMMessage message}) => _data.resendMessage(message: message);
   Future<IMMessage> recallMessage({required IMMessage message}) => _data.recallMessage(message: message);
   Future<IMMessage> editMessage({required IMMessage message}) => _data.editMessage(message: message);
+  Future<bool> deleteLocalMessage({required IMMessage message}) => _data.deleteLocalMessage(message: message);
   void deleteMessage({required IMMessage message}) => _data.deleteMessage(message: message);
   void setRead({required String roomId, required IMMessage message}) => _data.setReadIfNeed(roomId: roomId, message: message);
 

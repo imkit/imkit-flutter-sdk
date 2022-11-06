@@ -13,6 +13,7 @@ enum IMMessageAction {
   unsend,
   edit,
   report,
+  delete,
 }
 
 class IMMessageItemMenu with IMAccessor {
@@ -49,6 +50,9 @@ extension on IMMessageItemMenu {
     if (state.reportableMessageTypes.contains(message.type) && !message.isMe) {
       items.add(pm.MenuItem(title: IMKit.S.messages_action_report, userInfo: IMMessageAction.report));
     }
+    if (state.deleteMessageTypes.contains(message.type)) {
+      items.add(pm.MenuItem(title: IMKit.S.messages_action_delete, userInfo: IMMessageAction.delete));
+    }
     return items;
   }
 
@@ -71,6 +75,9 @@ extension on IMMessageItemMenu {
         inputViewWidgetKey.currentState?.editingMessage(message: message);
         break;
       case IMMessageAction.report:
+        break;
+      case IMMessageAction.delete:
+        IMKit.instance.action.deleteLocalMessage(message: message);
         break;
     }
   }

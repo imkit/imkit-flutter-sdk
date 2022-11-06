@@ -65,6 +65,8 @@ class _$IMDatabase extends IMDatabase {
 
   IMMessageDao? _messageDaoInstance;
 
+  IMMessageMarkDao? _messageMarkDaoInstance;
+
   IMUserDao? _userDaoInstance;
 
   Future<sqflite.Database> open(String path, List<Migration> migrations,
@@ -90,6 +92,8 @@ class _$IMDatabase extends IMDatabase {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `IMMessage` (`id` TEXT NOT NULL, `roomId` TEXT NOT NULL, `type` TEXT NOT NULL, `systemEvent` TEXT, `sender` TEXT, `createdAt` INTEGER, `updatedAt` INTEGER, `responseObject` TEXT, `text` TEXT, `stickerId` TEXT, `mentions` TEXT NOT NULL, `images` TEXT NOT NULL, `file` TEXT, `location` TEXT, `extra` TEXT, `status` TEXT NOT NULL, `membersWhoHaveRead` TEXT NOT NULL, PRIMARY KEY (`id`))');
         await database.execute(
+            'CREATE TABLE IF NOT EXISTS `IMMessageMark` (`id` TEXT NOT NULL, `isDelete` INTEGER NOT NULL, PRIMARY KEY (`id`))');
+        await database.execute(
             'CREATE TABLE IF NOT EXISTS `IMUser` (`id` TEXT NOT NULL, `nickname` TEXT NOT NULL, `desc` TEXT, `avatarUrl` TEXT, `lastLoginAt` INTEGER, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
@@ -106,6 +110,12 @@ class _$IMDatabase extends IMDatabase {
   @override
   IMMessageDao get messageDao {
     return _messageDaoInstance ??= _$IMMessageDao(database, changeListener);
+  }
+
+  @override
+  IMMessageMarkDao get messageMarkDao {
+    return _messageMarkDaoInstance ??=
+        _$IMMessageMarkDao(database, changeListener);
   }
 
   @override
@@ -667,6 +677,105 @@ class _$IMMessageDao extends IMMessageDao {
   @override
   Future<int> deleteItems(List<IMMessage> items) {
     return _iMMessageDeletionAdapter.deleteListAndReturnChangedRows(items);
+  }
+}
+
+class _$IMMessageMarkDao extends IMMessageMarkDao {
+  _$IMMessageMarkDao(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _iMMessageMarkInsertionAdapter = InsertionAdapter(
+            database,
+            'IMMessageMark',
+            (IMMessageMark item) => <String, Object?>{
+                  'id': item.id,
+                  'isDelete': item.isDelete ? 1 : 0
+                },
+            changeListener),
+        _iMMessageMarkUpdateAdapter = UpdateAdapter(
+            database,
+            'IMMessageMark',
+            ['id'],
+            (IMMessageMark item) => <String, Object?>{
+                  'id': item.id,
+                  'isDelete': item.isDelete ? 1 : 0
+                },
+            changeListener),
+        _iMMessageMarkDeletionAdapter = DeletionAdapter(
+            database,
+            'IMMessageMark',
+            ['id'],
+            (IMMessageMark item) => <String, Object?>{
+                  'id': item.id,
+                  'isDelete': item.isDelete ? 1 : 0
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<IMMessageMark> _iMMessageMarkInsertionAdapter;
+
+  final UpdateAdapter<IMMessageMark> _iMMessageMarkUpdateAdapter;
+
+  final DeletionAdapter<IMMessageMark> _iMMessageMarkDeletionAdapter;
+
+  @override
+  Stream<List<IMMessageMark>> findDeleteMessages() {
+    return _queryAdapter.queryListStream(
+        'SELECT * FROM IMMessageMark WHERE isDelete = true',
+        mapper: (Map<String, Object?> row) => IMMessageMark(
+            id: row['id'] as String, isDelete: (row['isDelete'] as int) != 0),
+        queryableName: 'IMMessageMark',
+        isView: false);
+  }
+
+  @override
+  Future<List<IMMessageMark>> findDeleteMessagesByFurure() async {
+    return _queryAdapter.queryList(
+        'SELECT * FROM IMMessageMark WHERE isDelete = true',
+        mapper: (Map<String, Object?> row) => IMMessageMark(
+            id: row['id'] as String, isDelete: (row['isDelete'] as int) != 0));
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    await _queryAdapter.queryNoReturn('DELETE FROM IMMessageMark');
+  }
+
+  @override
+  Future<void> insertItem(IMMessageMark item) async {
+    await _iMMessageMarkInsertionAdapter.insert(
+        item, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> insertItems(List<IMMessageMark> items) async {
+    await _iMMessageMarkInsertionAdapter.insertList(
+        items, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> updateItem(IMMessageMark item) async {
+    await _iMMessageMarkUpdateAdapter.update(item, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<int> updateItems(List<IMMessageMark> items) {
+    return _iMMessageMarkUpdateAdapter.updateListAndReturnChangedRows(
+        items, OnConflictStrategy.replace);
+  }
+
+  @override
+  Future<void> deleteItem(IMMessageMark item) async {
+    await _iMMessageMarkDeletionAdapter.delete(item);
+  }
+
+  @override
+  Future<int> deleteItems(List<IMMessageMark> items) {
+    return _iMMessageMarkDeletionAdapter.deleteListAndReturnChangedRows(items);
   }
 }
 
