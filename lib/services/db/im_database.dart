@@ -24,6 +24,8 @@ import 'package:imkit/services/db/im_room_dao.dart';
 import 'package:imkit/services/db/im_user_dao.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 
+import 'im_database_config.dart';
+
 part 'im_database.g.dart';
 
 @TypeConverters([
@@ -43,7 +45,7 @@ part 'im_database.g.dart';
   IMLocationConverter,
   IMMapConverter,
 ])
-@Database(version: 1, entities: [IMRoom, IMMessage, IMMessageMark, IMUser])
+@Database(version: IMDatabaseConfig.version, entities: [IMRoom, IMMessage, IMMessageMark, IMUser])
 abstract class IMDatabase extends FloorDatabase {
   IMRoomDao get roomDao;
   IMMessageDao get messageDao;
