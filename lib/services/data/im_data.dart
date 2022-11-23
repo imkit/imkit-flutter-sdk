@@ -347,6 +347,10 @@ class IMData {
     return _messageDataManager.editMessage(localMessage: message);
   }
 
+  Future<bool> deleteLocalMessage({required IMMessage message}) {
+    return _messageDataManager.deleteLocalMessage(message: message);
+  }
+
   void deleteMessage({required IMMessage message}) {
     _messageDataManager.deleteItem(message);
   }

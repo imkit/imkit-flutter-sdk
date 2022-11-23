@@ -17,10 +17,14 @@ import 'package:imkit/models/converter/im_system_event_converter.dart';
 import 'package:imkit/models/converter/im_tag_list_converter.dart';
 import 'package:imkit/models/converter/im_user_converter.dart';
 import 'package:imkit/models/converter/im_user_list_converter.dart';
+import 'package:imkit/models/im_message_mark.dart';
 import 'package:imkit/services/db/im_message_dao.dart';
+import 'package:imkit/services/db/im_message_mark_dao.dart';
 import 'package:imkit/services/db/im_room_dao.dart';
 import 'package:imkit/services/db/im_user_dao.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
+
+import 'im_database_config.dart';
 
 part 'im_database.g.dart';
 
@@ -41,10 +45,11 @@ part 'im_database.g.dart';
   IMLocationConverter,
   IMMapConverter,
 ])
-@Database(version: 1, entities: [IMRoom, IMMessage, IMUser])
+@Database(version: IMDatabaseConfig.version, entities: [IMRoom, IMMessage, IMMessageMark, IMUser])
 abstract class IMDatabase extends FloorDatabase {
   IMRoomDao get roomDao;
   IMMessageDao get messageDao;
+  IMMessageMarkDao get messageMarkDao;
   IMUserDao get userDao;
 
   // static IMDatabase? _instance;

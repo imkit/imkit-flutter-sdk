@@ -1,4 +1,5 @@
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/models/im_message_mark.dart';
 import 'package:imkit/models/im_system_event.dart';
 import 'package:imkit/services/data/managers/im_base_data_manager.dart';
 
@@ -23,28 +24,52 @@ class IMMessageDataManager extends IMBaseDataManager {
     return database.messageDao.findLatestMessage(roomId);
   }
 
-  Future<void> insertItem(IMMessage message) {
+  Future<void> insertItem(IMMessage message) async {
+    final deleteMessageIds = await findDeleteMessageIds();
+    if (deleteMessageIds.contains(message.id)) {
+      return;
+    }
     return database.messageDao.insertItem(message);
   }
 
-  Future<void> updateItem(IMMessage message) {
+  Future<void> updateItem(IMMessage message) async {
+    final deleteMessageIds = await findDeleteMessageIds();
+    if (deleteMessageIds.contains(message.id)) {
+      return;
+    }
     return database.messageDao.updateItem(message);
   }
 
-  Future<void> updateItems(List<IMMessage> messages) {
-    return database.messageDao.updateItems(messages);
+  Future<void> updateItems(List<IMMessage> messages) async {
+    final deleteMessageIds = await findDeleteMessageIds();
+    final filterMessages = messages.where((element) => !deleteMessageIds.contains(element.id)).toList();
+    if (filterMessages.isEmpty) {
+      return;
+    }
+    return database.messageDao.updateItems(filterMessages).then((value) => {});
   }
 
-  Future<void> deleteItem(IMMessage message) {
+  Future<void> deleteItem(IMMessage message) async {
     return database.messageDao.deleteItem(message);
   }
 
-  Future<void> insertItems(List<IMMessage> messages) {
-    return database.messageDao.insertItems(messages);
+  Future<void> insertItems(List<IMMessage> messages) async {
+    final deleteMessageIds = await findDeleteMessageIds();
+    final filterMessages = messages.where((element) => !deleteMessageIds.contains(element.id)).toList();
+    if (filterMessages.isEmpty) {
+      return;
+    }
+    return database.messageDao.insertItems(filterMessages);
   }
 
   Future<void> deleteByRoom(String roomId) {
     return database.messageDao.deleteByRoom(roomId);
+  }
+
+  Future<List<String>> findDeleteMessageIds() async {
+    final List<IMMessageMark> messagesMark = await database.messageMarkDao.findDeleteMessagesByFurure();
+
+    return messagesMark.map((element) => element.id).toList();
   }
 
   Future<IMMessage> preSendMessage({required IMMessage localMessage}) async {
@@ -91,6 +116,13 @@ class IMMessageDataManager extends IMBaseDataManager {
     await updateItem(serverMessage);
 
     return serverMessage;
+  }
+
+  Future<bool> deleteLocalMessage({required IMMessage message}) async {
+    await database.messageMarkDao.insertItem(IMMessageMark(id: message.id, isDelete: true));
+    await deleteItem(message);
+
+    return true;
   }
 
   void onSocketDidReceiveMessage(IMMessage message) {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:collection/collection.dart';
 import 'package:imkit/extensions/date_ext.dart';
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/models/im_message_mark.dart';
+import 'package:imkit/services/db/im_message_mark_dao.dart';
 import 'package:imkit/third_party/popup_menu/src/popup_menu.dart';
 import 'package:imkit/widgets/messages/im_messages_floating_action_widget.dart';
 import 'package:imkit/widgets/messages/im_messages_list_item.dart';
@@ -27,6 +29,7 @@ class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
   );
 
   late List<IMMessage> _messages = [];
+  late List<IMMessageMark> _messagesMark = [];
   late bool _isInitial = false;
   PopupMenu? _popupMenu;
 
@@ -50,45 +53,55 @@ class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
           builder: (BuildContext context, AsyncSnapshot<List<IMMessage>> snapshot) {
             debugPrint(">>> message list count: ${snapshot.data?.length ?? 0}");
 
-            _messages = snapshot.data ?? [];
-            int itemCount = _messages.length;
-            if (itemCount > 0 && !_isInitial) {
-              _isInitial = true;
-              _jumpToLastReadMessage(_messages);
-            }
-            return ListView.separated(
-              controller: _controller,
-              padding: const EdgeInsets.all(8),
-              itemCount: itemCount,
-              separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 8),
-              itemBuilder: (BuildContext context, int index) {
-                final prevMessageCreatedAt = _messages.firstWhereIndexedOrNull((i, _) => i == index - 1)?.createdAt;
-                final currentMessage = _messages[index];
-                if (index == (itemCount - 1)) {
-                  IMKit.instance.action.setRead(roomId: widget.roomId, message: currentMessage);
+            return StreamBuilder<List<IMMessageMark>>(
+              initialData: _messagesMark,
+              stream: IMKit.instance.listener.watchMessagesMark(),
+              builder: (BuildContext context, AsyncSnapshot<List<IMMessageMark>> snapshotWithMark) {
+                final allMessages = snapshot.data ?? [];
+                _messagesMark = snapshotWithMark.data ?? [];
+                final _deleteMessageIds = _messagesMark.map((element) => element.id);
+
+                _messages = allMessages.where((element) => !_deleteMessageIds.contains(element.id)).toList();
+                int itemCount = _messages.length;
+                if (itemCount > 0 && !_isInitial) {
+                  _isInitial = true;
+                  _jumpToLastReadMessage(_messages);
                 }
-                final key = ValueKey(currentMessage.id);
-                return AutoScrollTag(
-                  key: key,
-                  index: index,
+                return ListView.separated(
                   controller: _controller,
-                  child: Column(
-                    children: [
-                      Visibility(
-                        visible: currentMessage.createdAt?.calculateDifference(prevMessageCreatedAt) != 0,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: IMMessageItemDate(value: currentMessage.createdAt?.toMessageHeader ?? ""),
-                        ),
+                  padding: const EdgeInsets.all(8),
+                  itemCount: itemCount,
+                  separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 8),
+                  itemBuilder: (BuildContext context, int index) {
+                    final prevMessageCreatedAt = _messages.firstWhereIndexedOrNull((i, _) => i == index - 1)?.createdAt;
+                    final currentMessage = _messages[index];
+                    if (index == (itemCount - 1)) {
+                      IMKit.instance.action.setRead(roomId: widget.roomId, message: currentMessage);
+                    }
+                    final key = ValueKey(currentMessage.id);
+                    return AutoScrollTag(
+                      key: key,
+                      index: index,
+                      controller: _controller,
+                      child: Column(
+                        children: [
+                          Visibility(
+                            visible: currentMessage.createdAt?.calculateDifference(prevMessageCreatedAt) != 0,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: IMMessageItemDate(value: currentMessage.createdAt?.toMessageHeader ?? ""),
+                            ),
+                          ),
+                          IMMessageListItem(
+                            key: key,
+                            room: widget.room,
+                            message: currentMessage,
+                            onLoginPress: (itemKey, itemMenu) => _onLoginPress(context: context, itemKey: itemKey, itemMenu: itemMenu),
+                          ),
+                        ],
                       ),
-                      IMMessageListItem(
-                        key: key,
-                        room: widget.room,
-                        message: currentMessage,
-                        onLoginPress: (itemKey, itemMenu) => _onLoginPress(context: context, itemKey: itemKey, itemMenu: itemMenu),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 );
               },
             );

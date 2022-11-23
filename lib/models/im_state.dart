@@ -50,6 +50,16 @@ class IMState {
     // IMMessageType.file,
   ];
 
+  List<IMMessageType> deleteMessageTypes = [
+    IMMessageType.text,
+    IMMessageType.image,
+    IMMessageType.audio,
+    IMMessageType.video,
+    IMMessageType.file,
+    IMMessageType.sticker,
+    IMMessageType.location
+  ];
+
   Map<String, String> headers() {
     return {
       "IM-CLIENT-KEY": clientKey,
