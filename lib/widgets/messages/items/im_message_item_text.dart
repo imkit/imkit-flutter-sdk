@@ -18,36 +18,41 @@ class IMMessageItemTextState extends State<IMMessageItemText> {
   void initState() {
     super.initState();
 
-    Future.delayed(Duration.zero, () => _doTranslateIfNeed());
-  }
-
-  _doTranslateIfNeed() async {
-    translatedText = widget.message.translatedText;
     if (IMKit.instance.internal.state.cloudTranslateActive &&
         !widget.message.isMe &&
         (translatedText == null || translatedText!.isEmpty)) {
-      Map<String, dynamic> parameters = {"q": widget.message.text};
-      parameters["target"] = Localizations.localeOf(context).toString();
+      Future.delayed(Duration.zero, () => _fetchTranslateText());
+    }
+  }
+
+  _fetchTranslateText() async {
+    Map<String, dynamic> parameters = {"q": widget.message.text};
+    parameters["target"] = Localizations.localeOf(context).toString();
+
+    String? translate;
+    if (IMKit.translatedMessage.containsKey(widget.message.id)) {
+      translate = IMKit.translatedMessage[widget.message.id];
+    } else {
       LanguageTranslate result = await IMKit.instance.action.doTranslate(
           IMKit.instance.internal.state.translationApiKey, parameters);
 
-      String? translate;
       if (result.data != null &&
           result.data!.translations != null &&
           result.data!.translations!.isNotEmpty) {
         translate = result.data!.translations![0].translatedText;
-      }
-      if (mounted) {
-        setState(() {
-          if (translate != null && translate.isNotEmpty) {
-            translatedText = IMKit.S.n_translation + ": " + translate;
-          }
-        });
-      }
 
-      // todo update to be if need?
-      // widget.message.translatedText = translatedText;
-      // await IMKit.instance.internal.data.updateMessage(message: widget.message);
+        if (translate != null) {
+          IMKit.translatedMessage[widget.message.id] = translate;
+        }
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        if (translate != null && translate.isNotEmpty) {
+          translatedText = IMKit.S.n_translation + ": " + translate;
+        }
+      });
     }
   }
 

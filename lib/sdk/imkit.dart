@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_view/flutter_file_view.dart';
@@ -48,6 +50,8 @@ class IMKit {
   static String get bucket => _instance._internal.state.bucket;
   static IMKitStyle get style => _instance._style;
   static IMKitS get S => IMKitS.current;
+
+  static Map<String, String> translatedMessage = HashMap();
 
   static init(IMStateBuilder builder) async {
     final database = await $FloorIMDatabase.databaseBuilder('imkit_flutter_database.db').addMigrations(IMDatabaseConfig.migrations()).build();
