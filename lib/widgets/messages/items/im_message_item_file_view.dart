@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_file_view/flutter_file_view.dart';
 import 'package:imkit/models/im_message.dart';
 import 'package:imkit/sdk/imkit.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
-import 'package:imkit/widgets/messages/sub_views/im_message_file_viewer.dart';
 
 class IMMessageItemFileView extends StatelessWidget {
   final IMMessage message;

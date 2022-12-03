@@ -1,6 +1,8 @@
+import 'dart:io';
+
+import 'package:advance_pdf_viewer/advance_pdf_viewer.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_file_view/flutter_file_view.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
 import 'package:intl/intl.dart';
@@ -17,7 +19,7 @@ class IMMessageFileViewer extends StatefulWidget {
 
 class IMMessageFileViewerState extends State<IMMessageFileViewer> {
   bool _isLoading = true;
-  String? _filePath;
+  PDFViewer? _pdfViewer;
 
   @override
   void initState() {
@@ -50,7 +52,7 @@ class IMMessageFileViewerState extends State<IMMessageFileViewer> {
           IMIconButtonWidget(
             icon: const Icon(Icons.ios_share),
             onPressed: () {
-              final filePath = _filePath ?? "";
+              final filePath = _pdfViewer?.document.filePath ?? "";
               final file = widget.message.file;
               if (filePath.isNotEmpty) {
                 Share.shareXFiles(
@@ -73,8 +75,8 @@ class IMMessageFileViewerState extends State<IMMessageFileViewer> {
       body: Stack(
         children: [
           Visibility(
-            visible: (_filePath ?? "").isNotEmpty,
-            child: LocalFileViewer(filePath: _filePath ?? ""),
+            visible: _pdfViewer != null,
+            child: Container(child: _pdfViewer),
           ),
           Visibility(
             visible: _isLoading,
@@ -91,28 +93,33 @@ class IMMessageFileViewerState extends State<IMMessageFileViewer> {
     );
   }
 
-  void _getFile() {
+  void _getFile() async {
     final file = widget.message.file;
     final url = file?.url ?? "";
     final filename = file?.filename ?? "";
     final originalPath = file?.originalPath ?? "";
 
     if (originalPath.isNotEmpty) {
-      setState(() {
-        _isLoading = false;
-        _filePath = originalPath;
-      });
+      PDFDocument.fromFile(File(originalPath)).then((document) => _loadFinish(document: document));
     } else if (url.isNotEmpty) {
-      IMKit.instance.action.downloadFileToCache(url: url, filename: filename).then((value) {
-        setState(() {
-          _isLoading = false;
-          _filePath = value.path;
-        });
-      });
+      IMKit.instance.action
+          .downloadFileToCache(url: url, filename: filename)
+          .then((file) => PDFDocument.fromFile(file))
+          .then((document) => _loadFinish(document: document));
     } else {
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  void _loadFinish({required PDFDocument document}) {
+    setState(() {
+      _isLoading = false;
+      _pdfViewer = PDFViewer(
+        document: document,
+        showPicker: false,
+      );
+    });
   }
 }
