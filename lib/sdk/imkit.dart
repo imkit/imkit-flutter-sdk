@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:floor/floor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -7,6 +9,7 @@ import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/sdk/internal/imkit_action.dart';
 import 'package:imkit/sdk/internal/imkit_internal.dart';
 import 'package:imkit/sdk/internal/imkit_listener.dart';
+import 'package:imkit/services/data/storage/im_local_storage.dart';
 import 'package:imkit/services/db/im_database.dart';
 import 'package:imkit/services/db/im_database_config.dart';
 import 'package:imkit/widgets/messages/im_messages_view.dart';
@@ -46,6 +49,8 @@ class IMKit {
   static IMKitStyle get style => _instance._style;
   static IMKitS get S => IMKitS.current;
 
+  static Map<String, String> translatedMessage = HashMap();
+
   static init(IMStateBuilder builder) async {
     final database = await $FloorIMDatabase.databaseBuilder('imkit_flutter_database.db').addMigrations(IMDatabaseConfig.migrations()).build();
 
@@ -60,6 +65,8 @@ class IMKit {
     _instance._listener = IMKitListener(database);
 
     _instance.socketConnect();
+
+    _instance.internal.state.cloudTranslateActive = _instance.internal.data.localStorege.getValue(key: IMLocalStoregeKey.enableTranslate, defalut: false)!;
   }
 
   static Future<IMUser?> login({required String uid, String? token}) => _instance._internal.login(uid: uid, token: token);

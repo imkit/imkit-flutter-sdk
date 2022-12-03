@@ -318,6 +318,9 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                     _sentMessage = await IMKit.instance.action
                         .preSendFileMessage(roomId: widget.roomId, platformFile: singlePlatformFile, responseObject: tmpResponseObject);
                     break;
+
+                  default:
+                    messagesListWidgetKey.currentState?.refresh();
                 }
 
                 updateInputType(IMMessagesInputViewType.none);

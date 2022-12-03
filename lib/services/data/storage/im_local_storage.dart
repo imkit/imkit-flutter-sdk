@@ -7,6 +7,8 @@ part 'im_local_storage.g.dart';
 enum IMLocalStoregeKey {
   @Value("lastRoomUpdatedAt")
   lastRoomUpdatedAt,
+  @Value("enableTranslate")
+  enableTranslate,
 }
 
 class IMLocalStorage {
@@ -18,6 +20,7 @@ class IMLocalStorage {
 
   void clean() {
     remove(key: IMLocalStoregeKey.lastRoomUpdatedAt);
+    remove(key: IMLocalStoregeKey.enableTranslate);
   }
 
   Future<bool> setValue({required IMLocalStoregeKey key, required dynamic value}) async {
@@ -41,6 +44,10 @@ class IMLocalStorage {
     switch (key) {
       case IMLocalStoregeKey.lastRoomUpdatedAt:
         value = _prefs.getInt(key.value) ?? defalut;
+        break;
+
+      case IMLocalStoregeKey.enableTranslate:
+        value = _prefs.getBool(key.value) ?? defalut;
         break;
     }
     if (value != null) {

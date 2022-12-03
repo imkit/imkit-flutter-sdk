@@ -11,7 +11,9 @@ import 'package:imkit/models/im_image.dart';
 import 'package:imkit/models/im_location.dart';
 import 'package:imkit/models/im_member_property.dart';
 import 'package:imkit/models/im_response_object.dart';
+import 'package:imkit/models/language_translate.dart';
 import 'package:imkit/sdk/internal/imkit_action.dart';
+import 'package:imkit/services/data/managers/language_manager.dart';
 import 'package:imkit/services/data/managers/im_auth_manager.dart';
 import 'package:imkit/services/data/managers/im_file_data_manager.dart';
 import 'package:imkit/services/data/managers/im_message_data_manager.dart';
@@ -30,6 +32,7 @@ class IMData {
   late final IMAuthDataManager _authDataManager = IMAuthDataManager();
   late final IMUserDataManager _userDataManager = IMUserDataManager();
   late final IMFileDataManager _fileDataManager = IMFileDataManager();
+  late final LanguageDataManager _translateDataManager = LanguageDataManager();
   late final IMLocalStorage localStorege;
   late final IMSocketClient _socketClient = IMSocketClient(
       state: state,
@@ -429,6 +432,15 @@ class IMData {
     await _messageDataManager.deleteByRoom(roomId);
 
     return result;
+  }
+
+  /// Language
+  Future<LanguageTranslate> doTranslate(
+          {required String apiKey, required Map<String, dynamic> body}) =>
+      _translateDataManager.doTranslate(apiKey: apiKey, body: body);
+
+  Future<void> updateMessage({required IMMessage message}) async {
+    await _messageDataManager.updateItem(message);
   }
 
   /// Socket

@@ -22,6 +22,7 @@ IMMessage _$IMMessageFromJson(Map<String, dynamic> json) => IMMessage(
       createdAt: toDateTime(_toCreatedAt(json, 'createdAtMS') as int?),
       updatedAt: toDateTime(json['updatedAtMS'] as int?),
       text: _toText(json, 'text') as String?,
+      translatedText: json['translatedText'] as String?,
       stickerId: json['sticker'] as String?,
       responseObject: _toResponseObject(json, 'responseObject') == null
           ? null
@@ -58,6 +59,7 @@ Map<String, dynamic> _$IMMessageToJson(IMMessage instance) => <String, dynamic>{
       'updatedAtMS': toTimestamp(instance.updatedAt),
       'responseObject': instance.responseObject,
       'text': instance.text,
+      'translatedText': instance.translatedText,
       'sticker': instance.stickerId,
       'mentions': instance.mentions,
       'images': instance.images,

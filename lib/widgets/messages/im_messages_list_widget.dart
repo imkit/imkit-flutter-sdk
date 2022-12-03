@@ -111,6 +111,7 @@ class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
 
   Future<bool> scrollTo(String? messageId) => _scrollTo(_messages.indexWhere((element) => element.id == (messageId ?? "")), AutoScrollPosition.middle);
   Future<bool> scrollToBottom() => _scrollTo(_messages.length - 1, AutoScrollPosition.end);
+  refresh() => setState(() {});
   void jumpToBottom() => _controller.jumpTo(_controller.position.maxScrollExtent);
 }
 

@@ -16,6 +16,8 @@ class IMKitRecordInputViewStyle {
 
 class IMKitUtilityInputViewStyle {
   Color iconColor = const Color.fromRGBO(120, 120, 120, 1);
+  Color iconActiveColor = const Color.fromRGBO(60, 60, 60, 1);
+  Color iconInactiveColor = const Color.fromRGBO(180, 180, 180, 1);
 
   TextStyle textTextStyle = const TextStyle(color: Color.fromRGBO(117, 117, 117, 1), fontSize: 12);
 }
