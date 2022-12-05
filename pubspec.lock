@@ -11,9 +11,9 @@ packages:
   advance_pdf_viewer:
     dependency: "direct main"
     description:
-      name: advance_pdf_viewer
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "advance_pdf_viewer-2.0.1"
+      relative: true
+    source: path
     version: "2.0.1"
   analyzer:
     dependency: transitive
