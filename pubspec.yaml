@@ -45,6 +45,9 @@ dependencies:
   advance_pdf_viewer:
     path: advance_pdf_viewer-2.0.1
 
+  # Video
+  video_player: ^2.4.9
+
   # Util
   enume: ^1.1.0
   crypto: ^3.0.1
