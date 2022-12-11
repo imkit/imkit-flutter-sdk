@@ -7,7 +7,10 @@ part of 'im_auth_request.dart';
 // **************************************************************************
 
 class _IMAuthRequest implements IMAuthRequest {
-  _IMAuthRequest(this._dio, {this.baseUrl});
+  _IMAuthRequest(
+    this._dio, {
+    this.baseUrl,
+  });
 
   final Dio _dio;
 
@@ -19,12 +22,19 @@ class _IMAuthRequest implements IMAuthRequest {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = {'id': userId};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<IMClient>(
-            Options(method: 'POST', headers: _headers, extra: _extra)
-                .compose(_dio.options, '/auths/sign/v2',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result =
+        await _dio.fetch<Map<String, dynamic>>(_setStreamType<IMClient>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/auths/sign/v2',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = IMClient.fromJson(_result.data!);
     return value;
   }

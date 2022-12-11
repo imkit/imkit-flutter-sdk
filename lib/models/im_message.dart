@@ -78,6 +78,7 @@ class IMMessage {
   @JsonKey(readValue: _toText)
   String? text;
 
+  @JsonKey(ignore: true)
   String? translatedText;
 
   @JsonKey(name: 'sticker', defaultValue: null)

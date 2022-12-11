@@ -69,10 +69,13 @@ class _$IMDatabase extends IMDatabase {
 
   IMUserDao? _userDaoInstance;
 
-  Future<sqflite.Database> open(String path, List<Migration> migrations,
-      [Callback? callback]) async {
+  Future<sqflite.Database> open(
+    String path,
+    List<Migration> migrations, [
+    Callback? callback,
+  ]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
-      version: 2,
+      version: 3,
       onConfigure: (database) async {
         await database.execute('PRAGMA foreign_keys = ON');
         await callback?.onConfigure?.call(database);
@@ -125,8 +128,10 @@ class _$IMDatabase extends IMDatabase {
 }
 
 class _$IMRoomDao extends IMRoomDao {
-  _$IMRoomDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+  _$IMRoomDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _iMRoomInsertionAdapter = InsertionAdapter(
             database,
             'IMRoom',
@@ -353,8 +358,10 @@ class _$IMRoomDao extends IMRoomDao {
 }
 
 class _$IMMessageDao extends IMMessageDao {
-  _$IMMessageDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+  _$IMMessageDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _iMMessageInsertionAdapter = InsertionAdapter(
             database,
             'IMMessage',
@@ -515,7 +522,9 @@ class _$IMMessageDao extends IMMessageDao {
 
   @override
   Stream<List<IMMessage>> findMessagesByType(
-      String roomId, IMMessageType type) {
+    String roomId,
+    IMMessageType type,
+  ) {
     return _queryAdapter.queryListStream(
         'SELECT * FROM IMMessage WHERE roomId = ?1 AND type = ?2 ORDER BY createdAt ASC',
         mapper: (Map<String, Object?> row) => IMMessage(
@@ -690,8 +699,10 @@ class _$IMMessageDao extends IMMessageDao {
 }
 
 class _$IMMessageMarkDao extends IMMessageMarkDao {
-  _$IMMessageMarkDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+  _$IMMessageMarkDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database, changeListener),
         _iMMessageMarkInsertionAdapter = InsertionAdapter(
             database,
             'IMMessageMark',
@@ -789,8 +800,10 @@ class _$IMMessageMarkDao extends IMMessageMarkDao {
 }
 
 class _$IMUserDao extends IMUserDao {
-  _$IMUserDao(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database),
+  _$IMUserDao(
+    this.database,
+    this.changeListener,
+  )   : _queryAdapter = QueryAdapter(database),
         _iMUserInsertionAdapter = InsertionAdapter(
             database,
             'IMUser',

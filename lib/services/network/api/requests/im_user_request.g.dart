@@ -7,7 +7,10 @@ part of 'im_user_request.dart';
 // **************************************************************************
 
 class _IMUserRequest implements IMUserRequest {
-  _IMUserRequest(this._dio, {this.baseUrl});
+  _IMUserRequest(
+    this._dio, {
+    this.baseUrl,
+  });
 
   final Dio _dio;
 
@@ -19,18 +22,29 @@ class _IMUserRequest implements IMUserRequest {
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<IMUser>(
-            Options(method: 'GET', headers: _headers, extra: _extra)
-                .compose(_dio.options, '/me',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result =
+        await _dio.fetch<Map<String, dynamic>>(_setStreamType<IMUser>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/me',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = IMUser.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<IMUser> updateMe({nickname, avatarUrl, description}) async {
+  Future<IMUser> updateMe({
+    nickname,
+    avatarUrl,
+    description,
+  }) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
@@ -38,15 +52,22 @@ class _IMUserRequest implements IMUserRequest {
     final _data = {
       'nickname': nickname,
       'avatarUrl': avatarUrl,
-      'description': description
+      'description': description,
     };
     _data.removeWhere((k, v) => v == null);
-    final _result = await _dio.fetch<Map<String, dynamic>>(
-        _setStreamType<IMUser>(
-            Options(method: 'POST', headers: _headers, extra: _extra)
-                .compose(_dio.options, '/me',
-                    queryParameters: queryParameters, data: _data)
-                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final _result =
+        await _dio.fetch<Map<String, dynamic>>(_setStreamType<IMUser>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              '/me',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = IMUser.fromJson(_result.data!);
     return value;
   }
