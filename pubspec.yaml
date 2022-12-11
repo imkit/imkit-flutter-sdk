@@ -62,7 +62,7 @@ dependencies:
   share_plus: ^4.5.2
 
   any_link_preview: ^2.0.9
-  flutter_map: ^2.2.0
+  flutter_map: ^2.0.0
   location: ^4.4.0
   latlong2: ^0.8.1
   geocoding: ^2.0.5
