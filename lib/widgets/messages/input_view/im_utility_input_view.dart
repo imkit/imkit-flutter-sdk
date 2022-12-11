@@ -12,24 +12,18 @@ class IMUtilityInputView extends StatelessWidget {
 
   IMUtilityInputView({Key? key, required this.onSelected}) : super(key: key);
 
-  final List<IMUtilityType> _types = [
-    IMUtilityType.location,
-    IMUtilityType.file,
-    IMUtilityType.translate
-  ];
+  final List<IMUtilityType> _types = [IMUtilityType.location, IMUtilityType.file, IMUtilityType.translate];
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: IMMessageItemComponent.isPortrait(context) ? 250 : 170,
+        height: IMMessageItemComponent.isPortrait(context) ? 300 : 170,
         child: GridView.custom(
           padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4, crossAxisSpacing: 0, mainAxisSpacing: 0),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, crossAxisSpacing: 0, mainAxisSpacing: 0),
           childrenDelegate: SliverChildBuilderDelegate(
             (BuildContext context, int index) => GestureDetector(
               behavior: HitTestBehavior.opaque,
-              onTap: () async =>
-                  onSelected(await onTap(context, _types[index])),
+              onTap: () async => onSelected(await onTap(context, _types[index])),
               child: IMUtilityItem(
                 key: ValueKey<int>(index),
                 type: _types[index],
@@ -51,8 +45,7 @@ extension on IMUtilityInputView {
   Future<dynamic> onTap(BuildContext context, IMUtilityType type) {
     switch (type) {
       case IMUtilityType.location:
-        return Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const TakeLocationScreen()));
+        return Navigator.of(context).push(MaterialPageRoute(builder: (context) => const TakeLocationScreen()));
 
       case IMUtilityType.file:
         return FilePicker.platform.pickFiles(
@@ -64,8 +57,7 @@ extension on IMUtilityInputView {
         return Future(() {
           bool enable = !IMKit.instance.internal.state.cloudTranslateActive;
           IMKit.instance.internal.state.cloudTranslateActive = enable;
-          IMKit.instance.internal.data.localStorege
-              .setValue(key: IMLocalStoregeKey.enableTranslate, value: enable);
+          IMKit.instance.internal.data.localStorege.setValue(key: IMLocalStoregeKey.enableTranslate, value: enable);
         });
     }
   }
