@@ -239,6 +239,7 @@ class IMData {
 
   Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
     try {
+      await _messageDataManager.updateItem(message..status = IMMessageStatus.sent);
       message.images = await Future.wait(
         message.images.map(
           (element) => _fileDataManager.uploadImage(image: element, uploadProgress: uploadProgress, cancelToken: cancelToken),
@@ -247,8 +248,7 @@ class IMData {
       return _messageDataManager.sendNewMessage(localMessage: message);
     } catch (_) {
       uploadProgress?.call(0);
-      message.status = IMMessageStatus.undelivered;
-      _messageDataManager.updateItem(message);
+      _messageDataManager.updateItem(message..status = IMMessageStatus.undelivered);
       return message;
     }
   }
@@ -303,6 +303,7 @@ class IMData {
       return message;
     }
     try {
+      await _messageDataManager.updateItem(message..status = IMMessageStatus.sent);
       final uploadedFile = await _fileDataManager.upload(
         mimeType: file.mimeType!,
         file: File(file.originalPath!),
@@ -313,16 +314,12 @@ class IMData {
       return _messageDataManager.sendNewMessage(localMessage: message);
     } catch (_) {
       uploadProgress?.call(0);
-      message.status = IMMessageStatus.undelivered;
-      _messageDataManager.updateItem(message);
+      _messageDataManager.updateItem(message..status = IMMessageStatus.undelivered);
       return message;
     }
   }
 
   Future<IMMessage> resendMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
-    message.status = IMMessageStatus.sent;
-    await _messageDataManager.updateItem(message);
-
     switch (message.type) {
       case IMMessageType.image:
         return await sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
@@ -335,7 +332,9 @@ class IMData {
       case IMMessageType.location:
       case IMMessageType.sticker:
       default:
-        return await _messageDataManager.sendNewMessage(localMessage: message);
+        return await _messageDataManager
+            .updateItem(message..status = IMMessageStatus.sent)
+            .then((_) => _messageDataManager.sendNewMessage(localMessage: message));
     }
   }
 
@@ -435,8 +434,7 @@ class IMData {
   }
 
   /// Language
-  Future<LanguageTranslate> doTranslate(
-          {required String apiKey, required Map<String, dynamic> body}) =>
+  Future<LanguageTranslate> doTranslate({required String apiKey, required Map<String, dynamic> body}) =>
       _translateDataManager.doTranslate(apiKey: apiKey, body: body);
 
   Future<void> updateMessage({required IMMessage message}) async {

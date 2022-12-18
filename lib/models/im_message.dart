@@ -33,6 +33,7 @@ enum IMMessageType {
 
 enum IMMessageStatus {
   initial,
+  preSent,
   sent,
   delivered,
   undelivered,

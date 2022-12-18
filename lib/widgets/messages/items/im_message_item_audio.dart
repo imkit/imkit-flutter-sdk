@@ -11,6 +11,7 @@ class IMMessageItemAudio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     switch (message.status) {
+      case IMMessageStatus.preSent:
       case IMMessageStatus.sent:
         return IMMessageItemAudioUpload(message: message);
 

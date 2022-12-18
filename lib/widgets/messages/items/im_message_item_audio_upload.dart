@@ -24,7 +24,7 @@ class _IMMessageItemAudioUploadState extends State<IMMessageItemAudioUpload> {
   void initState() {
     super.initState();
 
-    if ([IMMessageStatus.sent].contains(widget.message.status)) {
+    if ([IMMessageStatus.preSent].contains(widget.message.status)) {
       Future.delayed(Duration.zero, _sendAudioMessage);
     }
   }

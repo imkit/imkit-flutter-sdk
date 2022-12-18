@@ -347,8 +347,8 @@ class _$IMRoomDao extends IMRoomDao {
   }
 
   @override
-  Future<void> deleteItem(IMRoom item) async {
-    await _iMRoomDeletionAdapter.delete(item);
+  Future<int> deleteItem(IMRoom item) {
+    return _iMRoomDeletionAdapter.deleteAndReturnChangedRows(item);
   }
 
   @override
@@ -688,8 +688,8 @@ class _$IMMessageDao extends IMMessageDao {
   }
 
   @override
-  Future<void> deleteItem(IMMessage item) async {
-    await _iMMessageDeletionAdapter.delete(item);
+  Future<int> deleteItem(IMMessage item) {
+    return _iMMessageDeletionAdapter.deleteAndReturnChangedRows(item);
   }
 
   @override
@@ -789,8 +789,8 @@ class _$IMMessageMarkDao extends IMMessageMarkDao {
   }
 
   @override
-  Future<void> deleteItem(IMMessageMark item) async {
-    await _iMMessageMarkDeletionAdapter.delete(item);
+  Future<int> deleteItem(IMMessageMark item) {
+    return _iMMessageMarkDeletionAdapter.deleteAndReturnChangedRows(item);
   }
 
   @override
@@ -889,8 +889,8 @@ class _$IMUserDao extends IMUserDao {
   }
 
   @override
-  Future<void> deleteItem(IMUser item) async {
-    await _iMUserDeletionAdapter.delete(item);
+  Future<int> deleteItem(IMUser item) {
+    return _iMUserDeletionAdapter.deleteAndReturnChangedRows(item);
   }
 
   @override

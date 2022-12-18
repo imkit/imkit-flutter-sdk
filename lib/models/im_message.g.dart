@@ -69,6 +69,7 @@ Map<String, dynamic> _$IMMessageToJson(IMMessage instance) => <String, dynamic>{
 
 const _$IMMessageStatusEnumMap = {
   IMMessageStatus.initial: 'initial',
+  IMMessageStatus.preSent: 'preSent',
   IMMessageStatus.sent: 'sent',
   IMMessageStatus.delivered: 'delivered',
   IMMessageStatus.undelivered: 'undelivered',

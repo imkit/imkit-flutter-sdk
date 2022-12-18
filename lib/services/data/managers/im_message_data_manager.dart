@@ -49,7 +49,7 @@ class IMMessageDataManager extends IMBaseDataManager {
     return database.messageDao.updateItems(filterMessages).then((value) => {});
   }
 
-  Future<void> deleteItem(IMMessage message) async {
+  Future<int> deleteItem(IMMessage message) async {
     return database.messageDao.deleteItem(message);
   }
 
@@ -74,7 +74,7 @@ class IMMessageDataManager extends IMBaseDataManager {
 
   Future<IMMessage> preSendMessage({required IMMessage localMessage}) async {
     IMMessage message = localMessage;
-    message.status = IMMessageStatus.sent;
+    message.status = IMMessageStatus.preSent;
     message.createdAt = DateTime.now();
 
     await insertItem(message);
@@ -86,8 +86,8 @@ class IMMessageDataManager extends IMBaseDataManager {
     try {
       final serverMessage = await _sendMessageToServer(roomId: localMessage.roomId, body: localMessage.parameters);
       await Future.wait([
-        deleteItem(localMessage),
         insertItem(serverMessage),
+        deleteItem(localMessage),
       ]);
       return serverMessage;
     } catch (error) {

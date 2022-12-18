@@ -20,7 +20,7 @@ class _IMMessageItemFileUploadState extends State<IMMessageItemFileUpload> {
   void initState() {
     super.initState();
 
-    if ([IMMessageStatus.sent].contains(widget.message.status)) {
+    if ([IMMessageStatus.preSent].contains(widget.message.status)) {
       Future.delayed(Duration.zero, _sendMessage);
     }
   }
