@@ -22,7 +22,6 @@ IMMessage _$IMMessageFromJson(Map<String, dynamic> json) => IMMessage(
       createdAt: toDateTime(_toCreatedAt(json, 'createdAtMS') as int?),
       updatedAt: toDateTime(json['updatedAtMS'] as int?),
       text: _toText(json, 'text') as String?,
-      translatedText: json['translatedText'] as String?,
       stickerId: json['sticker'] as String?,
       responseObject: _toResponseObject(json, 'responseObject') == null
           ? null
@@ -52,25 +51,25 @@ IMMessage _$IMMessageFromJson(Map<String, dynamic> json) => IMMessage(
 Map<String, dynamic> _$IMMessageToJson(IMMessage instance) => <String, dynamic>{
       '_id': instance.id,
       'room': instance.roomId,
-      'messageType': _$IMMessageTypeEnumMap[instance.type],
+      'messageType': _$IMMessageTypeEnumMap[instance.type]!,
       'systemEvent': instance.systemEvent,
       'sender': instance.sender,
       'createdAtMS': toTimestamp(instance.createdAt),
       'updatedAtMS': toTimestamp(instance.updatedAt),
       'responseObject': instance.responseObject,
       'text': instance.text,
-      'translatedText': instance.translatedText,
       'sticker': instance.stickerId,
       'mentions': instance.mentions,
       'images': instance.images,
       'file': instance.file,
       'location': instance.location,
       'extra': instance.extra,
-      'status': _$IMMessageStatusEnumMap[instance.status],
+      'status': _$IMMessageStatusEnumMap[instance.status]!,
     };
 
 const _$IMMessageStatusEnumMap = {
   IMMessageStatus.initial: 'initial',
+  IMMessageStatus.preSent: 'preSent',
   IMMessageStatus.sent: 'sent',
   IMMessageStatus.delivered: 'delivered',
   IMMessageStatus.undelivered: 'undelivered',

@@ -30,6 +30,7 @@ class IMMessageItemFile extends StatelessWidget {
 extension on IMMessageItemFile {
   Widget getChild() {
     switch (message.status) {
+      case IMMessageStatus.preSent:
       case IMMessageStatus.sent:
         return IMMessageItemFileUpload(message: message);
 

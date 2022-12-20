@@ -17,7 +17,7 @@ IMSystemEvent _$IMSystemEventFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$IMSystemEventToJson(IMSystemEvent instance) =>
     <String, dynamic>{
-      'type': _$IMMessageSystemEventTypeEnumMap[instance.type],
+      'type': _$IMMessageSystemEventTypeEnumMap[instance.type]!,
       'members': instance.members,
     };
 

@@ -20,80 +20,78 @@ class IMMessageImageViewer extends StatelessWidget {
   IMMessageImageViewer({Key? key, required this.defaultMessage}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Column(children: [
-          Text(
-            defaultMessage.sender?.nickname ?? "",
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          Visibility(
-            visible: defaultMessage.createdAt != null,
-            child: Text(
-              DateFormat("yyyy/MM/dd a hh:mm:ss").format(defaultMessage.createdAt ?? DateTime.now()),
-              style: const TextStyle(fontSize: 12),
+  Widget build(BuildContext context) => Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: Column(children: [
+            Text(
+              defaultMessage.sender?.nickname ?? "",
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          ),
-        ]),
-        backgroundColor: const Color.fromRGBO(0, 0, 0, 0.3),
-        actions: [
-          IMIconButtonWidget(
-            icon: const Icon(Icons.download),
-            onPressed: () async {
-              final url = _currentUrl ?? "";
-              if (url.isNotEmpty) {
-                final cacheManager = IMKitCacheManager();
-                FileInfo? fileInfo = await cacheManager.getFileFromCache(url);
-                fileInfo ??= await cacheManager.downloadFile(url, authHeaders: IMKit.instance.internal.state.headers());
+            Visibility(
+              visible: defaultMessage.createdAt != null,
+              child: Text(
+                DateFormat("yyyy/MM/dd a hh:mm:ss").format(defaultMessage.createdAt ?? DateTime.now()),
+                style: const TextStyle(fontSize: 12),
+              ),
+            ),
+          ]),
+          backgroundColor: const Color.fromRGBO(0, 0, 0, 0.3),
+          actions: [
+            IMIconButtonWidget(
+              icon: const Icon(Icons.download),
+              onPressed: () async {
+                final url = _currentUrl ?? "";
+                if (url.isNotEmpty) {
+                  final cacheManager = IMKitCacheManager();
+                  FileInfo? fileInfo = await cacheManager.getFileFromCache(url);
+                  fileInfo ??= await cacheManager.downloadFile(url, authHeaders: IMKit.instance.internal.state.headers());
 
-                final path = fileInfo.file.path;
-                final result = await PhotoManager.editor.saveImageWithPath(path, title: '');
-                final isSuccess = (result?.id ?? "").isNotEmpty;
-                if (isSuccess) {
-                  Toast.basic(text: IMKit.S.p_p_saved, icon: Icons.check);
+                  final path = fileInfo.file.path;
+                  final result = await PhotoManager.editor.saveImageWithPath(path, title: '');
+                  final isSuccess = (result?.id ?? "").isNotEmpty;
+                  if (isSuccess) {
+                    Toast.basic(text: IMKit.S.p_p_saved, icon: Icons.check);
+                  }
                 }
-              }
-            },
-          )
-        ],
-      ),
-      body: StreamBuilder<List<IMMessage>>(
-        stream: IMKit.instance.listener.watchMessagesByType(roomId: defaultMessage.roomId, type: IMMessageType.image),
-        initialData: const [],
-        builder: (BuildContext context, AsyncSnapshot<List<IMMessage>> snapshot) {
-          final messages = (snapshot.data ?? []).where((element) {
-            if (element.images.isNotEmpty) {
-              final firstImage = element.images.first;
-              return firstImage.originalUrl.isNotEmpty || firstImage.thumbnailUrl.isNotEmpty;
-            }
-            return false;
-          }).toList();
-          final index = messages.indexWhere((element) => element.id == defaultMessage.id);
-
-          if (messages.isNotEmpty && index >= 0 && !isJumpToDefault) {
-            isJumpToDefault = true;
-            Future.delayed(const Duration(milliseconds: 5), () => _pageController.jumpToPage(index));
-          }
-
-          return Container(
-            color: Colors.black,
-            child: PhotoViewGallery.builder(
-              scrollPhysics: const BouncingScrollPhysics(),
-              itemCount: messages.length,
-              loadingBuilder: (context, event) => _loadingWidget(progress: event == null ? 0 : event.cumulativeBytesLoaded / (event.expectedTotalBytes ?? 0)),
-              builder: (BuildContext context, int index) => _getPhotoItem(message: messages[index]),
-              pageController: _pageController,
-              onPageChanged: (index) {
-                _currentUrl = _url(message: messages[index]);
               },
-            ),
-          );
-        },
-      ),
-    );
-  }
+            )
+          ],
+        ),
+        body: StreamBuilder<List<IMMessage>>(
+          stream: IMKit.instance.listener.watchMessagesByType(roomId: defaultMessage.roomId, type: IMMessageType.image),
+          initialData: const [],
+          builder: (BuildContext context, AsyncSnapshot<List<IMMessage>> snapshot) {
+            final messages = (snapshot.data ?? []).where((element) {
+              if (element.images.isNotEmpty) {
+                final firstImage = element.images.first;
+                return firstImage.originalUrl.isNotEmpty || firstImage.thumbnailUrl.isNotEmpty;
+              }
+              return false;
+            }).toList();
+            final index = messages.indexWhere((element) => element.id == defaultMessage.id);
+
+            if (messages.isNotEmpty && index >= 0 && !isJumpToDefault) {
+              isJumpToDefault = true;
+              Future.delayed(const Duration(milliseconds: 5), () => _pageController.jumpToPage(index));
+            }
+
+            return Container(
+              color: Colors.black,
+              child: PhotoViewGallery.builder(
+                scrollPhysics: const BouncingScrollPhysics(),
+                itemCount: messages.length,
+                loadingBuilder: (context, event) => _loadingWidget(progress: event == null ? 0 : event.cumulativeBytesLoaded / (event.expectedTotalBytes ?? 0)),
+                builder: (BuildContext context, int index) => _getPhotoItem(message: messages[index]),
+                pageController: _pageController,
+                onPageChanged: (index) {
+                  _currentUrl = _url(message: messages[index]);
+                },
+              ),
+            );
+          },
+        ),
+      );
 }
 
 extension on IMMessageImageViewer {

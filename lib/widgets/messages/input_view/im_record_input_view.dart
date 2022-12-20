@@ -31,7 +31,7 @@ class _IMRecordInputViewState extends State<IMRecordInputView> {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-        height: IMMessageItemComponent.isPortrait(context) ? 250 : 170,
+        height: IMMessageItemComponent.isPortrait(context) ? 300 : 170,
         child: _buildBody(context),
       );
 

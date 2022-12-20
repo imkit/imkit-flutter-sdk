@@ -42,7 +42,11 @@ dependencies:
   # File
   file_picker: ^4.6.1
   mime: ^1.0.2
-  advance_pdf_viewer: ^2.0.1
+  advance_pdf_viewer:
+    path: advance_pdf_viewer-2.0.1
+
+  # Video
+  video_player: ^2.4.9
 
   # Util
   enume: ^1.1.0
@@ -58,7 +62,7 @@ dependencies:
   share_plus: ^4.5.2
 
   any_link_preview: ^2.0.9
-  flutter_map: ^2.2.0
+  flutter_map: ^2.0.0
   location: ^4.4.0
   latlong2: ^0.8.1
   geocoding: ^2.0.5

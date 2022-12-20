@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/extensions/string_ext.dart';
 import 'package:imkit/sdk/imkit.dart';
+import 'package:imkit/utils/imkit_cache_manager.dart';
 
 class IMImageWidget extends StatelessWidget {
   const IMImageWidget({
@@ -51,6 +52,7 @@ class IMImageWidget extends StatelessWidget {
   }
 
   Widget _fromNetwork() => CachedNetworkImage(
+        cacheManager: IMKitCacheManager(),
         imageUrl: url ?? "",
         fit: fit,
         width: width,

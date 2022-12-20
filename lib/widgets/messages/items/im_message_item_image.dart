@@ -19,7 +19,7 @@ class IMMessageItemImage extends StatelessWidget {
     } else if ((image.thumbnailPath ?? "").isNotEmpty) {
       return _buildFromLocal(message: message);
     } else {
-      return _buildFromUrl(context: context, url: image.thumbnailUrl);
+      return _buildFromUrl(context: context, url: image.thumbnailUrl, width: image.width, height: image.height);
     }
   }
 }
@@ -27,28 +27,34 @@ class IMMessageItemImage extends StatelessWidget {
 extension on IMMessageItemImage {
   Widget _buildFromError() => IMMessageItemComponent.getLoadImageFailure();
 
-  Widget _buildFromUrl({required BuildContext context, required String url}) => InkWell(
-      onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => IMMessageImageViewer(defaultMessage: message),
-              fullscreenDialog: true,
-            ),
+  Widget _buildFromUrl({required BuildContext context, required String url, int? width, int? height}) => InkWell(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => IMMessageImageViewer(defaultMessage: message),
+            fullscreenDialog: true,
           ),
-      child: IMImageWidget(
+        ),
+        child: IMImageWidget(
           url: url,
           fit: BoxFit.fitWidth,
+          width: width?.toDouble(),
+          height: (width ?? 0) <= 0 || (height ?? 0) <= 0 ? null : IMMessageItemComponent.getMaxCellWidth(context) * (height ?? 0) / (width ?? 0),
           maxWidthDiskCache: IMMessageItemComponent.getMaxCellWidth(context).toInt(),
           onError: _buildFromError,
-          onProgress: (double? progress) => Container(
-                padding: const EdgeInsets.all(12),
-                width: 44,
-                height: 44,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  value: progress,
-                ),
-              )));
+          onProgress: (double? progress) => Center(
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              width: 44,
+              height: 44,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                value: progress,
+              ),
+            ),
+          ),
+        ),
+      );
 
   Widget _buildFromLocal({required IMMessage message}) => IMMessageItemImageUpload(message: message);
 }

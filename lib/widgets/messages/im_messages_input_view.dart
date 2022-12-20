@@ -348,7 +348,6 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                     _responseObject = null;
                   });
                   await IMKit.instance.action.sendStickerMessage(roomId: widget.roomId, sticker: sticker, responseObject: tmpResponseObject);
-                  updateInputType(IMMessagesInputViewType.none);
                   scrollToBottom();
                 },
               ),
@@ -371,13 +370,17 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
         ),
       );
 
-  void updateInputType(IMMessagesInputViewType type) {
+  void updateInputType(IMMessagesInputViewType type) async {
     if (type == _inputViewType) {
       return;
     }
 
     if (type != IMMessagesInputViewType.text) {
       _focusNode.unfocus();
+
+      if (_inputViewType == IMMessagesInputViewType.text) {
+        await Future.delayed(const Duration(milliseconds: 350));
+      }
     }
 
     setState(() {

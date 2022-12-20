@@ -41,7 +41,7 @@ IMRoom _$IMRoomFromJson(Map<String, dynamic> json) => IMRoom(
 
 Map<String, dynamic> _$IMRoomToJson(IMRoom instance) => <String, dynamic>{
       '_id': instance.id,
-      'roomType': _$IMRoomTypeEnumMap[instance.type],
+      'roomType': _$IMRoomTypeEnumMap[instance.type]!,
       'name': instance.name,
       'description': instance.desc,
       'cover': instance.coverUrl,

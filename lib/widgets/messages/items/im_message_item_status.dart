@@ -19,6 +19,7 @@ extension on IMMessageItemStatus {
   List<Widget> _getChildren() {
     switch (message.status) {
       case IMMessageStatus.initial:
+      case IMMessageStatus.preSent:
       case IMMessageStatus.sent:
         return _forSending();
 
