@@ -147,6 +147,7 @@ extension on IMMessagesListWidgetState {
         } else {
           jumpToBottom();
         }
+        Future.delayed(const Duration(milliseconds: 300), _onScrollControllerListener);
       },
     );
   }
