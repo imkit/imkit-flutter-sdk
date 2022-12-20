@@ -348,7 +348,6 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                     _responseObject = null;
                   });
                   await IMKit.instance.action.sendStickerMessage(roomId: widget.roomId, sticker: sticker, responseObject: tmpResponseObject);
-                  updateInputType(IMMessagesInputViewType.none);
                   scrollToBottom();
                 },
               ),
