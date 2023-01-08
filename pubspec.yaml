@@ -1,7 +1,9 @@
 name: imkit
 description: A new Flutter package project.
 version: 0.0.1
-homepage:
+homepage: https://github.com/imkit/imkit-flutter-sdk
+
+publish_to: 'none'
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
@@ -43,7 +45,8 @@ dependencies:
   file_picker: ^4.6.1
   mime: ^1.0.2
   advance_pdf_viewer:
-    path: advance_pdf_viewer-2.0.1
+    git:
+      url: https://github.com/imkit/advance_pdf_viewer
 
   # Video
   video_player: ^2.4.9
