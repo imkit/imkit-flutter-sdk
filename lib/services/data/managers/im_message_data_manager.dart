@@ -72,9 +72,9 @@ class IMMessageDataManager extends IMBaseDataManager {
     return messagesMark.map((element) => element.id).toList();
   }
 
-  Future<IMMessage> preSendMessage({required IMMessage localMessage}) async {
+  Future<IMMessage> preSendMessage({required IMMessage localMessage, IMMessageStatus status = IMMessageStatus.preSent}) async {
     IMMessage message = localMessage;
-    message.status = IMMessageStatus.preSent;
+    message.status = status;
     message.createdAt = DateTime.now();
 
     await insertItem(message);

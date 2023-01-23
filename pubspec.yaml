@@ -24,11 +24,11 @@ dependencies:
   loading_indicator: ^3.0.0
   
   # Model
-  json_annotation: ^4.4.0
+  json_annotation: ^4.6.0
 
   # Persistent Data
   shared_preferences: ^2.0.13
-  floor: ^1.2.0
+  floor: ^1.4.0
 
   # Photo
   photo_manager: ^2.1.4
