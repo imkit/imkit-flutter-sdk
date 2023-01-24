@@ -416,5 +416,5 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
 }
 
 extension on IMMessagesInputViewState {
-  Future<bool>? scrollToBottom() => Future.delayed(const Duration(milliseconds: 300), messagesListWidgetKey.currentState?.scrollToBottom);
+  void scrollToBottom() => messagesListWidgetKey.currentState?.jumpToBottom();
 }
