@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -10,6 +11,7 @@ class IMImageWidget extends StatelessWidget {
   const IMImageWidget({
     Key? key,
     this.url,
+    this.localPath,
     this.bytes,
     this.fit = BoxFit.cover,
     this.width,
@@ -23,6 +25,7 @@ class IMImageWidget extends StatelessWidget {
   }) : super(key: key);
 
   final String? url;
+  final String? localPath;
   final Uint8List? bytes;
   final BoxFit? fit;
   final double? width;
@@ -41,6 +44,8 @@ class IMImageWidget extends StatelessWidget {
     try {
       if (url?.isNotEmpty ?? false) {
         return _fromNetwork();
+      } else if (localPath?.isNotEmpty ?? false) {
+        return _fromFile();
       } else if (bytes?.isNotEmpty ?? false) {
         return _fromMemory();
       } else {
@@ -76,6 +81,19 @@ class IMImageWidget extends StatelessWidget {
           );
         },
         imageBuilder: onImageBuilder == null ? null : (BuildContext context, ImageProvider<Object> imageProvider) => onImageBuilder?.call(imageProvider),
+      );
+
+  Widget _fromFile() => Image.file(
+        File(localPath ?? ""),
+        width: width,
+        height: height,
+        fit: fit,
+        errorBuilder: (context, error, stackTrace) {
+          if (onError != null) {
+            onError?.call();
+          }
+          return _fromText();
+        },
       );
 
   Widget _fromMemory() => Image.memory(

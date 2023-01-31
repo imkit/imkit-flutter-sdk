@@ -183,9 +183,9 @@ class IMData {
     return _messageDataManager.sendNewMessage(localMessage: newMessage);
   }
 
-  Future<List<IMMessage>> preSendImageMessages({required String roomId, required List<AssetEntity> assetEntities}) async {
+  Future<IMMessage> preSendImageMessages({required String roomId, required List<AssetEntity> assetEntities}) async {
     final me = await getMe();
-    final messages = await Future.wait(assetEntities.map((element) async {
+    final images = await Future.wait(assetEntities.map((element) async {
       final list = await element.thumbnailDataWithSize(const ThumbnailSize.square(1500), quality: 90);
       final originalFile = await element.file;
       final originalFileSize = await originalFile?.length();
@@ -196,9 +196,8 @@ class IMData {
         final thumbnailFilepath = "$originalDirectory/thumbnail_$originalFilename";
         thumbnailFile = list != null ? await File(thumbnailFilepath).writeAsBytes(list) : originalFile;
       }
-
       if (originalFile != null) {
-        final image = IMImage(
+        return IMImage(
           originalUrl: "",
           thumbnailUrl: "",
           width: element.width,
@@ -206,20 +205,20 @@ class IMData {
           originalPath: originalFile.path,
           thumbnailPath: thumbnailFile?.path ?? originalFile.path,
         );
-        final message = IMMessage.fromImages(
-          roomId: roomId,
-          sender: me,
-          images: [image],
-        );
-        return _messageDataManager.preSendMessage(localMessage: message);
       }
       return null;
     }));
 
-    return messages.whereNotNull().toList();
+    final message = IMMessage.fromImages(
+      roomId: roomId,
+      sender: me,
+      images: images.whereNotNull().toList(),
+    );
+    return _messageDataManager.preSendMessage(localMessage: message);
   }
 
-  Future<IMMessage> preSendImageMessage({required String roomId, required String path, required int width, required int height}) async {
+  Future<IMMessage> preSendImageMessage(
+      {required String roomId, required String path, required int width, required int height, IMMessageStatus status = IMMessageStatus.preSent}) async {
     final me = await getMe();
     final image = IMImage(
       originalUrl: "",
@@ -234,22 +233,74 @@ class IMData {
       sender: me,
       images: [image],
     );
-    return _messageDataManager.preSendMessage(localMessage: message);
+    return _messageDataManager.preSendMessage(localMessage: message, status: status);
   }
 
-  Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
+  Future<IMImage> uploadImage({required IMImage image, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
     try {
-      await _messageDataManager.updateItem(message..status = IMMessageStatus.sent);
-      message.images = await Future.wait(
-        message.images.map(
-          (element) => _fileDataManager.uploadImage(image: element, uploadProgress: uploadProgress, cancelToken: cancelToken),
-        ),
-      );
-      return _messageDataManager.sendNewMessage(localMessage: message);
+      return _fileDataManager.uploadImage(image: image, uploadProgress: uploadProgress, cancelToken: cancelToken);
     } catch (_) {
       uploadProgress?.call(0);
-      _messageDataManager.updateItem(message..status = IMMessageStatus.undelivered);
-      return message;
+      return image;
+    }
+
+    // try {
+    //   await _messageDataManager.updateItem(message..status = IMMessageStatus.sent);
+    //   message.images = await Future.wait(
+    //     message.images.map(
+    //       (element) => _fileDataManager.uploadImage(image: element, uploadProgress: uploadProgress, cancelToken: cancelToken),
+    //     ),
+    //   );
+    //   return _messageDataManager.sendNewMessage(localMessage: message);
+    // } catch (_) {
+    //   uploadProgress?.call(0);
+    //   _messageDataManager.updateItem(message..status = IMMessageStatus.undelivered);
+    //   return message;
+    // }
+  }
+
+  // Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
+  //   try {
+  //     await setMessageStatus(message: message, status: IMMessageStatus.sent);
+  //     message.images = await Future.wait(
+  //       message.images.map(
+  //         (element) => _fileDataManager.uploadImage(image: element, uploadProgress: uploadProgress, cancelToken: cancelToken),
+  //       ),
+  //     );
+  //     return _messageDataManager.sendNewMessage(localMessage: message);
+  //   } catch (_) {
+  //     uploadProgress?.call(0);
+  //     return setMessageStatus(message: message, status: IMMessageStatus.undelivered);
+  //   }
+  // }
+
+  Future<IMMessage> sendImageMessageNoUpload({required IMMessage message, required List<IMImage> images}) async {
+    try {
+      final successUploadedImages = images.where((element) => element.originalUrl.isNotEmpty || element.thumbnailUrl.isNotEmpty).toList();
+
+      if (successUploadedImages.isEmpty) {
+        throw Error();
+      }
+      await setMessageStatus(message: message, status: IMMessageStatus.sent);
+
+      final newImageMessages = images
+          .where((element) => element.originalUrl.isEmpty && element.thumbnailUrl.isEmpty)
+          .map(
+            (element) => preSendImageMessage(
+              roomId: message.roomId,
+              path: element.originalPath ?? element.thumbnailPath ?? "",
+              width: element.width,
+              height: element.height,
+              status: IMMessageStatus.undelivered,
+            ),
+          )
+          .toList();
+
+      return _messageDataManager.sendNewMessage(localMessage: message..images = successUploadedImages).then(
+            (value) => Future.wait(newImageMessages).then((_) => value).catchError((_) => value),
+          );
+    } catch (_) {
+      return setMessageStatus(message: message, status: IMMessageStatus.sent);
     }
   }
 
@@ -322,7 +373,8 @@ class IMData {
   Future<IMMessage> resendMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) async {
     switch (message.type) {
       case IMMessageType.image:
-        return await sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
+        // return await sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
+        return setMessageStatus(message: message, status: IMMessageStatus.preSent);
 
       case IMMessageType.audio:
       case IMMessageType.file:
@@ -352,6 +404,13 @@ class IMData {
 
   void deleteMessage({required IMMessage message}) {
     _messageDataManager.deleteItem(message);
+  }
+
+  Future<IMMessage> setMessageStatus({required IMMessage message, required IMMessageStatus status}) async {
+    if (message.status != status) {
+      await _messageDataManager.updateItem(message..status = status);
+    }
+    return message;
   }
 
   Future<void> _syncMessages({required String roomId, int limit = 50}) async {

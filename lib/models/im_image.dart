@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'im_image.g.dart';
@@ -24,6 +27,8 @@ class IMImage {
 
   String? originalPath;
   String? thumbnailPath;
+
+  String get id => md5.convert(utf8.encode("${originalUrl}_${thumbnailUrl}_${originalPath ?? ""}_${thumbnailPath ?? ""})")).toString();
 
   IMImage({
     this.originalUrl = "",

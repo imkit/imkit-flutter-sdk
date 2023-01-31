@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/models/im_image.dart';
 import 'package:imkit/models/im_location.dart';
 import 'package:imkit/models/im_response_object.dart';
 import 'package:imkit/models/language_translate.dart';
@@ -72,12 +73,16 @@ class IMKitAction with WidgetsBindingObserver {
   // Message
   Future<IMMessage> sendTextMessage({required String roomId, required String text, IMResponseObject? responseObject}) =>
       _data.sendTextMessage(roomId: roomId, text: text, responseObject: responseObject);
-  Future<List<IMMessage>> preSendImageMessages({required String roomId, required List<AssetEntity> assetEntities}) =>
+  Future<IMMessage> preSendImageMessages({required String roomId, required List<AssetEntity> assetEntities}) =>
       _data.preSendImageMessages(roomId: roomId, assetEntities: assetEntities);
   Future<IMMessage> preSendImageMessage({required String roomId, required String path, required int width, required int height}) =>
       _data.preSendImageMessage(roomId: roomId, path: path, width: width, height: height);
-  Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
-      _data.sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
+  Future<IMImage> uploadImage({required IMImage image, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
+      _data.uploadImage(image: image, uploadProgress: uploadProgress, cancelToken: cancelToken);
+  // Future<IMMessage> sendImageMessage({required IMMessage message, UploadProgress? uploadProgress, CancelToken? cancelToken}) =>
+  //     _data.sendImageMessage(message: message, uploadProgress: uploadProgress, cancelToken: cancelToken);
+  Future<IMMessage> sendImageMessageNoUpload({required IMMessage message, required List<IMImage> images}) =>
+      _data.sendImageMessageNoUpload(message: message, images: images);
   Future<IMMessage> sendLocationMessage({required String roomId, required IMLocation location, IMResponseObject? responseObject}) =>
       _data.sendLocationMessage(roomId: roomId, location: location, responseObject: responseObject);
   Future<IMMessage> sendStickerMessage({required String roomId, required String sticker, IMResponseObject? responseObject}) =>
@@ -95,6 +100,7 @@ class IMKitAction with WidgetsBindingObserver {
   Future<bool> deleteLocalMessage({required IMMessage message}) => _data.deleteLocalMessage(message: message);
   void deleteMessage({required IMMessage message}) => _data.deleteMessage(message: message);
   void setRead({required String roomId, required IMMessage message}) => _data.setReadIfNeed(roomId: roomId, message: message);
+  Future<IMMessage> setMessageStatus({required IMMessage message, required IMMessageStatus status}) => _data.setMessageStatus(message: message, status: status);
 
   // File
   Future<File> downloadFileToCache({required String url, required String filename}) => _data.downloadFileToCache(url: url, filename: filename);

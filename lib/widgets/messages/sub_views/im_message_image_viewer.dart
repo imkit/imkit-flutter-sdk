@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/models/im_image.dart';
 import 'package:imkit/utils/imkit_cache_manager.dart';
 import 'package:imkit/utils/toast.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
@@ -11,13 +12,26 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
+class IMMessageImageViewerItem {
+  IMImage image;
+  IMUser? sender;
+  DateTime? createdAt;
+
+  IMMessageImageViewerItem({
+    required this.image,
+    this.sender,
+    this.createdAt,
+  });
+}
+
 // ignore: must_be_immutable
 class IMMessageImageViewer extends StatelessWidget {
-  final IMMessage defaultMessage;
+  final String roomId;
+  final IMMessageImageViewerItem selectedItem;
   late String? _currentUrl;
   late final PageController _pageController = PageController();
-  late bool isJumpToDefault = false;
-  IMMessageImageViewer({Key? key, required this.defaultMessage}) : super(key: key);
+  late bool _isJumpToDefault = false;
+  IMMessageImageViewer({Key? key, required this.roomId, required this.selectedItem}) : super(key: key);
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -25,13 +39,13 @@ class IMMessageImageViewer extends StatelessWidget {
         appBar: AppBar(
           title: Column(children: [
             Text(
-              defaultMessage.sender?.nickname ?? "",
+              selectedItem.sender?.nickname ?? "",
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Visibility(
-              visible: defaultMessage.createdAt != null,
+              visible: selectedItem.createdAt != null,
               child: Text(
-                DateFormat("yyyy/MM/dd a hh:mm:ss").format(defaultMessage.createdAt ?? DateTime.now()),
+                DateFormat("yyyy/MM/dd a hh:mm:ss").format(selectedItem.createdAt ?? DateTime.now()),
                 style: const TextStyle(fontSize: 12),
               ),
             ),
@@ -59,20 +73,19 @@ class IMMessageImageViewer extends StatelessWidget {
           ],
         ),
         body: StreamBuilder<List<IMMessage>>(
-          stream: IMKit.instance.listener.watchMessagesByType(roomId: defaultMessage.roomId, type: IMMessageType.image),
+          stream: IMKit.instance.listener.watchMessagesByType(roomId: roomId, type: IMMessageType.image),
           initialData: const [],
           builder: (BuildContext context, AsyncSnapshot<List<IMMessage>> snapshot) {
-            final messages = (snapshot.data ?? []).where((element) {
-              if (element.images.isNotEmpty) {
-                final firstImage = element.images.first;
-                return firstImage.originalUrl.isNotEmpty || firstImage.thumbnailUrl.isNotEmpty;
-              }
-              return false;
-            }).toList();
-            final index = messages.indexWhere((element) => element.id == defaultMessage.id);
+            final images = (snapshot.data ?? [])
+                .expand((message) => message.images
+                    // .where((element) => element.originalUrl.isNotEmpty || element.thumbnailUrl.isNotEmpty)
+                    .map((element) => IMMessageImageViewerItem(image: element, sender: message.sender, createdAt: message.createdAt)))
+                .toList();
 
-            if (messages.isNotEmpty && index >= 0 && !isJumpToDefault) {
-              isJumpToDefault = true;
+            final index = images.indexWhere((element) => element.image.id == selectedItem.image.id);
+
+            if (images.isNotEmpty && index >= 0 && !_isJumpToDefault) {
+              _isJumpToDefault = true;
               Future.delayed(const Duration(milliseconds: 5), () => _pageController.jumpToPage(index));
             }
 
@@ -80,12 +93,12 @@ class IMMessageImageViewer extends StatelessWidget {
               color: Colors.black,
               child: PhotoViewGallery.builder(
                 scrollPhysics: const BouncingScrollPhysics(),
-                itemCount: messages.length,
+                itemCount: images.length,
                 loadingBuilder: (context, event) => _loadingWidget(progress: event == null ? 0 : event.cumulativeBytesLoaded / (event.expectedTotalBytes ?? 0)),
-                builder: (BuildContext context, int index) => _getPhotoItem(message: messages[index]),
+                builder: (BuildContext context, int index) => _getPhotoItem(item: images[index]),
                 pageController: _pageController,
                 onPageChanged: (index) {
-                  _currentUrl = _url(message: messages[index]);
+                  _currentUrl = _url(item: images[index]);
                 },
               ),
             );
@@ -95,12 +108,11 @@ class IMMessageImageViewer extends StatelessWidget {
 }
 
 extension on IMMessageImageViewer {
-  String _url({required IMMessage message}) {
-    final firstImage = message.images.first;
-    if (firstImage.originalUrl.isNotEmpty) {
-      return firstImage.originalUrl;
+  String _url({required IMMessageImageViewerItem item}) {
+    if (item.image.originalUrl.isNotEmpty) {
+      return item.image.originalUrl;
     }
-    return firstImage.thumbnailUrl;
+    return item.image.thumbnailUrl;
   }
 
   Widget _loadingWidget({required double progress}) => SizedBox.fromSize(
@@ -119,10 +131,10 @@ extension on IMMessageImageViewer {
         ),
       );
 
-  PhotoViewGalleryPageOptions _getPhotoItem({required IMMessage message}) {
+  PhotoViewGalleryPageOptions _getPhotoItem({required IMMessageImageViewerItem item}) {
     return PhotoViewGalleryPageOptions(
-      imageProvider: CachedNetworkImageProvider(_url(message: message), headers: IMKit.instance.internal.state.headers()),
-      heroAttributes: PhotoViewHeroAttributes(tag: message.id),
+      imageProvider: CachedNetworkImageProvider(_url(item: item), headers: IMKit.instance.internal.state.headers()),
+      heroAttributes: PhotoViewHeroAttributes(tag: item.image.id),
       errorBuilder: (context, error, stack) => IMMessageItemComponent.getLoadImageFailure(),
     );
   }
