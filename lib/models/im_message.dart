@@ -516,27 +516,28 @@ Map<String, dynamic>? _toSystemEvent(Map<dynamic, dynamic>? json, String key) {
       return IMSystemEvent(type: IMMessageSystemEventType.recall).toJson();
 
     case "addMember":
+      final member = toMap(json["member"]);
       return IMSystemEvent(
         type: IMMessageSystemEventType.addMember,
-        members: [deserializeIMUser(json["member"])],
+        members: member != null ? [deserializeIMUser(member)] : [],
       ).toJson();
 
     case "deleteMember":
       return IMSystemEvent(
         type: IMMessageSystemEventType.deleteMember,
-        members: deserializeIMUserList(extra?["members"] ?? []),
+        members: deserializeIMUserList(toList((extra?["members"])) ?? []),
       ).toJson();
 
     case "addMembers":
       return IMSystemEvent(
         type: IMMessageSystemEventType.addMembers,
-        members: deserializeIMUserList(extra?["invitees"] ?? []),
+        members: deserializeIMUserList(toList((extra?["invitees"])) ?? []),
       ).toJson();
 
     case "cancelInvitations":
       return IMSystemEvent(
         type: IMMessageSystemEventType.cancelInvitations,
-        members: deserializeIMUserList(extra?["invitees"] ?? []),
+        members: deserializeIMUserList(toList((extra?["invitees"])) ?? []),
       ).toJson();
 
     default:
@@ -583,7 +584,7 @@ List<Map<String, dynamic>> _toImages(Map<dynamic, dynamic>? json, String key) {
   switch (json["messageType"]) {
     case "image":
       if (json["images"] != null) {
-        return (json["images"] as List).map((element) => Map.castFrom<dynamic, dynamic, String, dynamic>(element)).toList();
+        return toList(json["images"]) ?? [];
       } else {
         return [
           {
