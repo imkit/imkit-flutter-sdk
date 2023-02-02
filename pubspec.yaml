@@ -28,7 +28,7 @@ dependencies:
 
   # Persistent Data
   shared_preferences: ^2.0.13
-  floor: ^1.4.0
+  floor: ^1.3.0
 
   # Photo
   photo_manager: ^2.1.4
@@ -49,7 +49,7 @@ dependencies:
       url: https://github.com/imkit/advance_pdf_viewer
 
   # Video
-  video_player: ^2.4.9
+  video_player: ^2.3.0
 
   # Util
   enume: ^1.1.0

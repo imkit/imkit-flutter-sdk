@@ -30,7 +30,10 @@ List<Map<String, dynamic>> serializeIMSystemEventList(List<IMSystemEvent> object
 
 @JsonSerializable()
 class IMSystemEvent {
+  @JsonKey()
   IMMessageSystemEventType type;
+
+  @JsonKey(toJson: serializeIMUserList)
   List<IMUser> members;
 
   IMSystemEvent({
