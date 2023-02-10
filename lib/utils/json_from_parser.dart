@@ -4,6 +4,10 @@ DateTime? toDateTime(int? timestamp) => timestamp == null ? null : DateTime.from
 
 int? toTimestamp(DateTime? dateTime) => dateTime?.millisecondsSinceEpoch;
 
+int toInt(dynamic value) => int.tryParse(value.toString()) ?? 0;
+
+double toDouble(dynamic value) => double.tryParse(value.toString()) ?? 0;
+
 Map<String, dynamic>? toMap(dynamic resource) {
   if (resource == null) {
     return null;

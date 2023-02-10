@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:imkit/imkit_sdk.dart';
+import 'package:imkit/utils/json_from_parser.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'im_file.g.dart';
@@ -25,10 +26,10 @@ class IMFile {
   @JsonKey(name: 'mimeType', defaultValue: null)
   String? mimeType;
 
-  @JsonKey(name: 'bytes')
+  @JsonKey(name: 'bytes', fromJson: toInt)
   int bytes = 0;
 
-  @JsonKey(name: 'duration')
+  @JsonKey(name: 'duration', fromJson: toInt)
   int duration = 0;
 
   String? originalPath;

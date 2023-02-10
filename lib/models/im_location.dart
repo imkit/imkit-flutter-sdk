@@ -1,3 +1,4 @@
+import 'package:imkit/utils/json_from_parser.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'im_location.g.dart';
@@ -13,10 +14,10 @@ class IMLocation {
   @JsonKey(name: 'address')
   String address = "";
 
-  @JsonKey(name: 'latitude')
+  @JsonKey(name: 'latitude', fromJson: toDouble)
   double latitude = 0;
 
-  @JsonKey(name: 'longitude')
+  @JsonKey(name: 'longitude', fromJson: toDouble)
   double longitude = 0;
 
   IMLocation({

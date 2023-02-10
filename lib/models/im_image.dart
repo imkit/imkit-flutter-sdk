@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:imkit/utils/json_from_parser.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'im_image.g.dart';
@@ -19,10 +20,10 @@ class IMImage {
   @JsonKey(name: 'thumbnailUrl')
   String thumbnailUrl;
 
-  @JsonKey(name: 'width')
+  @JsonKey(name: 'width', fromJson: toInt)
   int width = 0;
 
-  @JsonKey(name: 'height')
+  @JsonKey(name: 'height', fromJson: toInt)
   int height = 0;
 
   String? originalPath;

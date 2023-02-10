@@ -1,3 +1,4 @@
+import 'package:imkit/utils/json_from_parser.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'im_member_property.g.dart';
@@ -13,7 +14,7 @@ class IMMemberProperty {
   @JsonKey(name: 'client')
   String uid = "";
 
-  @JsonKey(name: 'badge')
+  @JsonKey(name: 'badge', fromJson: toInt)
   int badge = 0;
 
   @JsonKey(name: 'lastRead')
