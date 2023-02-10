@@ -11,8 +11,8 @@ IMFile _$IMFileFromJson(Map<String, dynamic> json) => IMFile(
       name: json['name'] as String?,
       fileExtension: json['fileExtension'] as String?,
       mimeType: json['mimeType'] as String?,
-      bytes: json['bytes'] as int? ?? 0,
-      duration: json['duration'] as int? ?? 0,
+      bytes: json['bytes'] == null ? 0 : toInt(json['bytes']),
+      duration: json['duration'] == null ? 0 : toInt(json['duration']),
       originalPath: json['originalPath'] as String?,
     );
 

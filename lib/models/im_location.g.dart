@@ -8,8 +8,8 @@ part of 'im_location.dart';
 
 IMLocation _$IMLocationFromJson(Map<String, dynamic> json) => IMLocation(
       address: json['address'] as String? ?? "",
-      latitude: (json['latitude'] as num?)?.toDouble() ?? 0,
-      longitude: (json['longitude'] as num?)?.toDouble() ?? 0,
+      latitude: json['latitude'] == null ? 0 : toDouble(json['latitude']),
+      longitude: json['longitude'] == null ? 0 : toDouble(json['longitude']),
     );
 
 Map<String, dynamic> _$IMLocationToJson(IMLocation instance) =>

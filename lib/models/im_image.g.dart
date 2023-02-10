@@ -9,8 +9,8 @@ part of 'im_image.dart';
 IMImage _$IMImageFromJson(Map<String, dynamic> json) => IMImage(
       originalUrl: json['originalUrl'] as String? ?? "",
       thumbnailUrl: json['thumbnailUrl'] as String? ?? "",
-      width: json['width'] as int? ?? 0,
-      height: json['height'] as int? ?? 0,
+      width: json['width'] == null ? 0 : toInt(json['width']),
+      height: json['height'] == null ? 0 : toInt(json['height']),
       originalPath: json['originalPath'] as String?,
       thumbnailPath: json['thumbnailPath'] as String?,
     );
