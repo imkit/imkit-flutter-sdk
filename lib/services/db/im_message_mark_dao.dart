@@ -6,10 +6,10 @@ import 'package:imkit/services/db/im_base_dao.dart';
 abstract class IMMessageMarkDao extends IMBaseDao<IMMessageMark> {
   static const String table = 'IMMessageMark';
 
-  @Query('SELECT * FROM $table WHERE isDelete = true')
+  @Query('SELECT * FROM $table WHERE isDelete = 1')
   Stream<List<IMMessageMark>> findDeleteMessages();
 
-  @Query('SELECT * FROM $table WHERE isDelete = true')
+  @Query('SELECT * FROM $table WHERE isDelete = 1')
   Future<List<IMMessageMark>> findDeleteMessagesByFurure();
 
   @Query('DELETE FROM $table')
