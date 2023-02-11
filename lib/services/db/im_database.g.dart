@@ -745,7 +745,7 @@ class _$IMMessageMarkDao extends IMMessageMarkDao {
   @override
   Stream<List<IMMessageMark>> findDeleteMessages() {
     return _queryAdapter.queryListStream(
-        'SELECT * FROM IMMessageMark WHERE isDelete = true',
+        'SELECT * FROM IMMessageMark WHERE isDelete = 1',
         mapper: (Map<String, Object?> row) => IMMessageMark(
             id: row['id'] as String, isDelete: (row['isDelete'] as int) != 0),
         queryableName: 'IMMessageMark',
@@ -755,7 +755,7 @@ class _$IMMessageMarkDao extends IMMessageMarkDao {
   @override
   Future<List<IMMessageMark>> findDeleteMessagesByFurure() async {
     return _queryAdapter.queryList(
-        'SELECT * FROM IMMessageMark WHERE isDelete = true',
+        'SELECT * FROM IMMessageMark WHERE isDelete = 1',
         mapper: (Map<String, Object?> row) => IMMessageMark(
             id: row['id'] as String, isDelete: (row['isDelete'] as int) != 0));
   }
