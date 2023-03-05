@@ -52,7 +52,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             if (snapshot.hasError) {
               Toast.basic(text: "${snapshot.error}", icon: Icons.error);
               Future.delayed(const Duration(seconds: 2), () {
-                Navigator.pop(context);
+                Navigator.of(context).pop();
               });
               return Container();
             } else {
@@ -84,7 +84,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             if (!mounted) return;
             final AssetEntity result = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => DisplayPictureScreen(imagePath: image.path)));
             if (result.relativePath != null) {
-              Navigator.pop(context, result);
+              Navigator.of(context).pop(result);
             }
           } catch (e) {
             debugPrint(e.toString());
@@ -132,7 +132,7 @@ class DisplayPictureScreen extends StatelessWidget {
           image.image.resolve(const ImageConfiguration()).addListener(ImageStreamListener((imageInfo, synchronousCall) {
             AssetEntity assetEntity =
                 AssetEntity(id: imagePath, typeInt: 1, width: imageInfo.image.width, height: imageInfo.image.height, relativePath: imagePath);
-            Navigator.pop(context, assetEntity);
+            Navigator.of(context).pop(assetEntity);
           }));
         },
         child: const Icon(Icons.send),

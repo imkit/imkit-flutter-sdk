@@ -146,12 +146,12 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
                             (granted) async {
                               if (granted) {
                                 final cameras = await availableCameras();
-                                final AssetEntity result =
+                                updateInputType(IMMessagesInputViewType.none);
+                                final AssetEntity? result =
                                     await Navigator.of(context).push(MaterialPageRoute(builder: (context) => TakePictureScreen(camera: cameras.first)));
-                                if (result.relativePath != null) {
+                                if (result != null && result.relativePath != null) {
                                   await IMKit.instance.action
                                       .preSendImageMessage(roomId: widget.roomId, path: result.relativePath!, width: result.width, height: result.height);
-                                  updateInputType(IMMessagesInputViewType.none);
                                   scrollToBottom();
                                 }
                               } else {
