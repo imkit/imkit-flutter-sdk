@@ -1,5 +1,6 @@
 import 'package:any_link_preview/any_link_preview.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class IMUrlPreviewWidget extends StatelessWidget {
   const IMUrlPreviewWidget({Key? key, required this.url}) : super(key: key);
@@ -16,6 +17,7 @@ class IMUrlPreviewWidget extends StatelessWidget {
         borderRadius: 4,
         removeElevation: false,
         previewHeight: (MediaQuery.of(context).size.height) * 0.1,
+
         titleStyle: const TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.bold,
@@ -30,6 +32,7 @@ class IMUrlPreviewWidget extends StatelessWidget {
           color: Colors.grey[300],
           child: const Text('Oops!'),
         ),
+        urlLaunchMode: LaunchMode.externalApplication,
         // errorImage: _errorImage,
       ));
 }

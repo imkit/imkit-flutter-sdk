@@ -38,7 +38,7 @@ dependencies:
   camera: ^0.10.0+1
 
   # Microphone
-  audioplayers: ^1.0.1
+  audioplayers: ^3.0.1
   record: ^3.0.4
 
   # File
@@ -64,12 +64,13 @@ dependencies:
   intl_utils: ^2.6.1
   share_plus: ^4.5.2
 
-  any_link_preview: ^2.0.9
+  any_link_preview: ^3.0.0
   flutter_map: ^2.0.0
   location: ^4.4.0
   latlong2: ^0.8.1
   geocoding: ^2.0.5
   map_launcher: ^2.4.0
+  url_launcher: any
 
 dev_dependencies:
   flutter_test:

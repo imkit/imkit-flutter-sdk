@@ -2,9 +2,8 @@ import 'package:audioplayers/audioplayers.dart' as ap;
 
 class AudioPlayerManager {
   static final AudioPlayerManager instance = AudioPlayerManager._();
-  final ap.AudioContext _audioContext = ap.AudioContext(
+  final ap.AudioContext _audioContext = const ap.AudioContext(
     iOS: ap.AudioContextIOS(
-      defaultToSpeaker: true,
       category: ap.AVAudioSessionCategory.playback,
       options: [
         ap.AVAudioSessionOptions.defaultToSpeaker,
@@ -33,7 +32,7 @@ class AudioPlayerManager {
     _audioPlayer = player;
     _audioPlayer?.play(
       source,
-      mode: ap.PlayerMode.lowLatency,
+      // mode: ap.PlayerMode.lowLatency,
     );
   }
 }
