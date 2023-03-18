@@ -1,79 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:imkit/imkit_sdk.dart';
-import 'package:imkit/models/language_translate.dart';
 
-class IMMessageItemText extends StatefulWidget {
+class IMMessageItemText extends StatelessWidget {
   final IMMessage message;
-
   const IMMessageItemText({Key? key, required this.message}) : super(key: key);
 
   @override
-  State<IMMessageItemText> createState() => IMMessageItemTextState();
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(message.text ?? "", style: message.isMe ? IMKit.style.message.outgoing.textSytle : IMKit.style.message.incoming.textSytle),
+            translateWidget(context)
+          ],
+        ),
+      );
 }
 
-class IMMessageItemTextState extends State<IMMessageItemText> {
-  String? translatedText;
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (IMKit.instance.internal.state.cloudTranslateActive &&
-        !widget.message.isMe &&
-        (translatedText == null || translatedText!.isEmpty)) {
-      Future.delayed(Duration.zero, () => _fetchTranslateText());
-    }
-  }
-
-  _fetchTranslateText() async {
-    Map<String, dynamic> parameters = {"q": widget.message.text};
-    parameters["target"] = Localizations.localeOf(context).toString();
-
-    String? translate;
-    if (IMKit.translatedMessage.containsKey(widget.message.id)) {
-      translate = IMKit.translatedMessage[widget.message.id];
+extension on IMMessageItemText {
+  Widget translateWidget(BuildContext context) {
+    if (!IMKit.instance.internal.state.cloudTranslateActive || message.isMe) {
+      return const SizedBox();
+    } else if (IMKit.translatedMessage.containsKey(message.id)) {
+      return translatedTextWidget(IMKit.translatedMessage[message.id]);
     } else {
-      LanguageTranslate result = await IMKit.instance.action.doTranslate(
-          IMKit.instance.internal.state.translationApiKey, parameters);
-
-      if (result.data != null &&
-          result.data!.translations != null &&
-          result.data!.translations!.isNotEmpty) {
-        translate = result.data!.translations![0].translatedText;
-
-        if (translate != null) {
-          IMKit.translatedMessage[widget.message.id] = translate;
-        }
-      }
-    }
-
-    if (mounted) {
-      setState(() {
-        if (translate != null && translate.isNotEmpty) {
-          translatedText = IMKit.S.n_translation + ": " + translate;
-        }
-      });
+      return FutureBuilder<String>(
+        future: fetchTranslateText(context),
+        builder: (context, snapshot) => translatedTextWidget(snapshot.data),
+      );
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(widget.message.text ?? "",
-              style: widget.message.isMe
-                  ? IMKit.style.message.outgoing.textSytle
-                  : IMKit.style.message.incoming.textSytle),
-          Visibility(
-            visible: IMKit.instance.internal.state.cloudTranslateActive &&
-                translatedText != null &&
-                translatedText!.isNotEmpty,
-            child: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(translatedText ?? "",
-                    style: IMKit.style.message.outgoing.translateTextStyle)),
+  Widget translatedTextWidget(String? text) => Visibility(
+        visible: (text ?? "").isNotEmpty,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            "${IMKit.S.n_translation}: ${text ?? ""}",
+            style: IMKit.style.message.outgoing.translateTextStyle,
           ),
-        ]));
-  }
+        ),
+      );
+
+  Future<String> fetchTranslateText(BuildContext context) => IMKit.instance.action
+      .doTranslate(IMKit.instance.internal.state.translationApiKey, {"q": message.text, "target": Localizations.localeOf(context).toString()})
+      .then((result) => result.data?.translations?.first.translatedText ?? "")
+      .then((translate) {
+        if (translate.isNotEmpty) {
+          IMKit.translatedMessage[message.id] = translate;
+        }
+        return translate;
+      })
+      .catchError((error) => "");
 }
