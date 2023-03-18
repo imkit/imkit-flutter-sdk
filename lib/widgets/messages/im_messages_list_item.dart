@@ -99,26 +99,11 @@ extension on IMMessageListItem {
   Widget _bodyWidget({required BuildContext context}) {
     switch (message.type) {
       case IMMessageType.text:
-        {
-          String text = "";
-          if (message.text != null) {
-            text = message.text!;
-          }
-
-          List<String> urls = <String>[];
-          RegExp exp = RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
-          Iterable<RegExpMatch> matches = exp.allMatches(text);
-
-          for (var match in matches) {
-            urls.add(text.substring(match.start, match.end));
-          }
-
-          if (urls.isEmpty) {
-            return IMMessageItemText(message: message);
-          } else {
-            return IMMessageItemUrl(message: message, urls: urls);
-          }
-        }
+        String text = message.text ?? "";
+        RegExp exp = RegExp(r'(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+');
+        Iterable<RegExpMatch> matches = exp.allMatches(text);
+        List<String> urls = matches.map((element) => text.substring(element.start, element.end)).toList();
+        return urls.isEmpty ? IMMessageItemText(message: message) : IMMessageItemUrl(message: message, urls: urls);
 
       case IMMessageType.image:
         return IMMessageItemImage(message: message);

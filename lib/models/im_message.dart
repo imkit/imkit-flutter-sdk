@@ -572,7 +572,14 @@ Map<String, dynamic>? _toFile(Map<dynamic, dynamic>? json, String key) {
 
 Map<String, dynamic>? _toLocation(Map<dynamic, dynamic>? json, String key) {
   if (json?["messageType"] == "location") {
-    return {"address": json?["message"] ?? "", "latitude": json?["latitude"] ?? 0, "longitude": json?["longitude"] ?? 0};
+    final extra = json?["extra"];
+    final res = {
+      "address": json?["message"] ?? (extra is String ? extra : null) ?? "",
+      "latitude": json?["latitude"] ?? 0,
+      "longitude": json?["longitude"] ?? 0,
+    };
+    print(res);
+    return res;
   }
   return null;
 }
@@ -631,7 +638,7 @@ Map<String, dynamic>? _toExtra(Map<dynamic, dynamic>? json, String key) {
   }
   switch (json["messageType"]) {
     case "template":
-      return json["template"];
+      return toMap(json["template"]);
 
     case "flex":
       return Map.castFrom<dynamic, dynamic, String, dynamic>(json);
