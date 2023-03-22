@@ -44,6 +44,23 @@ class IMKitInternal {
     });
   }
 
+  Future<String> exchangeToken() async {
+    if (_state.tokenExpired == null) {
+      return "";
+    }
+    try {
+      final newToken = (await _state.tokenExpired) ?? "";
+      if (newToken.isNotEmpty) {
+        _state.token = newToken;
+        _data.socketConnect();
+        return newToken;
+      }
+      return "";
+    } catch (error) {
+      return "";
+    }
+  }
+
   void logout() {
     _state.logout();
     _localStorage.clean();

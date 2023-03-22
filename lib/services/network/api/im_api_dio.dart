@@ -2,7 +2,8 @@ import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:imkit/sdk/internal/imkit_accessor.dart';
-import 'package:imkit/services/network/api/interceptors/im_api_wrapper.dart';
+import 'package:imkit/services/network/api/interceptors/im_api_token_interceptor.dart';
+import 'package:imkit/services/network/api/interceptors/im_api_interceptor.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class IMApiDio with DioMixin, IMAccessor implements Dio {
@@ -20,7 +21,8 @@ class IMApiDio with DioMixin, IMAccessor implements Dio {
 
     this.options = options;
 
-    interceptors.add(IMApiWrapper(sdk.state));
+    interceptors.add(IMApiInterceptor(sdk.state));
+    interceptors.add(IMApiTokenInterceptor(this));
 
     // if (kDebugMode) {
     //   interceptors.add(PrettyDioLogger(

@@ -2,10 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/models/im_state.dart';
 
-class IMApiWrapper extends Interceptor {
+class IMApiInterceptor extends Interceptor {
   final IMState _state;
 
-  IMApiWrapper(this._state);
+  IMApiInterceptor(this._state);
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
