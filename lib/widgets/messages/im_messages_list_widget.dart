@@ -57,7 +57,7 @@ class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
                 _messagesMark = snapshotWithMark.data ?? [];
                 final _deleteMessageIds = _messagesMark.map((element) => element.id);
                 _messages = allMessages.where((element) => !_deleteMessageIds.contains(element.id)).toList();
-                final lastReciverUnReadMessage = _messages.where((element) => !element.isMe && element.membersWhoHaveRead.isEmpty).firstOrNull;
+                final lastReciverUnReadMessage = _messages.where((element) => !element.isMe && !element.membersWhoHaveRead.contains(IMKit.uid)).firstOrNull;
 
                 if (lastReciverUnReadMessage != null) {
                   IMKit.instance.action.setRead(roomId: widget.roomId, message: lastReciverUnReadMessage);
