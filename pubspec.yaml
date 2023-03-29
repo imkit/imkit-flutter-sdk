@@ -65,12 +65,11 @@ dependencies:
   share_plus: ^4.5.2
 
   any_link_preview: ^3.0.0
-  flutter_map: ^2.0.0
-  location: ^4.4.0
-  latlong2: ^0.8.1
+  google_maps_flutter: ^2.0.0
+  geolocator: ^8.0.0
   geocoding: ^2.0.5
-  map_launcher: ^2.4.0
   url_launcher: any
+  device_info_plus: ^4.0.0
 
 dev_dependencies:
   flutter_test:
