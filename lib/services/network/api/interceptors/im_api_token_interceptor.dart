@@ -14,15 +14,16 @@ class IMApiTokenInterceptor extends Interceptor {
       switch (err.response?.statusCode) {
         case 401:
         case 403:
-          final token = await IMKit.instance.internal.exchangeToken();
-          if (token.isNotEmpty) {
-            err.requestOptions.headers
-              ..remove(_headerAuthorization)
-              ..putIfAbsent(_headerAuthorization, () => token);
-            return handler.resolve(await retry(_dio, err.requestOptions, handler));
-          } else {
-            return handler.reject(err);
-          }
+          return Future.delayed(const Duration(seconds: 3), () async {
+            final headers = err.requestOptions.headers;
+            final inHeaderAccessToken = headers[_headerAuthorization];
+            final inStateAccessToken = IMKit.instance.internal.state.token;
+            return resend(
+              err,
+              (inHeaderAccessToken == inStateAccessToken) ? await IMKit.instance.internal.exchangeToken() : inStateAccessToken,
+              handler,
+            );
+          });
 
         default:
           return handler.next(err);
@@ -34,6 +35,20 @@ class IMApiTokenInterceptor extends Interceptor {
 }
 
 extension on IMApiTokenInterceptor {
+  void resend(DioError err, String accessToken, ErrorInterceptorHandler handler) async {
+    if (accessToken.isNotEmpty) {
+      try {
+        err.requestOptions.headers
+          ..remove(_headerAuthorization)
+          ..putIfAbsent(_headerAuthorization, () => accessToken);
+        return handler.resolve(await retry(_dio, err.requestOptions, handler));
+      } on DioError catch (error) {
+        return handler.reject(error);
+      }
+    }
+    return handler.reject(err);
+  }
+
   Future retry(Dio dio, RequestOptions requestOptions, ErrorInterceptorHandler handler) {
     if (requestOptions.data is FormData) {
       FormData formData = FormData();

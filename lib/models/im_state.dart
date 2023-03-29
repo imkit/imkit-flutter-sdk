@@ -12,8 +12,9 @@ class IMState {
   String token = "";
   List<String> stickers = [];
   String sdkPackageName = "";
+  String fcmToken = "";
   final String sdkDefaultPackageName = "imkit";
-  Future<String?>? tokenExpired;
+  Future<String?> Function()? tokenExpired;
 
   List<IMMessageType> replyableMessageTypes = [
     IMMessageType.text,
@@ -91,7 +92,7 @@ class IMStateBuilder {
   String _token = "";
   List<String> _stickers = [];
   String _sdkPackageName = "imkit";
-  Future<String?>? _tokenExpired;
+  Future<String?> Function()? _tokenExpired;
 
   IMStateBuilder setClientKey(String value) {
     _clientKey = value;
@@ -133,8 +134,8 @@ class IMStateBuilder {
     return this;
   }
 
-  IMStateBuilder setTokenExpired(Future<String?> Function() handler) {
-    _tokenExpired = handler();
+  IMStateBuilder setTokenExpired(Future<String?> Function()? handler) {
+    _tokenExpired = handler;
     return this;
   }
 

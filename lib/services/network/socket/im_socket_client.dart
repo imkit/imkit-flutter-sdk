@@ -121,7 +121,6 @@ extension on IMSocketClient {
           reconnect();
         } else if (_convertSocketData(data)["RC"] == 401) {
           disconnect();
-          IMKit.instance.internal.exchangeToken();
         }
       });
     });
