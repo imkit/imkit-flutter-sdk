@@ -31,6 +31,7 @@ class IMMessageItemMenu with IMAccessor {
 
 extension on IMMessageItemMenu {
   List<pm.MenuItem> get items {
+    final isMe = message.isMe;
     List<pm.MenuItem> items = [];
     if (state.copyableMessageTypes.contains(message.type)) {
       items.add(pm.MenuItem(title: IMKit.S.messages_action_copy, userInfo: IMMessageAction.copy));
@@ -38,16 +39,16 @@ extension on IMMessageItemMenu {
     if (state.replyableMessageTypes.contains(message.type)) {
       items.add(pm.MenuItem(title: IMKit.S.messages_action_reply, userInfo: IMMessageAction.reply));
     }
-    if (state.editableMessageTypes.contains(message.type)) {
+    if (state.editableMessageTypes.contains(message.type) && isMe) {
       items.add(pm.MenuItem(title: IMKit.S.messages_action_edit, userInfo: IMMessageAction.edit));
     }
-    if (state.unsendableMessageTypes.contains(message.type)) {
+    if (state.unsendableMessageTypes.contains(message.type) && isMe) {
       items.add(pm.MenuItem(title: IMKit.S.messages_action_unsend, userInfo: IMMessageAction.unsend));
     }
     if (state.forwardableMessageTypes.contains(message.type)) {
       items.add(pm.MenuItem(title: IMKit.S.messages_action_forward, userInfo: IMMessageAction.forward));
     }
-    if (state.reportableMessageTypes.contains(message.type) && !message.isMe) {
+    if (state.reportableMessageTypes.contains(message.type) && !isMe) {
       items.add(pm.MenuItem(title: IMKit.S.messages_action_report, userInfo: IMMessageAction.report));
     }
     if (state.deleteMessageTypes.contains(message.type)) {
