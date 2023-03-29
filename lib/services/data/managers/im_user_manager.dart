@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:imkit/imkit_sdk.dart';
 import 'package:imkit/services/data/managers/im_base_data_manager.dart';
 
 class IMUserDataManager extends IMBaseDataManager {
+  late final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+
   Future<void> insertItem(IMUser user) {
     return database.userDao.insertItem(user);
   }
@@ -41,5 +46,47 @@ class IMUserDataManager extends IMBaseDataManager {
 
   Future<IMUser> _fetchMe() {
     return api.user.fetchMe();
+  }
+
+  Future<bool> subscribe({required String fcmToken}) {
+    return getDeviceId()
+        .then((deviceId) {
+          if ((deviceId ?? "").isNotEmpty) {
+            return api.user.subscribe(
+              fcmToken: fcmToken,
+              type: "fcm",
+              deviceId: deviceId ?? "",
+            );
+          }
+          throw Error();
+        })
+        .then((_) => true)
+        .catchError((_) => false);
+  }
+
+  Future<bool> unsubscribe() {
+    return getDeviceId()
+        .then((deviceId) {
+          if ((deviceId ?? "").isNotEmpty) {
+            return api.user.unsubscribe(
+              type: "fcm",
+              deviceId: deviceId ?? "",
+            );
+          }
+          throw Error();
+        })
+        .then((_) => true)
+        .catchError((_) => false);
+  }
+}
+
+extension on IMUserDataManager {
+  Future<String?> getDeviceId() {
+    if (Platform.isIOS) {
+      return deviceInfoPlugin.iosInfo.then((value) => value.identifierForVendor).catchError((_) => null);
+    } else if (Platform.isAndroid) {
+      return deviceInfoPlugin.androidInfo.then((value) => value.androidId).catchError((_) => null);
+    }
+    return Future.value(null);
   }
 }

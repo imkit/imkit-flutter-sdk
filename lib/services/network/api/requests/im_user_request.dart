@@ -17,4 +17,17 @@ abstract class IMUserRequest {
     @Field("avatarUrl") String? avatarUrl,
     @Field("description") String? description,
   });
+
+  @POST("/me/subscribe")
+  Future<dynamic> subscribe({
+    @Field("token") required String fcmToken,
+    @Field("type") required String type,
+    @Field("deviceId") required String deviceId,
+  });
+
+  @POST("/me/unsubscribe")
+  Future<dynamic> unsubscribe({
+    @Field("type") required String type,
+    @Field("deviceId") required String deviceId,
+  });
 }

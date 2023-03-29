@@ -49,7 +49,7 @@ class IMKitInternal {
       return "";
     }
     try {
-      final newToken = (await _state.tokenExpired) ?? "";
+      final newToken = (await _state.tokenExpired?.call()) ?? "";
       if (newToken.isNotEmpty) {
         _state.token = newToken;
         _data.socketConnect();
@@ -62,9 +62,11 @@ class IMKitInternal {
   }
 
   void logout() {
-    _state.logout();
-    _localStorage.clean();
-    _database.clean();
-    _data.socketDisconnect();
+    _data.unsubscribe().whenComplete(() {
+      _state.logout();
+      _localStorage.clean();
+      _database.clean();
+      _data.socketDisconnect();
+    });
   }
 }
