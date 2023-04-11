@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:imkit/gen/assets.gen.dart';
 import 'package:imkit/models/im_location.dart';
 import 'package:imkit/sdk/imkit.dart';
 import 'package:imkit/widgets/components/im_icon_button_widget.dart';
+import 'package:label_marker/label_marker.dart';
 
 class TakeLocationScreen extends StatefulWidget {
   const TakeLocationScreen({Key? key}) : super(key: key);
@@ -18,99 +20,131 @@ class TakeLocationScreen extends StatefulWidget {
 
 class _TakeLocationScreenState extends State<TakeLocationScreen> {
   GoogleMapController? _controller;
+  Set<Marker> _markers = {};
   LatLng? _centerLocation;
   String? _centerAddress;
   bool _isMoving = false;
-
-  get _centerMarkerId => MarkerId(getCenterLatLng().toString());
 
   @override
   void initState() {
     super.initState();
 
     Future.delayed(const Duration(milliseconds: 300), () async {
+      LatLng latLng;
       try {
         final position = await getPosition();
-        _updateCenterLocation(LatLng(position.latitude, position.longitude));
+        latLng = LatLng(position.latitude, position.longitude);
       } catch (error) {
-        _updateCenterLocation(const LatLng(0, 0));
+        latLng = const LatLng(0, 0);
       }
+      _controller?.moveCamera(CameraUpdate.newLatLng(latLng));
+      _updateCenterLocation(latLng);
     });
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text(IMKit.S.messages_action_shareLocation),
-          actions: [
-            IMIconButtonWidget(
-              icon: const Icon(Icons.ios_share),
-              onPressed: () {
-                IMLocation? location;
-                final latLng = _centerLocation;
-                if (latLng != null) {
-                  location = IMLocation(
-                    address: _centerAddress ?? "",
-                    latitude: latLng.latitude,
-                    longitude: latLng.longitude,
-                  );
-                }
-                Navigator.of(context).pop(location);
-              },
-            )
-          ],
-        ),
-        body: GoogleMap(
-          mapType: MapType.normal,
-          initialCameraPosition: CameraPosition(
-            target: getCenterLatLng(),
-            zoom: 17,
-          ),
-          compassEnabled: true,
-          myLocationEnabled: true,
-          padding: const EdgeInsets.only(right: 16, bottom: 40),
-          markers: {
-            Marker(
-              markerId: _centerMarkerId,
-              position: getCenterLatLng(),
-              infoWindow: InfoWindow(title: "", snippet: _isMoving ? "" : _centerAddress),
-              icon: BitmapDescriptor.defaultMarker,
-            )
-          },
-          onMapCreated: (GoogleMapController controller) {
-            _controller = controller;
-          },
-          onCameraMove: (CameraPosition cameraPosition) {
-            _isMoving = true;
-            _updateCenterLocation(cameraPosition.target);
-          },
-          onCameraIdle: () async {
-            _isMoving = false;
-            getAddress().then((address) {
-              if (!_isMoving) {
-                _updateCenterAddress(address);
-                _controller?.showMarkerInfoWindow(_centerMarkerId);
+      appBar: AppBar(
+        title: Text(IMKit.S.messages_action_shareLocation),
+        actions: [
+          IMIconButtonWidget(
+            icon: const Icon(Icons.ios_share),
+            onPressed: () {
+              IMLocation? location;
+              final latLng = _centerLocation;
+              if (latLng != null) {
+                location = IMLocation(
+                  address: _centerAddress ?? "",
+                  latitude: latLng.latitude,
+                  longitude: latLng.longitude,
+                );
               }
-            });
-          },
-          onTap: (LatLng latLng) async {
-            _isMoving = true;
-            _updateCenterLocation(latLng);
-            _controller?.moveCamera(CameraUpdate.newLatLng(latLng));
-          },
-        ),
-      );
+              Navigator.of(context).pop(location);
+            },
+          )
+        ],
+      ),
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: CameraPosition(
+              target: getCenterLatLng(),
+              zoom: 17,
+            ),
+            compassEnabled: true,
+            myLocationEnabled: true,
+            padding: const EdgeInsets.only(right: 16, bottom: 40),
+            markers: _markers,
+            onMapCreated: (GoogleMapController controller) {
+              _controller = controller;
+            },
+            onCameraMoveStarted: () {
+              _cleanMarkers();
+            },
+            onCameraMove: (CameraPosition cameraPosition) {
+              _isMoving = true;
+              _updateCenterLocation(cameraPosition.target);
+            },
+            onCameraIdle: () async {
+              _isMoving = false;
+              getAddress().then((address) {
+                if (!_isMoving) {
+                  _updateCenterAddress(address);
+                }
+              });
+            },
+            onTap: (LatLng latLng) async {
+              _isMoving = true;
+              _updateCenterLocation(latLng);
+              _controller?.moveCamera(CameraUpdate.newLatLng(latLng));
+            },
+          ),
+          Center(
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 72, right: 16),
+              width: 36,
+              height: 36,
+              child: Assets.images.locationMark.image(
+                color: Colors.red,
+                package: IMKit.instance.internal.state.sdkDefaultPackageName,
+              ),
+            ),
+          ),
+        ],
+      ));
 
   void _updateCenterLocation(LatLng latLng) {
-    setState(() {
-      _centerLocation = latLng;
-    });
+    _centerLocation = latLng;
+  }
+
+  void _cleanMarkers() {
+    if (_markers.isNotEmpty) {
+      setState(() {
+        _markers = {};
+      });
+    }
   }
 
   void _updateCenterAddress(String address) {
-    setState(() {
-      _centerAddress = address;
-    });
+    if (address.isNotEmpty) {
+      _markers
+          .addLabelMarker(LabelMarker(
+        label: address,
+        textStyle: const TextStyle(fontSize: 32, color: Colors.white),
+        anchor: const Offset(0.5, 2.0),
+        markerId: MarkerId(address),
+        flat: true,
+        position: getCenterLatLng(),
+        backgroundColor: Colors.black,
+      ))
+          .then((value) {
+        setState(() {
+          _centerAddress = address;
+        });
+      });
+    }
   }
 }
 
