@@ -49,7 +49,7 @@ class IMKitInternal {
       return "";
     }
     try {
-      final newToken = (await _state.tokenExpired?.call()) ?? "";
+      final newToken = (await _state.tokenExpired!()) ?? "";
       if (newToken.isNotEmpty) {
         _state.token = newToken;
         _data.socketConnect();

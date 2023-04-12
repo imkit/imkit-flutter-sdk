@@ -21,8 +21,8 @@ class IMApiDio with DioMixin, IMAccessor implements Dio {
 
     this.options = options;
 
-    interceptors.add(IMApiInterceptor(sdk.state));
-    interceptors.add(IMApiTokenInterceptor(this));
+    interceptors.add(IMApiTokenInterceptor(this, sdk.state));
+    interceptors.add(IMApiInterceptor());
 
     // if (kDebugMode) {
     //   interceptors.add(PrettyDioLogger(
@@ -32,6 +32,8 @@ class IMApiDio with DioMixin, IMAccessor implements Dio {
     //     responseHeader: true,
     //     responseBody: true,
     //     compact: true,
+    //     maxWidth: 200,
+    //     error: true,
     //   ));
     // }
 

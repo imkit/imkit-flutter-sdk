@@ -38,7 +38,7 @@ dependencies:
   camera: ^0.10.0+1
 
   # Microphone
-  audioplayers: ^3.0.1
+  audioplayers: ^1.0.1
   record: ^3.0.4
 
   # File

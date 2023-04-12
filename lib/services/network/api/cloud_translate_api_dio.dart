@@ -18,7 +18,7 @@ class CloudTranslateApiDio with DioMixin, IMAccessor implements Dio {
 
     this.options = options;
 
-    interceptors.add(IMApiInterceptor(sdk.state));
+    interceptors.add(IMApiInterceptor());
 
     // if (kDebugMode) {
     //   interceptors.add(PrettyDioLogger(

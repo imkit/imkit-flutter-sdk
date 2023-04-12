@@ -578,7 +578,6 @@ Map<String, dynamic>? _toLocation(Map<dynamic, dynamic>? json, String key) {
       "latitude": json?["latitude"] ?? 0,
       "longitude": json?["longitude"] ?? 0,
     };
-    print(res);
     return res;
   }
   return null;

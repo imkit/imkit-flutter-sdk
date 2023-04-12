@@ -6,6 +6,7 @@ import 'package:imkit/services/data/managers/im_base_data_manager.dart';
 
 class IMUserDataManager extends IMBaseDataManager {
   late final DeviceInfoPlugin deviceInfoPlugin = DeviceInfoPlugin();
+  late String _registerFCMToken = "";
 
   Future<void> insertItem(IMUser user) {
     return database.userDao.insertItem(user);
@@ -49,6 +50,11 @@ class IMUserDataManager extends IMBaseDataManager {
   }
 
   Future<bool> subscribe({required String fcmToken}) {
+    if (_registerFCMToken == fcmToken) {
+      return Future.value(true);
+    }
+    _registerFCMToken = fcmToken;
+
     return getDeviceId()
         .then((deviceId) {
           if ((deviceId ?? "").isNotEmpty) {
@@ -61,7 +67,10 @@ class IMUserDataManager extends IMBaseDataManager {
           throw Error();
         })
         .then((_) => true)
-        .catchError((_) => false);
+        .catchError((_) {
+          _registerFCMToken = "";
+          return false;
+        });
   }
 
   Future<bool> unsubscribe() {

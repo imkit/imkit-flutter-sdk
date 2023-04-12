@@ -1,32 +1,35 @@
 import 'package:dio/dio.dart';
 import 'package:imkit/imkit_sdk.dart';
 
-class IMApiTokenInterceptor extends Interceptor {
+class IMApiTokenInterceptor extends QueuedInterceptorsWrapper {
   final Dio _dio;
+  final IMState _state;
 
-  final _headerAuthorization = '"IM-Authorization"';
+  final _headerAuthorization = "IM-Authorization";
 
-  IMApiTokenInterceptor(this._dio);
+  IMApiTokenInterceptor(this._dio, this._state);
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.headers = _state.headersForApi();
+    handler.next(options);
+  }
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     try {
       switch (err.response?.statusCode) {
         case 401:
-        case 403:
-          return Future.delayed(const Duration(seconds: 3), () async {
-            final headers = err.requestOptions.headers;
-            final inHeaderAccessToken = headers[_headerAuthorization];
-            final inStateAccessToken = IMKit.instance.internal.state.token;
-            return resend(
-              err,
-              (inHeaderAccessToken == inStateAccessToken) ? await IMKit.instance.internal.exchangeToken() : inStateAccessToken,
-              handler,
-            );
-          });
-
+          final headers = err.requestOptions.headers;
+          final inHeaderAccessToken = headers[_headerAuthorization];
+          final inStateAccessToken = _state.token;
+          return retry(
+            err,
+            (inHeaderAccessToken == inStateAccessToken) ? await IMKit.instance.internal.exchangeToken() : inStateAccessToken,
+            handler,
+          );
         default:
-          return handler.next(err);
+          return handler.reject(err);
       }
     } catch (error) {
       return handler.next(err);
@@ -35,13 +38,24 @@ class IMApiTokenInterceptor extends Interceptor {
 }
 
 extension on IMApiTokenInterceptor {
-  void resend(DioError err, String accessToken, ErrorInterceptorHandler handler) async {
+  void retry(DioError err, String accessToken, ErrorInterceptorHandler handler) async {
     if (accessToken.isNotEmpty) {
       try {
         err.requestOptions.headers
           ..remove(_headerAuthorization)
           ..putIfAbsent(_headerAuthorization, () => accessToken);
-        return handler.resolve(await retry(_dio, err.requestOptions, handler));
+
+        final requestOptions = getRetryRequestOptions(err.requestOptions);
+        final response = await Dio(_dio.options).request(
+          requestOptions.path,
+          data: requestOptions.data,
+          queryParameters: requestOptions.queryParameters,
+          options: Options(
+            method: requestOptions.method,
+            headers: requestOptions.headers,
+          ),
+        );
+        return handler.resolve(response);
       } on DioError catch (error) {
         return handler.reject(error);
       }
@@ -49,7 +63,7 @@ extension on IMApiTokenInterceptor {
     return handler.reject(err);
   }
 
-  Future retry(Dio dio, RequestOptions requestOptions, ErrorInterceptorHandler handler) {
+  RequestOptions getRetryRequestOptions(RequestOptions requestOptions) {
     if (requestOptions.data is FormData) {
       FormData formData = FormData();
       formData.fields.addAll(requestOptions.data.fields);
@@ -59,15 +73,6 @@ extension on IMApiTokenInterceptor {
       }
       requestOptions.data = formData;
     }
-
-    return dio.request(
-      requestOptions.path,
-      data: requestOptions.data,
-      queryParameters: requestOptions.queryParameters,
-      options: Options(
-        method: requestOptions.method,
-        headers: requestOptions.headers,
-      ),
-    );
+    return requestOptions;
   }
 }
