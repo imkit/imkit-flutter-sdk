@@ -53,8 +53,11 @@ class IMFileDataManager extends IMBaseDataManager {
 
   Future<File> downloadFileToCache({required String url, required String filename}) async {
     File file = await IMKitCacheManager().getSingleFile(url, headers: IMKit.instance.internal.state.headers());
-
-    return file.rename("${file.parent.path}/$filename");
+    try {
+      return file.rename("${file.parent.path}/$filename");
+    } catch (error) {
+      return file;
+    }
   }
 
   Future<File> addImageToCache({required String url, required File file}) async {

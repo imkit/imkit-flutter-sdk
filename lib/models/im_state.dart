@@ -12,7 +12,9 @@ class IMState {
   String token = "";
   List<String> stickers = [];
   String sdkPackageName = "";
+  String fcmToken = "";
   final String sdkDefaultPackageName = "imkit";
+  Future<String?> Function()? tokenExpired;
 
   List<IMMessageType> replyableMessageTypes = [
     IMMessageType.text,
@@ -90,6 +92,7 @@ class IMStateBuilder {
   String _token = "";
   List<String> _stickers = [];
   String _sdkPackageName = "imkit";
+  Future<String?> Function()? _tokenExpired;
 
   IMStateBuilder setClientKey(String value) {
     _clientKey = value;
@@ -116,7 +119,6 @@ class IMStateBuilder {
     return this;
   }
 
-
   IMStateBuilder setCloudTranslateActive(bool value) {
     _cloudTranslateActive = value;
     return this;
@@ -132,6 +134,11 @@ class IMStateBuilder {
     return this;
   }
 
+  IMStateBuilder setTokenExpired(Future<String?> Function()? handler) {
+    _tokenExpired = handler;
+    return this;
+  }
+
   IMState build() => IMState()
     ..clientKey = _clientKey
     ..chatServerURL = _chatServerURL
@@ -142,5 +149,6 @@ class IMStateBuilder {
     ..uid = _uid
     ..token = _token
     ..stickers = _stickers
-    ..sdkPackageName = _sdkPackageName;
+    ..sdkPackageName = _sdkPackageName
+    ..tokenExpired = _tokenExpired;
 }

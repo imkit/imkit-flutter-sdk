@@ -8,14 +8,19 @@ class IMRoomsView extends StatelessWidget {
   const IMRoomsView({Key? key, this.emptyView}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => IMRouteListenWidget(
-        onAppear: (_) => IMKit.uid.isNotEmpty ? IMKit.instance.action.fetchRooms() : null,
-        child: RefreshIndicator(
-            onRefresh: () => Future.delayed(const Duration(milliseconds: 500), () {
-                  if (IMKit.uid.isNotEmpty) {
-                    IMKit.instance.action.fetchRooms(isRefresh: true);
-                  }
-                }),
-            child: IMRoomsListWidget(emptyView: emptyView)),
+  Widget build(BuildContext context) => WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: IMRouteListenWidget(
+          onAppear: (_) => IMKit.uid.isNotEmpty ? IMKit.instance.action.fetchRooms() : null,
+          child: RefreshIndicator(
+              onRefresh: () => Future.delayed(const Duration(milliseconds: 500), () {
+                    if (IMKit.uid.isNotEmpty) {
+                      IMKit.instance.action.fetchRooms(isRefresh: true);
+                    }
+                  }),
+              child: IMRoomsListWidget(emptyView: emptyView)),
+        ),
       );
 }

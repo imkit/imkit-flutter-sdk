@@ -57,7 +57,11 @@ class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
                 _messagesMark = snapshotWithMark.data ?? [];
                 final _deleteMessageIds = _messagesMark.map((element) => element.id);
                 _messages = allMessages.where((element) => !_deleteMessageIds.contains(element.id)).toList();
+                final lastReciverUnReadMessage = _messages.where((element) => !element.isMe && !element.membersWhoHaveRead.contains(IMKit.uid)).firstOrNull;
 
+                if (lastReciverUnReadMessage != null) {
+                  IMKit.instance.action.setRead(roomId: widget.roomId, message: lastReciverUnReadMessage);
+                }
                 return ListView.separated(
                   controller: _controller,
                   padding: const EdgeInsets.all(8),
@@ -67,9 +71,6 @@ class IMMessagesListWidgetState extends State<IMMessagesListWidget> {
                   itemBuilder: (BuildContext context, int index) {
                     final prevMessageCreatedAt = _messages.firstWhereIndexedOrNull((i, _) => i == index + 1)?.createdAt;
                     final currentMessage = _messages[index];
-                    if (index == 0) {
-                      IMKit.instance.action.setRead(roomId: widget.roomId, message: currentMessage);
-                    }
                     final key = ValueKey(currentMessage.id);
                     return AutoScrollTag(
                       key: key,

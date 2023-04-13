@@ -1,7 +1,7 @@
 import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:imkit/sdk/internal/imkit_accessor.dart';
-import 'package:imkit/services/network/api/interceptors/im_api_wrapper.dart';
+import 'package:imkit/services/network/api/interceptors/im_api_interceptor.dart';
 
 class CloudTranslateApiDio with DioMixin, IMAccessor implements Dio {
   static CloudTranslateApiDio _instance() => CloudTranslateApiDio._();
@@ -18,7 +18,7 @@ class CloudTranslateApiDio with DioMixin, IMAccessor implements Dio {
 
     this.options = options;
 
-    interceptors.add(IMApiWrapper(sdk.state));
+    interceptors.add(IMApiInterceptor());
 
     // if (kDebugMode) {
     //   interceptors.add(PrettyDioLogger(

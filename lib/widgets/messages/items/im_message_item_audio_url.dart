@@ -10,7 +10,7 @@ import 'package:imkit/widgets/components/im_stateful_wrapper.dart';
 
 class IMMessageItemAudioUrl extends StatelessWidget {
   final IMMessage message;
-  final ap.AudioPlayer _audioPlayer = ap.AudioPlayer();
+  final ap.AudioPlayer _audioPlayer = ap.AudioPlayer()..setReleaseMode(ap.ReleaseMode.stop);
   final List<StreamSubscription> _streams = [];
 
   IMMessageItemAudioUrl({Key? key, required this.message}) : super(key: key);
@@ -43,34 +43,34 @@ class IMMessageItemAudioUrl extends StatelessWidget {
           },
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                StreamBuilder<ap.PlayerState>(
-                  stream: _audioPlayer.onPlayerStateChanged,
-                  builder: (context, snapshot) => Icon(
+            child: StreamBuilder<ap.PlayerState>(
+              stream: _audioPlayer.onPlayerStateChanged,
+              builder: (context, snapshot) => Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
                     snapshot.data == ap.PlayerState.playing ? Icons.pause_circle_filled_outlined : Icons.play_circle_fill_outlined,
                     size: 28,
                     color: IMKit.style.primaryColor,
                   ),
-                ),
-                const SizedBox(width: 8),
-                StreamBuilder<Duration>(
-                  stream: _audioPlayer.onPositionChanged,
-                  builder: (context, snapshot) {
-                    final total = Duration(seconds: message.file?.duration ?? 0);
-                    final diff = total - (snapshot.data ?? const Duration(seconds: 0));
-                    return SizedBox(
-                      width: 50,
-                      child: Text(
-                        Utils.formatDuration(diff.inSeconds),
-                        textAlign: TextAlign.center,
-                        style: message.isMe ? IMKit.style.message.outgoing.textSytle : IMKit.style.message.incoming.textSytle,
-                      ),
-                    );
-                  },
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  StreamBuilder<Duration>(
+                    stream: _audioPlayer.onPositionChanged,
+                    builder: (context, snapshotByPositionChanged) {
+                      final total = Duration(seconds: message.file?.duration ?? 0);
+                      final diff = snapshot.data == ap.PlayerState.completed ? total : total - (snapshotByPositionChanged.data ?? const Duration(seconds: 0));
+                      return SizedBox(
+                        width: 50,
+                        child: Text(
+                          Utils.formatDuration(diff.inSeconds),
+                          textAlign: TextAlign.center,
+                          style: message.isMe ? IMKit.style.message.outgoing.textSytle : IMKit.style.message.incoming.textSytle,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

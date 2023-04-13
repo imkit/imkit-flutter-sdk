@@ -11,6 +11,8 @@ class IMMessageItemComponent {
   static double getMaxCellWidth(BuildContext context) => MediaQuery.of(context).size.width * 0.7;
   static double getStrickerCellWidth(BuildContext context) => MediaQuery.of(context).size.width * 0.3;
 
+  static double getPreviewCellHeight(BuildContext context) => MediaQuery.of(context).size.height * 0.1;
+
   static Widget getLoadImageFailure() => Container(
         padding: const EdgeInsets.all(12),
         width: 44,

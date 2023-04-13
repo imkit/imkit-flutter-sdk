@@ -69,9 +69,16 @@ class IMKit {
     _instance.internal.state.cloudTranslateActive = _instance.internal.data.localStorege.getValue(key: IMLocalStoregeKey.enableTranslate, defalut: false)!;
   }
 
-  static Future<IMUser?> login({required String uid, String? token}) => _instance._internal.login(uid: uid, token: token);
+  static Future<IMUser?> login({required String uid, String? token}) => _instance._internal
+      .login(uid: uid, token: token)
+      .then((user) => _instance._internal.data.subscribe(fcmToken: _instance._internal.state.fcmToken).then((_) => user));
 
   static void logout() => _instance._internal.logout();
+
+  static void subscribe({required String fcmToken}) {
+    _instance._internal.state.fcmToken = fcmToken;
+    _instance._internal.data.subscribe(fcmToken: fcmToken);
+  }
 
   static void toMessageView({required BuildContext context, required String roomId, IMRoom? room}) =>
       Navigator.push(context, MaterialPageRoute(builder: (context) => IMMessagesView(roomId: roomId, room: room)));

@@ -2,6 +2,22 @@ import 'package:audioplayers/audioplayers.dart' as ap;
 
 class AudioPlayerManager {
   static final AudioPlayerManager instance = AudioPlayerManager._();
+  // final ap.AudioContext _audioContext = const ap.AudioContext(
+  //   iOS: ap.AudioContextIOS(
+  //     category: ap.AVAudioSessionCategory.playback,
+  //     options: [
+  //       ap.AVAudioSessionOptions.defaultToSpeaker,
+  //       ap.AVAudioSessionOptions.mixWithOthers,
+  //     ],
+  //   ),
+  //   android: ap.AudioContextAndroid(
+  //     isSpeakerphoneOn: true,
+  //     stayAwake: true,
+  //     contentType: ap.AndroidContentType.music,
+  //     usageType: ap.AndroidUsageType.media,
+  //     audioFocus: ap.AndroidAudioFocus.gain,
+  //   ),
+  // );
   final ap.AudioContext _audioContext = ap.AudioContext(
     iOS: ap.AudioContextIOS(
       defaultToSpeaker: true,
@@ -33,7 +49,7 @@ class AudioPlayerManager {
     _audioPlayer = player;
     _audioPlayer?.play(
       source,
-      mode: ap.PlayerMode.lowLatency,
+      // mode: ap.PlayerMode.lowLatency,
     );
   }
 }

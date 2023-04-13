@@ -1,18 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:imkit/imkit_sdk.dart';
-import 'package:imkit/models/im_state.dart';
 
-class IMApiWrapper extends Interceptor {
-  final IMState _state;
-
-  IMApiWrapper(this._state);
-
-  @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    options.headers = _state.headersForApi();
-    handler.next(options);
-  }
-
+class IMApiInterceptor extends QueuedInterceptorsWrapper {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     dynamic result;

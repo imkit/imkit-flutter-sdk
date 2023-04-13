@@ -60,6 +60,20 @@ class IMData {
         description: description,
       );
 
+  Future<bool> subscribe({required String fcmToken}) {
+    if (IMKit.uid.isNotEmpty && state.token.isNotEmpty && fcmToken.isNotEmpty) {
+      return _userDataManager.subscribe(fcmToken: fcmToken);
+    }
+    return Future.value(false);
+  }
+
+  Future<bool> unsubscribe() {
+    if (IMKit.uid.isNotEmpty && state.token.isNotEmpty) {
+      return _userDataManager.unsubscribe();
+    }
+    return Future.value(false);
+  }
+
   /// Room
   Future<IMRoom> createRoom({String? roomId, String? roomName, String? description, String? cover}) =>
       _roomDataManager.createRoom(roomId: roomId, roomName: roomName, description: description, cover: cover);

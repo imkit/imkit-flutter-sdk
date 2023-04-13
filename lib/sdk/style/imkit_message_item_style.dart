@@ -8,6 +8,7 @@ class IMKitMessageItemStyle {
   final IMKitMessageItemStatusStyle status = IMKitMessageItemStatusStyle();
   final IMKitMessageItemResponseStyle response = IMKitMessageItemResponseStyle();
   final IMKitMessageItemFileStyle file = IMKitMessageItemFileStyle();
+  final IMKitMessageItemPreviewStyle preview = IMKitMessageItemPreviewStyle();
 
   double cornerRadius = 12;
 
@@ -60,4 +61,10 @@ class IMKitMessageItemResponseStyle {
 
 class IMKitMessageItemFileStyle {
   TextStyle detailTextSytle = const TextStyle(color: Color.fromRGBO(117, 117, 117, 1), fontSize: 13);
+}
+
+class IMKitMessageItemPreviewStyle {
+  // TextStyle detailTextSytle = const TextStyle(color: Color.fromRGBO(117, 117, 117, 1), fontSize: 13);
+  TextStyle titleStyle = const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14);
+  TextStyle bodyStyle = const TextStyle(color: Colors.grey, fontWeight: FontWeight.normal, fontSize: 12);
 }
