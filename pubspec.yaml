@@ -55,7 +55,6 @@ dependencies:
   enume: ^1.1.0
   crypto: ^3.0.1
   path_provider: ^2.0.9
-  keyboard_dismisser: ^2.0.1
   cached_network_image: ^3.2.0
   scroll_to_index: ^2.1.1
   flutter_smart_dialog: ^4.0.0

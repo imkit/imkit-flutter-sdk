@@ -688,13 +688,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.3.1"
-  keyboard_dismisser:
-    dependency: "direct main"
-    description:
-      name: keyboard_dismisser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
   label_marker:
     dependency: "direct main"
     description:
