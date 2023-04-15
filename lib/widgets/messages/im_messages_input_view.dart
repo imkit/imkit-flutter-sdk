@@ -408,6 +408,7 @@ class IMMessagesInputViewState extends State<IMMessagesInputView> {
   }
 
   void replay({required IMMessage message}) {
+    updateInputType(IMMessagesInputViewType.text);
     setState(() {
       _responseObject = message.transformToResponseObject();
     });
