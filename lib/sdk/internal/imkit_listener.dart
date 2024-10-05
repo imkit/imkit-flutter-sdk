@@ -14,6 +14,8 @@ class IMKitListener {
 
   // Room
   Stream<List<IMRoom>> get watchRooms => _database.roomDao.findRooms();
+  Stream<int> get watchBadge =>
+      _database.roomDao.findRooms().map((event) => event.fold(0, (previousValue, element) => previousValue + element.numberOfUnreadMessages));
   Stream<IMRoom?> watchRoom({required String roomId}) => _database.roomDao.findRoom(roomId);
 
   // Message
