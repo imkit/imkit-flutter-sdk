@@ -2,7 +2,8 @@
 
 ## Intro
 
-Through IMKIT Flutter SDK, you will be able to integrate chat into your app easily and efficiently. Follow the simple integration process below to build the chat with feature-rich experience.
+Through IMKIT Flutter SDK, you will be able to integrate chat into your app easily and efficiently. 
+Follow the simple integration process below to build the chat with feature-rich experience.
 
 ## Requirements
 
