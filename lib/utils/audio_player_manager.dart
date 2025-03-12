@@ -20,14 +20,14 @@ class AudioPlayerManager {
   // );
   final ap.AudioContext _audioContext = ap.AudioContext(
     iOS: ap.AudioContextIOS(
-      defaultToSpeaker: true,
+      // defaultToSpeaker: true,
       category: ap.AVAudioSessionCategory.playback,
-      options: [
+      options: const {
         ap.AVAudioSessionOptions.defaultToSpeaker,
         ap.AVAudioSessionOptions.mixWithOthers,
-      ],
+      },
     ),
-    android: ap.AudioContextAndroid(
+    android: const ap.AudioContextAndroid(
       isSpeakerphoneOn: true,
       stayAwake: true,
       contentType: ap.AndroidContentType.music,
@@ -38,7 +38,7 @@ class AudioPlayerManager {
 
   ap.AudioPlayer? _audioPlayer;
   AudioPlayerManager._() {
-    ap.AudioPlayer.global.setGlobalAudioContext(_audioContext);
+    ap.AudioPlayer.global.setAudioContext(_audioContext);
   }
 
   void play({required ap.AudioPlayer player, required ap.Source source}) async {

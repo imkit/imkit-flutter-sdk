@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:imkit/sdk/imkit.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 class IMPhotoItem extends StatelessWidget {
   const IMPhotoItem({

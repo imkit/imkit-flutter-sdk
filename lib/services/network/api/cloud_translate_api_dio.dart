@@ -1,5 +1,5 @@
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'package:imkit/sdk/internal/imkit_accessor.dart';
 import 'package:imkit/services/network/api/interceptors/im_api_interceptor.dart';
 
@@ -12,9 +12,9 @@ class CloudTranslateApiDio with DioMixin, IMAccessor implements Dio {
     options = BaseOptions()
       ..baseUrl = state.cloudTranslateAPIUrl
       ..contentType = Headers.jsonContentType
-      ..connectTimeout = 60000
-      ..sendTimeout = 180000
-      ..receiveTimeout = 180000;
+      ..connectTimeout = const Duration(seconds: 60)
+      ..sendTimeout = const Duration(seconds: 180)
+      ..receiveTimeout = const Duration(seconds: 180);
 
     this.options = options;
 
@@ -31,6 +31,6 @@ class CloudTranslateApiDio with DioMixin, IMAccessor implements Dio {
     //   ));
     // }
 
-    httpClientAdapter = DefaultHttpClientAdapter();
+    httpClientAdapter = IOHttpClientAdapter();
   }
 }

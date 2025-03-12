@@ -67,7 +67,7 @@ extension on IMMessageItemMenu {
       case IMMessageAction.forward:
         break;
       case IMMessageAction.copy:
-        Clipboard.setData(ClipboardData(text: message.text));
+        Clipboard.setData(ClipboardData(text: message.text ?? ""));
         break;
       case IMMessageAction.unsend:
         IMKit.instance.action.recallMessage(message: message);

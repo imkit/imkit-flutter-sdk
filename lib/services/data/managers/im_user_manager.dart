@@ -94,7 +94,7 @@ extension on IMUserDataManager {
     if (Platform.isIOS) {
       return deviceInfoPlugin.iosInfo.then((value) => value.identifierForVendor).catchError((_) => null);
     } else if (Platform.isAndroid) {
-      return deviceInfoPlugin.androidInfo.then((value) => value.androidId).catchError((_) => null);
+      return deviceInfoPlugin.androidInfo.then((value) => value.id);
     }
     return Future.value(null);
   }

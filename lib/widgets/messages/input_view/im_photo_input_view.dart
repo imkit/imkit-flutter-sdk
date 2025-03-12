@@ -78,7 +78,7 @@ class _IMPhotoInputViewState extends State<IMPhotoInputView> {
     setState(() {
       _path = paths.first;
     });
-    _totalEntitiesCount = _path!.assetCount;
+    _totalEntitiesCount = await _path!.assetCountAsync;
     final List<AssetEntity> entities = await _path!.getAssetListPaged(
       page: 0,
       size: _sizePerPage,
